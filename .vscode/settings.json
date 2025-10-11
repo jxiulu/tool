@@ -61,7 +61,10 @@
         "variant": "cpp",
         "vector": "cpp",
         "algorithm": "cpp",
-        "archive": "cpp"
+        "archive": "cpp",
+        "condition_variable": "cpp",
+        "cstddef": "cpp"
     },
-    "editor.fontFamily": "JetBrains Mono, Menlo, Monaco, 'Courier New', monospace"
+    "editor.fontFamily": "JetBrains Mono, Menlo, Monaco, 'Courier New', monospace",
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }
