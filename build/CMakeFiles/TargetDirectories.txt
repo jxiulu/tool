@@ -1,3 +1,0 @@
-/Users/jerrylu/Documents/Projects/foldertranslator/build/CMakeFiles/main.dir
-/Users/jerrylu/Documents/Projects/foldertranslator/build/CMakeFiles/edit_cache.dir
-/Users/jerrylu/Documents/Projects/foldertranslator/build/CMakeFiles/rebuild_cache.dir
