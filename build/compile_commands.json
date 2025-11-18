@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/Users/jerrylu/Documents/Projects/SetteiMan/build",
+  "command": "/usr/bin/c++ -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/Users/jerrylu/Documents/Projects/SetteiMan/settei_man -isystem /opt/homebrew/include -std=gnu++2b -arch arm64 -o CMakeFiles/SetteiMan.dir/settei_man/settei_man.cpp.o -c /Users/jerrylu/Documents/Projects/SetteiMan/settei_man/settei_man.cpp",
+  "file": "/Users/jerrylu/Documents/Projects/SetteiMan/settei_man/settei_man.cpp",
+  "output": "CMakeFiles/SetteiMan.dir/settei_man/settei_man.cpp.o"
+}
+]
