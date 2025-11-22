@@ -1,26 +1,25 @@
 #include "company.hpp"
 #include "episode.hpp"
-#include "mats.hpp"
 #include <map>
 
-namespace settei {
+namespace org {
 
 //
 // series
 //
 
-Series::Series(const Company *parent_company, const std::string &series_code,
+series::series(const company *parent_company, const std::string &series_code,
                const std::string &naming_convention, const int season)
-    : parent_company_(parent_company), series_code_(series_code),
+    : parent_company_(parent_company), code_(series_code),
       naming_convention_(naming_convention), season_(season) {
     build_regex();
 }
 
-const std::vector<std::unique_ptr<Episode>> &Series::episodes() const {
+const std::vector<std::unique_ptr<episode>> &series::episodes() const {
     return episodes_;
 }
 
-void Series::build_regex() {
+void series::build_regex() {
     std::string pattern = naming_convention_;
 
     const char *alphanumeric = "([A-Za-z0-9]+)";
@@ -60,15 +59,15 @@ void Series::build_regex() {
     naming_regex_ = std::regex(pattern, std::regex::icase);
 }
 
-std::optional<CutInfo>
-Series::parse_cut_name(const std::string &folder_name) const {
+std::optional<materials::cut_info>
+series::parse_cut_name(const std::string &folder_name) const {
     std::smatch matches;
     if (!std::regex_match(folder_name, matches, naming_regex_)) {
         return std::nullopt;
     }
 
-    CutInfo info;
-    info.series_code = series_code_;
+    materials::cut_info info;
+    info.series_code = code_;
 
     for (size_t i = 0; i < field_order_.size(); i++) {
         const std::string &field = field_order_[i];
@@ -91,19 +90,19 @@ Series::parse_cut_name(const std::string &folder_name) const {
 // company
 //
 
-Company::Company(const std::string &name) : name_(name) {}
+company::company(const std::string &name) : name_(name) {}
 
-const std::vector<std::unique_ptr<Series>> &Company::series() const {
+const std::vector<std::unique_ptr<series>> &company::series() const {
     return series_;
 }
 
-void Company::set_path(const fs::path &path) { root_ = path; }
+void company::set_path(const fs::path &path) { root_ = path; }
 
-void Company::add_series(const std::string &series_code,
+void company::add_series(const std::string &series_code,
                          const std::string &naming_convention,
                          const int season) {
-    series_.push_back(
-        std::make_unique<Series>(this, series_code, naming_convention, season));
+    series_.push_back(std::make_unique<class series>(
+        this, series_code, naming_convention, season));
 }
 
-} // namespace settei
+} // namespace org

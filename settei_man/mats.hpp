@@ -1,9 +1,9 @@
+// material
+
 #pragma once
 
+#include "types.hpp"
 #include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
-#include <chrono>
 #include <filesystem>
 #include <memory>
 #include <optional>
@@ -12,154 +12,91 @@
 
 namespace fs = std::filesystem;
 
-namespace settei {
-
-//
-// fwd decs
-//
-
-class Company;
-class Series;
-class Episode;
-class Mat;
-class File;
-class Folder;
-class Cut;
-
-//
-// relevant types
-//
-
-enum class CutStage {
-    LO,
-    LOR,
-    KA,
-    KAR,
-    LS,
-    LSR,
-    GS,
-    GSR,
-    Other,
-};
-
-enum class CutStatus {
-    NotStarted,
-    Started,
-    InProgress,
-    AlmostDone,
-    Done,
-    Submitted,
-};
-
-struct CutInfo {
-    std::string series_code;
-    int episode_num;
-    std::optional<int> scene;
-    int number;
-    std::string stage;
-};
-
-struct ProgressEntry {
-    const CutStatus status;
-    const std::chrono::system_clock::time_point time_updated;
-};
-
-enum class MatType {
-    CutFolder,
-    CutFile,
-    ClipStudioFile,
-    PureRefFile,
-    MeetingNotes,
-    SetteiFolder,
-    SetteiFile,
-    Other
-};
-
-inline boost::uuids::uuid generate_uuid() {
-    static boost::uuids::random_generator gen;
-    return gen();
+namespace org {
+class episode;
 }
 
-inline CutStage parse_stage(const std::string &stage_str) {
-    // todo: stage parsing
-    // placeholder:
-    return CutStage::LO;
-}
+namespace materials {
+class material;
+class file;
+class folder;
+class cut;
 
-//
-// base material class
-//
-
-class Mat {
+class material {
   private:
-    const Episode *parent_episode_;
-    fs::path path_;
+    const org::episode *parent_episode_;
     std::string notes_;
     std::string alias_;
     const boost::uuids::uuid uuid_;
-    MatType type_;
+    material_type type_;
 
   protected:
-    Mat(const Episode *parent_episode, const fs::path &path, MatType type);
+    fs::path path_;
+    material(const org::episode *parent_episode, const fs::path &path,
+             material_type type);
+    material(const org::episode *parent, const fs::path &path,
+             material_type type, boost::uuids::uuid uuid);
 
   public:
-    virtual ~Mat() = default;
-    virtual bool is_dir() const = 0;
+    virtual ~material() = default;
+    virtual bool is_folder() const = 0;
 
-    const Episode *parent_episode() const { return parent_episode_; }
+    const org::episode *parent_episode() const { return parent_episode_; }
     const fs::path &path() const { return path_; }
     const std::string &notes() const { return notes_; }
     const std::string &alias() const { return alias_; }
     const boost::uuids::uuid &uuid() const { return uuid_; }
-    MatType type() const { return type_; }
+    material_type type() const { return type_; }
+
+    std::error_code move_to(const fs::path &location);
 
     void set_notes(const std::string &notes);
     void set_alias(const std::string &alias);
 };
 
-//
-// material classes
-//
-
-class File : public Mat {
+class file : public material {
   public:
-    bool is_dir() const override { return false; }
-    File(const Episode *parent_episode, const fs::path &path, MatType type);
+    bool is_folder() const override { return false; }
+    file(const org::episode *parent_episode, const fs::path &path,
+         material_type type);
 };
 
-class Folder : public Mat {
+class folder : public material {
   private:
-    std::vector<std::unique_ptr<Mat>> children_;
+    std::vector<std::unique_ptr<material>> children_;
 
   public:
-    bool is_dir() const override { return true; }
+    bool is_folder() const override { return true; }
 
-    const std::vector<std::unique_ptr<Mat>> &children() const;
-    void add_child(std::unique_ptr<Mat> child);
-    Mat *find_child(const boost::uuids::uuid &uuid);
+    const std::vector<std::unique_ptr<material>> &children() const;
+    void add_child(std::unique_ptr<material> child);
+    material *find_child(const boost::uuids::uuid &uuid);
 
-    Folder(const Episode *parent_episode, const fs::path &path, MatType type);
+    folder(const org::episode *parent_episode, const fs::path &path,
+           material_type type);
 };
 
-class Cut : public Folder {
+class cut : public folder {
   private:
-    CutStage stage_;
+    cut_stage stage_code_;
+    std::string stage_;
     int num_;
     std::optional<int> scene_num_;
-    std::vector<ProgressEntry> progress_history_;
+    std::vector<progress_entry> progress_history_;
 
   public:
-    Cut(const Episode *parent_episode, const fs::path &path,
+    cut(const org::episode *parent_episode, const fs::path &path,
         const std::optional<int> &scene_num, const int number,
-        const CutStage type);
+        const std::string &stage);
 
-    const std::optional<int> &scene_num() const { return scene_num_; }
+    const std::optional<int> &scene() const { return scene_num_; }
     int number() const { return num_; }
-    CutStage stage() const { return stage_; }
-    CutStatus status() const;
+    const cut_stage stage_code() const { return stage_code_; }
+    const cut_status status() const;
 
-    void update_status(const CutStatus new_status);
-    bool is_same_as(const Cut &other) const;
+    void mark(const cut_status new_status);
+    bool matches_with(const cut &other) const;
+    bool conflicts_with(const cut &other) const;
 };
 
-} // namespace settei
+} // namespace materials

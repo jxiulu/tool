@@ -1,5 +1,8 @@
+// episode
+
 #pragma once
 
+#include "mats.hpp"
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -11,58 +14,54 @@
 
 namespace fs = std::filesystem;
 
-namespace settei {
+namespace org {
 
-//
-// fwd decs
-//
+class series;
 
-class Company;
-class Series;
-class Episode;
-class Mat;
-class File;
-class Folder;
-class Cut;
-
-class Episode {
+class episode {
   private:
-    const Series *series_;
+    const series *series_;
     int episode_num_;
     fs::path root_;
-    fs::path up_dir_;
-    fs::path cels_dir_;
-    std::optional<fs::path> pureref_dir_;
+    fs::path up_folder_;
+    fs::path cels_folder_;
+    std::optional<fs::path> pureref_file_;
 
-    std::vector<std::unique_ptr<Mat>> materials_;
-    std::vector<std::unique_ptr<Cut>> active_cuts_;
-    std::vector<std::unique_ptr<Cut>> archived_cuts_;
+    std::vector<std::unique_ptr<materials::material>> materials_;
+    std::vector<std::unique_ptr<materials::cut>> active_cuts_;
+    std::vector<std::unique_ptr<materials::cut>> archived_cuts_;
 
     std::string notes_;
 
   public:
-    Episode(const Series *series, const fs::path &parent_dir);
+    episode(const series *series, const fs::path &parent_dir);
 
     //
     // read-only simple getters
     //
 
-    int episode() const { return episode_num_; }
-    const Series *series() const { return series_; }
+    int number() const { return episode_num_; }
+    const series *series() const { return series_; }
     const fs::path &root() const { return root_; }
-    const fs::path &up_dir() const { return up_dir_; }
-    const fs::path &cels_dir() const { return cels_dir_; }
-    const std::optional<fs::path> &pureref_dir() const { return pureref_dir_; }
+    const fs::path &up_path() const { return up_folder_; }
+    const fs::path &cels_path() const { return cels_folder_; }
+    const std::optional<fs::path> &pureref_path() const {
+        return pureref_file_;
+    }
     int num_todo() const { return active_cuts_.size(); }
+
     const std::string &notes() const { return notes_; }
 
-    const std::vector<std::unique_ptr<Mat>> &view_materials() const {
+    const std::vector<std::unique_ptr<materials::material>> &
+    view_materials() const {
         return materials_;
     }
-    const std::vector<std::unique_ptr<Cut>> &view_active_cuts() const {
+    const std::vector<std::unique_ptr<materials::cut>> &
+    view_active_cuts() const {
         return active_cuts_;
     }
-    const std::vector<std::unique_ptr<Cut>> &view_archived_cuts() const {
+    const std::vector<std::unique_ptr<materials::cut>> &
+    view_archived_cuts() const {
         return archived_cuts_;
     }
 
@@ -77,31 +76,38 @@ class Episode {
     //
 
     void scan_cuts();
-    Cut *get_cut(const int cut_num);
-    const Cut *view_cut(const int cut_num) const;
+    materials::cut *cut_number(const int cut_num);
+    const materials::cut *cut_number(const int cut_num) const;
+    materials::cut *find_cut(const boost::uuids::uuid &) const;
+    std::vector<materials::cut *>
+    find_exact_duplicates(const materials::cut &cut) const;
 
     //
     // material operations
     //
 
-    Mat *get_mat(const boost::uuids::uuid &mat_uuid);
-    const Mat *view_mat(const boost::uuids::uuid &mat_uuid) const;
+    materials::material *find_mat(const boost::uuids::uuid &mat_uuid);
+    const materials::material *
+    find_mat(const boost::uuids::uuid &mat_uuid) const;
 
     //
     // mutators
     //
 
-    void add_cut(std::unique_ptr<Cut> new_cut);
+    void add_cut(std::unique_ptr<materials::cut> new_cut);
     void reserve_active_cuts(size_t n);
-    void add_mat(std::unique_ptr<Mat> new_mat);
+    void add_mat(std::unique_ptr<materials::material> new_mat);
     void reserve_mats(size_t n);
+    std::error_code up_cut(materials::cut &cut);
 
-    enum FillProjectStatus {
-        Success = 0,
-        CelsFolderAlreadyExists = 1,
-        UpFolderAlreadyExists,
+    enum init_project_status {
+        success = 0,
+        cels_already_exists,
+        up_already_exists,
     };
-    FillProjectStatus fill_project();
+    init_project_status fill_project();
 };
 
-} // namespace settei
+std::unique_ptr<episode> create_project_from(const fs::path &path);
+
+} // namespace org

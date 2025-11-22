@@ -1,3 +1,4 @@
+/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/ai.dir
 /Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/SetteiMan.dir
 /Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/edit_cache.dir
 /Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/rebuild_cache.dir

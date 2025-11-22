@@ -1,8 +1,38 @@
 [
 {
   "directory": "/Users/jerrylu/Documents/Projects/SetteiMan/build",
-  "command": "/usr/bin/c++ -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/Users/jerrylu/Documents/Projects/SetteiMan/settei_man -isystem /opt/homebrew/include -std=gnu++2b -arch arm64 -o CMakeFiles/SetteiMan.dir/settei_man/settei_man.cpp.o -c /Users/jerrylu/Documents/Projects/SetteiMan/settei_man/settei_man.cpp",
+  "command": "/usr/bin/c++ -Dai_EXPORTS -I/Users/jerrylu/Documents/Projects/SetteiMan/ai -isystem /opt/homebrew/include -std=gnu++2b -arch arm64 -fPIC -o CMakeFiles/ai.dir/ai/clients.cpp.o -c /Users/jerrylu/Documents/Projects/SetteiMan/ai/clients.cpp",
+  "file": "/Users/jerrylu/Documents/Projects/SetteiMan/ai/clients.cpp",
+  "output": "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/ai.dir/ai/clients.cpp.o"
+},
+{
+  "directory": "/Users/jerrylu/Documents/Projects/SetteiMan/build",
+  "command": "/usr/bin/c++ -Dai_EXPORTS -I/Users/jerrylu/Documents/Projects/SetteiMan/ai -isystem /opt/homebrew/include -std=gnu++2b -arch arm64 -fPIC -o CMakeFiles/ai.dir/ai/context.cpp.o -c /Users/jerrylu/Documents/Projects/SetteiMan/ai/context.cpp",
+  "file": "/Users/jerrylu/Documents/Projects/SetteiMan/ai/context.cpp",
+  "output": "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/ai.dir/ai/context.cpp.o"
+},
+{
+  "directory": "/Users/jerrylu/Documents/Projects/SetteiMan/build",
+  "command": "/usr/bin/c++ -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/Users/jerrylu/Documents/Projects/SetteiMan/settei_man -I/Users/jerrylu/Documents/Projects/SetteiMan/ai -isystem /opt/homebrew/include -std=gnu++2b -arch arm64 -o CMakeFiles/SetteiMan.dir/settei_man/settei_man.cpp.o -c /Users/jerrylu/Documents/Projects/SetteiMan/settei_man/settei_man.cpp",
   "file": "/Users/jerrylu/Documents/Projects/SetteiMan/settei_man/settei_man.cpp",
-  "output": "CMakeFiles/SetteiMan.dir/settei_man/settei_man.cpp.o"
+  "output": "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/SetteiMan.dir/settei_man/settei_man.cpp.o"
+},
+{
+  "directory": "/Users/jerrylu/Documents/Projects/SetteiMan/build",
+  "command": "/usr/bin/c++ -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/Users/jerrylu/Documents/Projects/SetteiMan/settei_man -I/Users/jerrylu/Documents/Projects/SetteiMan/ai -isystem /opt/homebrew/include -std=gnu++2b -arch arm64 -o CMakeFiles/SetteiMan.dir/settei_man/company.cpp.o -c /Users/jerrylu/Documents/Projects/SetteiMan/settei_man/company.cpp",
+  "file": "/Users/jerrylu/Documents/Projects/SetteiMan/settei_man/company.cpp",
+  "output": "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/SetteiMan.dir/settei_man/company.cpp.o"
+},
+{
+  "directory": "/Users/jerrylu/Documents/Projects/SetteiMan/build",
+  "command": "/usr/bin/c++ -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/Users/jerrylu/Documents/Projects/SetteiMan/settei_man -I/Users/jerrylu/Documents/Projects/SetteiMan/ai -isystem /opt/homebrew/include -std=gnu++2b -arch arm64 -o CMakeFiles/SetteiMan.dir/settei_man/episode.cpp.o -c /Users/jerrylu/Documents/Projects/SetteiMan/settei_man/episode.cpp",
+  "file": "/Users/jerrylu/Documents/Projects/SetteiMan/settei_man/episode.cpp",
+  "output": "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/SetteiMan.dir/settei_man/episode.cpp.o"
+},
+{
+  "directory": "/Users/jerrylu/Documents/Projects/SetteiMan/build",
+  "command": "/usr/bin/c++ -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/Users/jerrylu/Documents/Projects/SetteiMan/settei_man -I/Users/jerrylu/Documents/Projects/SetteiMan/ai -isystem /opt/homebrew/include -std=gnu++2b -arch arm64 -o CMakeFiles/SetteiMan.dir/settei_man/mats.cpp.o -c /Users/jerrylu/Documents/Projects/SetteiMan/settei_man/mats.cpp",
+  "file": "/Users/jerrylu/Documents/Projects/SetteiMan/settei_man/mats.cpp",
+  "output": "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/SetteiMan.dir/settei_man/mats.cpp.o"
 }
 ]

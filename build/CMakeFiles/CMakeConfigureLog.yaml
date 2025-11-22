@@ -5,7 +5,7 @@ events:
     kind: "find-v1"
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineSystem.cmake:12 (find_program)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_UNAME"
     description: "Path to a program."
@@ -42,6 +42,7 @@ events:
       - "/usr/local/share/dotnet/"
       - "/Users/jerrylu/.dotnet/tools/"
       - "/usr/local/go/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
       - "/Applications/kitty.app/Contents/MacOS/"
     searched_directories:
       - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin/uname"
@@ -77,24 +78,25 @@ events:
         - "/opt/X11/bin"
         - "/Library/Apple/usr/bin"
         - "/usr/local/share/dotnet"
-        - "~/.dotnet/tools"
+        - "/Users/jerrylu/.dotnet/tools"
         - "/usr/local/go/bin"
+        - "/Users/jerrylu/.cargo/bin"
         - "/Applications/kitty.app/Contents/MacOS"
   -
     kind: "message-v1"
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineSystem.cmake:212 (message)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     message: |
       The system is: Darwin - 24.5.0 - arm64
   -
     kind: "find-v1"
     backtrace:
-      - "/opt/homebrew/share/cmake/Modules/CMakeUnixFindMake.cmake:5 (find_program)"
-      - "CMakeLists.txt:2 (project)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeNinjaFindMake.cmake:5 (find_program)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_MAKE_PROGRAM"
-    description: "Path to a program."
+    description: "Program used to build from build.ninja files."
     settings:
       SearchFramework: "FIRST"
       SearchAppBundle: "FIRST"
@@ -104,9 +106,9 @@ events:
       CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
       CMAKE_FIND_USE_INSTALL_PREFIX: true
     names:
-      - "gmake"
-      - "make"
-      - "smake"
+      - "ninja-build"
+      - "ninja"
+      - "samu"
     candidate_directories:
       - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin/"
       - "/Users/jerrylu/Downloads/google-cloud-sdk/bin/"
@@ -130,13 +132,23 @@ events:
       - "/usr/local/share/dotnet/"
       - "/Users/jerrylu/.dotnet/tools/"
       - "/usr/local/go/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
       - "/Applications/kitty.app/Contents/MacOS/"
     searched_directories:
-      - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin/gmake"
-      - "/Users/jerrylu/Downloads/google-cloud-sdk/bin/gmake"
-      - "/opt/homebrew/opt/llvm/bin/gmake"
-      - "/Users/jerrylu/.swiftly/bin/gmake"
-    found: "/opt/homebrew/bin/gmake"
+      - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin/ninja-build"
+      - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin/ninja"
+      - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin/samu"
+      - "/Users/jerrylu/Downloads/google-cloud-sdk/bin/ninja-build"
+      - "/Users/jerrylu/Downloads/google-cloud-sdk/bin/ninja"
+      - "/Users/jerrylu/Downloads/google-cloud-sdk/bin/samu"
+      - "/opt/homebrew/opt/llvm/bin/ninja-build"
+      - "/opt/homebrew/opt/llvm/bin/ninja"
+      - "/opt/homebrew/opt/llvm/bin/samu"
+      - "/Users/jerrylu/.swiftly/bin/ninja-build"
+      - "/Users/jerrylu/.swiftly/bin/ninja"
+      - "/Users/jerrylu/.swiftly/bin/samu"
+      - "/opt/homebrew/bin/ninja-build"
+    found: "/opt/homebrew/bin/ninja"
     search_context:
       ENV{PATH}:
         - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin"
@@ -159,15 +171,16 @@ events:
         - "/opt/X11/bin"
         - "/Library/Apple/usr/bin"
         - "/usr/local/share/dotnet"
-        - "~/.dotnet/tools"
+        - "/Users/jerrylu/.dotnet/tools"
         - "/usr/local/go/bin"
+        - "/Users/jerrylu/.cargo/bin"
         - "/Applications/kitty.app/Contents/MacOS"
   -
     kind: "find-v1"
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompiler.cmake:73 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:69 (_cmake_find_compiler)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_CXX_COMPILER"
     description: "CXX compiler"
@@ -210,6 +223,7 @@ events:
       - "/usr/local/share/dotnet/"
       - "/Users/jerrylu/.dotnet/tools/"
       - "/usr/local/go/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
       - "/Applications/kitty.app/Contents/MacOS/"
     searched_directories:
       - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin/c++"
@@ -245,8 +259,9 @@ events:
         - "/opt/X11/bin"
         - "/Library/Apple/usr/bin"
         - "/usr/local/share/dotnet"
-        - "~/.dotnet/tools"
+        - "/Users/jerrylu/.dotnet/tools"
         - "/usr/local/go/bin"
+        - "/Users/jerrylu/.cargo/bin"
         - "/Applications/kitty.app/Contents/MacOS"
   -
     kind: "find-v1"
@@ -256,7 +271,7 @@ events:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "file"
     variable: "src_in"
     description: "Path to a file."
@@ -295,8 +310,9 @@ events:
         - "/opt/X11/bin"
         - "/Library/Apple/usr/bin"
         - "/usr/local/share/dotnet"
-        - "~/.dotnet/tools"
+        - "/Users/jerrylu/.dotnet/tools"
         - "/usr/local/go/bin"
+        - "/Users/jerrylu/.cargo/bin"
         - "/Applications/kitty.app/Contents/MacOS"
   -
     kind: "message-v1"
@@ -304,7 +320,7 @@ events:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     message: |
       Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
       Compiler: /usr/bin/c++ 
@@ -318,14 +334,14 @@ events:
       Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
       
       The CXX compiler identification is AppleClang, found in:
-        /Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/4.1.1/CompilerIdCXX/a.out
+        /Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/4.1.3/CompilerIdCXX/a.out
       
   -
     kind: "message-v1"
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:290 (message)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     message: |
       Detecting CXX compiler apple sysroot: "/usr/bin/c++" "-E" "apple-sdk.cpp"
         # 1 "apple-sdk.cpp"
@@ -366,7 +382,7 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:238 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_AR"
     description: "Path to a program."
@@ -403,6 +419,7 @@ events:
       - "/usr/local/share/dotnet/"
       - "/Users/jerrylu/.dotnet/tools/"
       - "/usr/local/go/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
       - "/Applications/kitty.app/Contents/MacOS/"
     found: "/usr/bin/ar"
     search_context:
@@ -427,15 +444,16 @@ events:
         - "/opt/X11/bin"
         - "/Library/Apple/usr/bin"
         - "/usr/local/share/dotnet"
-        - "~/.dotnet/tools"
+        - "/Users/jerrylu/.dotnet/tools"
         - "/usr/local/go/bin"
+        - "/Users/jerrylu/.cargo/bin"
         - "/Applications/kitty.app/Contents/MacOS"
   -
     kind: "find-v1"
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:238 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_RANLIB"
     description: "Path to a program."
@@ -472,6 +490,7 @@ events:
       - "/usr/local/share/dotnet/"
       - "/Users/jerrylu/.dotnet/tools/"
       - "/usr/local/go/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
       - "/Applications/kitty.app/Contents/MacOS/"
     found: "/usr/bin/ranlib"
     search_context:
@@ -496,15 +515,16 @@ events:
         - "/opt/X11/bin"
         - "/Library/Apple/usr/bin"
         - "/usr/local/share/dotnet"
-        - "~/.dotnet/tools"
+        - "/Users/jerrylu/.dotnet/tools"
         - "/usr/local/go/bin"
+        - "/Users/jerrylu/.cargo/bin"
         - "/Applications/kitty.app/Contents/MacOS"
   -
     kind: "find-v1"
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:238 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_STRIP"
     description: "Path to a program."
@@ -541,6 +561,7 @@ events:
       - "/usr/local/share/dotnet/"
       - "/Users/jerrylu/.dotnet/tools/"
       - "/usr/local/go/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
       - "/Applications/kitty.app/Contents/MacOS/"
     found: "/usr/bin/strip"
     search_context:
@@ -565,15 +586,16 @@ events:
         - "/opt/X11/bin"
         - "/Library/Apple/usr/bin"
         - "/usr/local/share/dotnet"
-        - "~/.dotnet/tools"
+        - "/Users/jerrylu/.dotnet/tools"
         - "/usr/local/go/bin"
+        - "/Users/jerrylu/.cargo/bin"
         - "/Applications/kitty.app/Contents/MacOS"
   -
     kind: "find-v1"
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:238 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_LINKER"
     description: "Path to a program."
@@ -610,6 +632,7 @@ events:
       - "/usr/local/share/dotnet/"
       - "/Users/jerrylu/.dotnet/tools/"
       - "/usr/local/go/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
       - "/Applications/kitty.app/Contents/MacOS/"
     found: "/usr/bin/ld"
     search_context:
@@ -634,15 +657,16 @@ events:
         - "/opt/X11/bin"
         - "/Library/Apple/usr/bin"
         - "/usr/local/share/dotnet"
-        - "~/.dotnet/tools"
+        - "/Users/jerrylu/.dotnet/tools"
         - "/usr/local/go/bin"
+        - "/Users/jerrylu/.cargo/bin"
         - "/Applications/kitty.app/Contents/MacOS"
   -
     kind: "find-v1"
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:238 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_NM"
     description: "Path to a program."
@@ -679,6 +703,7 @@ events:
       - "/usr/local/share/dotnet/"
       - "/Users/jerrylu/.dotnet/tools/"
       - "/usr/local/go/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
       - "/Applications/kitty.app/Contents/MacOS/"
     found: "/usr/bin/nm"
     search_context:
@@ -703,15 +728,16 @@ events:
         - "/opt/X11/bin"
         - "/Library/Apple/usr/bin"
         - "/usr/local/share/dotnet"
-        - "~/.dotnet/tools"
+        - "/Users/jerrylu/.dotnet/tools"
         - "/usr/local/go/bin"
+        - "/Users/jerrylu/.cargo/bin"
         - "/Applications/kitty.app/Contents/MacOS"
   -
     kind: "find-v1"
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:238 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_OBJDUMP"
     description: "Path to a program."
@@ -748,6 +774,7 @@ events:
       - "/usr/local/share/dotnet/"
       - "/Users/jerrylu/.dotnet/tools/"
       - "/usr/local/go/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
       - "/Applications/kitty.app/Contents/MacOS/"
     found: "/usr/bin/objdump"
     search_context:
@@ -772,15 +799,16 @@ events:
         - "/opt/X11/bin"
         - "/Library/Apple/usr/bin"
         - "/usr/local/share/dotnet"
-        - "~/.dotnet/tools"
+        - "/Users/jerrylu/.dotnet/tools"
         - "/usr/local/go/bin"
+        - "/Users/jerrylu/.cargo/bin"
         - "/Applications/kitty.app/Contents/MacOS"
   -
     kind: "find-v1"
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:238 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_OBJCOPY"
     description: "Path to a program."
@@ -817,6 +845,7 @@ events:
       - "/usr/local/share/dotnet/"
       - "/Users/jerrylu/.dotnet/tools/"
       - "/usr/local/go/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
       - "/Applications/kitty.app/Contents/MacOS/"
     searched_directories:
       - "/usr/bin/objcopy"
@@ -841,6 +870,7 @@ events:
       - "/usr/local/share/dotnet/objcopy"
       - "/Users/jerrylu/.dotnet/tools/objcopy"
       - "/usr/local/go/bin/objcopy"
+      - "/Users/jerrylu/.cargo/bin/objcopy"
       - "/Applications/kitty.app/Contents/MacOS/objcopy"
     found: false
     search_context:
@@ -865,15 +895,16 @@ events:
         - "/opt/X11/bin"
         - "/Library/Apple/usr/bin"
         - "/usr/local/share/dotnet"
-        - "~/.dotnet/tools"
+        - "/Users/jerrylu/.dotnet/tools"
         - "/usr/local/go/bin"
+        - "/Users/jerrylu/.cargo/bin"
         - "/Applications/kitty.app/Contents/MacOS"
   -
     kind: "find-v1"
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:238 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_READELF"
     description: "Path to a program."
@@ -910,6 +941,7 @@ events:
       - "/usr/local/share/dotnet/"
       - "/Users/jerrylu/.dotnet/tools/"
       - "/usr/local/go/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
       - "/Applications/kitty.app/Contents/MacOS/"
     searched_directories:
       - "/usr/bin/readelf"
@@ -934,6 +966,7 @@ events:
       - "/usr/local/share/dotnet/readelf"
       - "/Users/jerrylu/.dotnet/tools/readelf"
       - "/usr/local/go/bin/readelf"
+      - "/Users/jerrylu/.cargo/bin/readelf"
       - "/Applications/kitty.app/Contents/MacOS/readelf"
     found: false
     search_context:
@@ -958,15 +991,16 @@ events:
         - "/opt/X11/bin"
         - "/Library/Apple/usr/bin"
         - "/usr/local/share/dotnet"
-        - "~/.dotnet/tools"
+        - "/Users/jerrylu/.dotnet/tools"
         - "/usr/local/go/bin"
+        - "/Users/jerrylu/.cargo/bin"
         - "/Applications/kitty.app/Contents/MacOS"
   -
     kind: "find-v1"
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:238 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_DLLTOOL"
     description: "Path to a program."
@@ -1003,6 +1037,7 @@ events:
       - "/usr/local/share/dotnet/"
       - "/Users/jerrylu/.dotnet/tools/"
       - "/usr/local/go/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
       - "/Applications/kitty.app/Contents/MacOS/"
     searched_directories:
       - "/usr/bin/dlltool"
@@ -1027,6 +1062,7 @@ events:
       - "/usr/local/share/dotnet/dlltool"
       - "/Users/jerrylu/.dotnet/tools/dlltool"
       - "/usr/local/go/bin/dlltool"
+      - "/Users/jerrylu/.cargo/bin/dlltool"
       - "/Applications/kitty.app/Contents/MacOS/dlltool"
     found: false
     search_context:
@@ -1051,15 +1087,16 @@ events:
         - "/opt/X11/bin"
         - "/Library/Apple/usr/bin"
         - "/usr/local/share/dotnet"
-        - "~/.dotnet/tools"
+        - "/Users/jerrylu/.dotnet/tools"
         - "/usr/local/go/bin"
+        - "/Users/jerrylu/.cargo/bin"
         - "/Applications/kitty.app/Contents/MacOS"
   -
     kind: "find-v1"
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:238 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_ADDR2LINE"
     description: "Path to a program."
@@ -1096,6 +1133,7 @@ events:
       - "/usr/local/share/dotnet/"
       - "/Users/jerrylu/.dotnet/tools/"
       - "/usr/local/go/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
       - "/Applications/kitty.app/Contents/MacOS/"
     searched_directories:
       - "/usr/bin/addr2line"
@@ -1120,6 +1158,7 @@ events:
       - "/usr/local/share/dotnet/addr2line"
       - "/Users/jerrylu/.dotnet/tools/addr2line"
       - "/usr/local/go/bin/addr2line"
+      - "/Users/jerrylu/.cargo/bin/addr2line"
       - "/Applications/kitty.app/Contents/MacOS/addr2line"
     found: false
     search_context:
@@ -1144,15 +1183,16 @@ events:
         - "/opt/X11/bin"
         - "/Library/Apple/usr/bin"
         - "/usr/local/share/dotnet"
-        - "~/.dotnet/tools"
+        - "/Users/jerrylu/.dotnet/tools"
         - "/usr/local/go/bin"
+        - "/Users/jerrylu/.cargo/bin"
         - "/Applications/kitty.app/Contents/MacOS"
   -
     kind: "find-v1"
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:238 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_TAPI"
     description: "Path to a program."
@@ -1189,6 +1229,7 @@ events:
       - "/usr/local/share/dotnet/"
       - "/Users/jerrylu/.dotnet/tools/"
       - "/usr/local/go/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
       - "/Applications/kitty.app/Contents/MacOS/"
     searched_directories:
       - "/usr/bin/tapi"
@@ -1213,6 +1254,7 @@ events:
       - "/usr/local/share/dotnet/tapi"
       - "/Users/jerrylu/.dotnet/tools/tapi"
       - "/usr/local/go/bin/tapi"
+      - "/Users/jerrylu/.cargo/bin/tapi"
       - "/Applications/kitty.app/Contents/MacOS/tapi"
     found: false
     search_context:
@@ -1237,15 +1279,16 @@ events:
         - "/opt/X11/bin"
         - "/Library/Apple/usr/bin"
         - "/usr/local/share/dotnet"
-        - "~/.dotnet/tools"
+        - "/Users/jerrylu/.dotnet/tools"
         - "/usr/local/go/bin"
+        - "/Users/jerrylu/.cargo/bin"
         - "/Applications/kitty.app/Contents/MacOS"
   -
     kind: "find-v1"
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/Platform/Darwin.cmake:76 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeSystemSpecificInformation.cmake:32 (include)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_INSTALL_NAME_TOOL"
     description: "Path to a program."
@@ -1282,6 +1325,7 @@ events:
       - "/usr/local/share/dotnet/"
       - "/Users/jerrylu/.dotnet/tools/"
       - "/usr/local/go/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
       - "/Applications/kitty.app/Contents/MacOS/"
     searched_directories:
       - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin/install_name_tool"
@@ -1317,8 +1361,9 @@ events:
         - "/opt/X11/bin"
         - "/Library/Apple/usr/bin"
         - "/usr/local/share/dotnet"
-        - "~/.dotnet/tools"
+        - "/Users/jerrylu/.dotnet/tools"
         - "/usr/local/go/bin"
+        - "/Users/jerrylu/.cargo/bin"
         - "/Applications/kitty.app/Contents/MacOS"
       CMAKE_INSTALL_PREFIX: "/usr/local"
   -
@@ -1326,12 +1371,12 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:83 (try_compile)"
       - "/opt/homebrew/share/cmake/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     checks:
       - "Detecting CXX compiler ABI info"
     directories:
-      source: "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-wv9V2l"
-      binary: "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-wv9V2l"
+      source: "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-qmdGCd"
+      binary: "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-qmdGCd"
     cmakeVariables:
       CMAKE_CXX_FLAGS: ""
       CMAKE_CXX_FLAGS_DEBUG: "-g"
@@ -1344,20 +1389,17 @@ events:
       variable: "CMAKE_CXX_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: '/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-wv9V2l'
+        Change Dir: '/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-qmdGCd'
         
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /opt/homebrew/bin/gmake -f Makefile cmTC_99053/fast
-        /opt/homebrew/bin/gmake  -f CMakeFiles/cmTC_99053.dir/build.make CMakeFiles/cmTC_99053.dir/build
-        gmake[1]: Entering directory '/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-wv9V2l'
-        Building CXX object CMakeFiles/cmTC_99053.dir/CMakeCXXCompilerABI.cpp.o
-        /usr/bin/c++   -arch arm64   -v -Wl,-v -MD -MT CMakeFiles/cmTC_99053.dir/CMakeCXXCompilerABI.cpp.o -MF CMakeFiles/cmTC_99053.dir/CMakeCXXCompilerABI.cpp.o.d -o CMakeFiles/cmTC_99053.dir/CMakeCXXCompilerABI.cpp.o -c /opt/homebrew/share/cmake/Modules/CMakeCXXCompilerABI.cpp
+        Run Build Command(s): /opt/homebrew/bin/ninja -v cmTC_9fc18
+        [1/2] /usr/bin/c++   -arch arm64   -v -Wl,-v -MD -MT CMakeFiles/cmTC_9fc18.dir/CMakeCXXCompilerABI.cpp.o -MF CMakeFiles/cmTC_9fc18.dir/CMakeCXXCompilerABI.cpp.o.d -o CMakeFiles/cmTC_9fc18.dir/CMakeCXXCompilerABI.cpp.o -c /opt/homebrew/share/cmake/Modules/CMakeCXXCompilerABI.cpp
         Apple clang version 17.0.0 (clang-1700.0.13.5)
         Target: arm64-apple-darwin24.5.0
         Thread model: posix
         InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
         clang++: warning: -Wl,-v: 'linker' input unused [-Wunused-command-line-argument]
         ignoring nonexistent directory "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"
-         "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang" -cc1 -triple arm64-apple-macosx15.0.0 -Wundef-prefix=TARGET_OS_ -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -Werror=implicit-function-declaration -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model pic -pic-level 2 -mframe-pointer=non-leaf -fno-strict-return -ffp-contract=on -fno-rounding-math -funwind-tables=1 -fobjc-msgsend-selector-stubs -target-sdk-version=15.5 -fvisibility-inlines-hidden-static-local-var -fdefine-target-os-macros -fno-assume-unique-vtables -fno-modulemap-allow-subdirectory-search -target-cpu apple-m1 -target-feature +zcm -target-feature +zcz -target-feature +v8.5a -target-feature +aes -target-feature +altnzcv -target-feature +ccdp -target-feature +complxnum -target-feature +crc -target-feature +dotprod -target-feature +fp-armv8 -target-feature +fp16fml -target-feature +fptoint -target-feature +fullfp16 -target-feature +jsconv -target-feature +lse -target-feature +neon -target-feature +pauth -target-feature +perfmon -target-feature +predres -target-feature +ras -target-feature +rcpc -target-feature +rdm -target-feature +sb -target-feature +sha2 -target-feature +sha3 -target-feature +specrestrict -target-feature +ssbs -target-abi darwinpcs -debugger-tuning=lldb -fdebug-compilation-dir=/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-wv9V2l -target-linker-version 1167.5 -v -fcoverage-compilation-dir=/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-wv9V2l -resource-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17 -dependency-file CMakeFiles/cmTC_99053.dir/CMakeCXXCompilerABI.cpp.o.d -skip-unused-modulemap-deps -MT CMakeFiles/cmTC_99053.dir/CMakeCXXCompilerABI.cpp.o -sys-header-deps -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -I/usr/local/include -internal-isystem /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1 -internal-isystem /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/include -internal-externc-isystem /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include -internal-externc-isystem /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -Wno-reorder-init-list -Wno-implicit-int-float-conversion -Wno-c99-designator -Wno-final-dtor-non-final-class -Wno-extra-semi-stmt -Wno-misleading-indentation -Wno-quoted-include-in-framework-header -Wno-implicit-fallthrough -Wno-enum-enum-conversion -Wno-enum-float-conversion -Wno-elaborated-enum-base -Wno-reserved-identifier -Wno-gnu-folding-constant -fdeprecated-macro -ferror-limit 19 -stack-protector 1 -fstack-check -mdarwin-stkchk-strong-link -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fno-cxx-modules -fskip-odr-check-in-gmf -fcxx-exceptions -fexceptions -fmax-type-align=16 -fcommon -clang-vendor-feature=+disableNonDependentMemberExprInCurrentInstantiation -fno-odr-hash-protocols -clang-vendor-feature=+enableAggressiveVLAFolding -clang-vendor-feature=+revert09abecef7bbf -clang-vendor-feature=+thisNoAlignAttr -clang-vendor-feature=+thisNoNullAttr -clang-vendor-feature=+disableAtImportPrivateFrameworkInImplementationError -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_99053.dir/CMakeCXXCompilerABI.cpp.o -x c++ /opt/homebrew/share/cmake/Modules/CMakeCXXCompilerABI.cpp
+         "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang" -cc1 -triple arm64-apple-macosx15.0.0 -Wundef-prefix=TARGET_OS_ -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -Werror=implicit-function-declaration -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model pic -pic-level 2 -mframe-pointer=non-leaf -fno-strict-return -ffp-contract=on -fno-rounding-math -funwind-tables=1 -fobjc-msgsend-selector-stubs -target-sdk-version=15.5 -fvisibility-inlines-hidden-static-local-var -fdefine-target-os-macros -fno-assume-unique-vtables -fno-modulemap-allow-subdirectory-search -target-cpu apple-m1 -target-feature +zcm -target-feature +zcz -target-feature +v8.5a -target-feature +aes -target-feature +altnzcv -target-feature +ccdp -target-feature +complxnum -target-feature +crc -target-feature +dotprod -target-feature +fp-armv8 -target-feature +fp16fml -target-feature +fptoint -target-feature +fullfp16 -target-feature +jsconv -target-feature +lse -target-feature +neon -target-feature +pauth -target-feature +perfmon -target-feature +predres -target-feature +ras -target-feature +rcpc -target-feature +rdm -target-feature +sb -target-feature +sha2 -target-feature +sha3 -target-feature +specrestrict -target-feature +ssbs -target-abi darwinpcs -debugger-tuning=lldb -fdebug-compilation-dir=/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-qmdGCd -target-linker-version 1167.5 -v -fcoverage-compilation-dir=/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-qmdGCd -resource-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17 -dependency-file CMakeFiles/cmTC_9fc18.dir/CMakeCXXCompilerABI.cpp.o.d -skip-unused-modulemap-deps -MT CMakeFiles/cmTC_9fc18.dir/CMakeCXXCompilerABI.cpp.o -sys-header-deps -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -I/usr/local/include -internal-isystem /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1 -internal-isystem /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/include -internal-externc-isystem /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include -internal-externc-isystem /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -Wno-reorder-init-list -Wno-implicit-int-float-conversion -Wno-c99-designator -Wno-final-dtor-non-final-class -Wno-extra-semi-stmt -Wno-misleading-indentation -Wno-quoted-include-in-framework-header -Wno-implicit-fallthrough -Wno-enum-enum-conversion -Wno-enum-float-conversion -Wno-elaborated-enum-base -Wno-reserved-identifier -Wno-gnu-folding-constant -fdeprecated-macro -ferror-limit 19 -stack-protector 1 -fstack-check -mdarwin-stkchk-strong-link -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fno-cxx-modules -fskip-odr-check-in-gmf -fcxx-exceptions -fexceptions -fmax-type-align=16 -fcommon -clang-vendor-feature=+disableNonDependentMemberExprInCurrentInstantiation -fno-odr-hash-protocols -clang-vendor-feature=+enableAggressiveVLAFolding -clang-vendor-feature=+revert09abecef7bbf -clang-vendor-feature=+thisNoAlignAttr -clang-vendor-feature=+thisNoNullAttr -clang-vendor-feature=+disableAtImportPrivateFrameworkInImplementationError -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_9fc18.dir/CMakeCXXCompilerABI.cpp.o -x c++ /opt/homebrew/share/cmake/Modules/CMakeCXXCompilerABI.cpp
         clang -cc1 version 17.0.0 (clang-1700.0.13.5) default target arm64-apple-darwin24.5.0
         ignoring nonexistent directory "/usr/local/include"
         ignoring nonexistent directory "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/local/include"
@@ -1371,13 +1413,12 @@ events:
          /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include
          /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks (framework directory)
         End of search list.
-        Linking CXX executable cmTC_99053
-        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_99053.dir/link.txt --verbose=1
+        [2/2] : && /usr/bin/c++ -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names -v -Wl,-v CMakeFiles/cmTC_9fc18.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_9fc18   && :
         Apple clang version 17.0.0 (clang-1700.0.13.5)
         Target: arm64-apple-darwin24.5.0
         Thread model: posix
         InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
-         "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld" -demangle -lto_library /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libLTO.dylib -dynamic -arch arm64 -platform_version macos 15.0.0 15.5 -syslibroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mllvm -enable-linkonceodr-outlining -o cmTC_99053 -L/usr/local/lib -search_paths_first -headerpad_max_install_names -v CMakeFiles/cmTC_99053.dir/CMakeCXXCompilerABI.cpp.o -lc++ -lSystem /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a
+         "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld" -demangle -lto_library /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libLTO.dylib -dynamic -arch arm64 -platform_version macos 15.0.0 15.5 -syslibroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mllvm -enable-linkonceodr-outlining -o cmTC_9fc18 -L/usr/local/lib -search_paths_first -headerpad_max_install_names -v CMakeFiles/cmTC_9fc18.dir/CMakeCXXCompilerABI.cpp.o -lc++ -lSystem /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a
         @(#)PROGRAM:ld PROJECT:ld-1167.5
         BUILD 01:45:05 Apr 30 2025
         configured to support archs: armv6 armv7 armv7s arm64 arm64e arm64_32 i386 x86_64 x86_64h armv6m armv7k armv7m armv7em
@@ -1390,8 +1431,6 @@ events:
         	/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib/swift
         Framework search paths:
         	/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks
-        /usr/bin/c++  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names -v -Wl,-v CMakeFiles/cmTC_99053.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_99053
-        gmake[1]: Leaving directory '/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-wv9V2l'
         
       exitCode: 0
   -
@@ -1399,7 +1438,7 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:122 (message)"
       - "/opt/homebrew/share/cmake/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     message: |
       Effective list of requested architectures (possibly empty)  : ""
       Effective list of architectures found in the ABI info binary: "arm64"
@@ -1408,7 +1447,7 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:217 (message)"
       - "/opt/homebrew/share/cmake/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     message: |
       Parsed CXX implicit include dir info: rv=done
         found start of include info
@@ -1430,25 +1469,22 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:253 (message)"
       - "/opt/homebrew/share/cmake/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     message: |
       Parsed CXX implicit link information:
         link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
         linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)))("|,| |$)]
-        ignore line: [Change Dir: '/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-wv9V2l']
+        ignore line: [Change Dir: '/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-qmdGCd']
         ignore line: []
-        ignore line: [Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /opt/homebrew/bin/gmake -f Makefile cmTC_99053/fast]
-        ignore line: [/opt/homebrew/bin/gmake  -f CMakeFiles/cmTC_99053.dir/build.make CMakeFiles/cmTC_99053.dir/build]
-        ignore line: [gmake[1]: Entering directory '/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-wv9V2l']
-        ignore line: [Building CXX object CMakeFiles/cmTC_99053.dir/CMakeCXXCompilerABI.cpp.o]
-        ignore line: [/usr/bin/c++   -arch arm64   -v -Wl -v -MD -MT CMakeFiles/cmTC_99053.dir/CMakeCXXCompilerABI.cpp.o -MF CMakeFiles/cmTC_99053.dir/CMakeCXXCompilerABI.cpp.o.d -o CMakeFiles/cmTC_99053.dir/CMakeCXXCompilerABI.cpp.o -c /opt/homebrew/share/cmake/Modules/CMakeCXXCompilerABI.cpp]
+        ignore line: [Run Build Command(s): /opt/homebrew/bin/ninja -v cmTC_9fc18]
+        ignore line: [[1/2] /usr/bin/c++   -arch arm64   -v -Wl -v -MD -MT CMakeFiles/cmTC_9fc18.dir/CMakeCXXCompilerABI.cpp.o -MF CMakeFiles/cmTC_9fc18.dir/CMakeCXXCompilerABI.cpp.o.d -o CMakeFiles/cmTC_9fc18.dir/CMakeCXXCompilerABI.cpp.o -c /opt/homebrew/share/cmake/Modules/CMakeCXXCompilerABI.cpp]
         ignore line: [Apple clang version 17.0.0 (clang-1700.0.13.5)]
         ignore line: [Target: arm64-apple-darwin24.5.0]
         ignore line: [Thread model: posix]
         ignore line: [InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin]
         ignore line: [clang++: warning: -Wl -v: 'linker' input unused [-Wunused-command-line-argument]]
         ignore line: [ignoring nonexistent directory "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"]
-        ignore line: [ "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang" -cc1 -triple arm64-apple-macosx15.0.0 -Wundef-prefix=TARGET_OS_ -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -Werror=implicit-function-declaration -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model pic -pic-level 2 -mframe-pointer=non-leaf -fno-strict-return -ffp-contract=on -fno-rounding-math -funwind-tables=1 -fobjc-msgsend-selector-stubs -target-sdk-version=15.5 -fvisibility-inlines-hidden-static-local-var -fdefine-target-os-macros -fno-assume-unique-vtables -fno-modulemap-allow-subdirectory-search -target-cpu apple-m1 -target-feature +zcm -target-feature +zcz -target-feature +v8.5a -target-feature +aes -target-feature +altnzcv -target-feature +ccdp -target-feature +complxnum -target-feature +crc -target-feature +dotprod -target-feature +fp-armv8 -target-feature +fp16fml -target-feature +fptoint -target-feature +fullfp16 -target-feature +jsconv -target-feature +lse -target-feature +neon -target-feature +pauth -target-feature +perfmon -target-feature +predres -target-feature +ras -target-feature +rcpc -target-feature +rdm -target-feature +sb -target-feature +sha2 -target-feature +sha3 -target-feature +specrestrict -target-feature +ssbs -target-abi darwinpcs -debugger-tuning=lldb -fdebug-compilation-dir=/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-wv9V2l -target-linker-version 1167.5 -v -fcoverage-compilation-dir=/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-wv9V2l -resource-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17 -dependency-file CMakeFiles/cmTC_99053.dir/CMakeCXXCompilerABI.cpp.o.d -skip-unused-modulemap-deps -MT CMakeFiles/cmTC_99053.dir/CMakeCXXCompilerABI.cpp.o -sys-header-deps -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -I/usr/local/include -internal-isystem /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1 -internal-isystem /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/include -internal-externc-isystem /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include -internal-externc-isystem /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -Wno-reorder-init-list -Wno-implicit-int-float-conversion -Wno-c99-designator -Wno-final-dtor-non-final-class -Wno-extra-semi-stmt -Wno-misleading-indentation -Wno-quoted-include-in-framework-header -Wno-implicit-fallthrough -Wno-enum-enum-conversion -Wno-enum-float-conversion -Wno-elaborated-enum-base -Wno-reserved-identifier -Wno-gnu-folding-constant -fdeprecated-macro -ferror-limit 19 -stack-protector 1 -fstack-check -mdarwin-stkchk-strong-link -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fno-cxx-modules -fskip-odr-check-in-gmf -fcxx-exceptions -fexceptions -fmax-type-align=16 -fcommon -clang-vendor-feature=+disableNonDependentMemberExprInCurrentInstantiation -fno-odr-hash-protocols -clang-vendor-feature=+enableAggressiveVLAFolding -clang-vendor-feature=+revert09abecef7bbf -clang-vendor-feature=+thisNoAlignAttr -clang-vendor-feature=+thisNoNullAttr -clang-vendor-feature=+disableAtImportPrivateFrameworkInImplementationError -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_99053.dir/CMakeCXXCompilerABI.cpp.o -x c++ /opt/homebrew/share/cmake/Modules/CMakeCXXCompilerABI.cpp]
+        ignore line: [ "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang" -cc1 -triple arm64-apple-macosx15.0.0 -Wundef-prefix=TARGET_OS_ -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -Werror=implicit-function-declaration -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model pic -pic-level 2 -mframe-pointer=non-leaf -fno-strict-return -ffp-contract=on -fno-rounding-math -funwind-tables=1 -fobjc-msgsend-selector-stubs -target-sdk-version=15.5 -fvisibility-inlines-hidden-static-local-var -fdefine-target-os-macros -fno-assume-unique-vtables -fno-modulemap-allow-subdirectory-search -target-cpu apple-m1 -target-feature +zcm -target-feature +zcz -target-feature +v8.5a -target-feature +aes -target-feature +altnzcv -target-feature +ccdp -target-feature +complxnum -target-feature +crc -target-feature +dotprod -target-feature +fp-armv8 -target-feature +fp16fml -target-feature +fptoint -target-feature +fullfp16 -target-feature +jsconv -target-feature +lse -target-feature +neon -target-feature +pauth -target-feature +perfmon -target-feature +predres -target-feature +ras -target-feature +rcpc -target-feature +rdm -target-feature +sb -target-feature +sha2 -target-feature +sha3 -target-feature +specrestrict -target-feature +ssbs -target-abi darwinpcs -debugger-tuning=lldb -fdebug-compilation-dir=/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-qmdGCd -target-linker-version 1167.5 -v -fcoverage-compilation-dir=/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-qmdGCd -resource-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17 -dependency-file CMakeFiles/cmTC_9fc18.dir/CMakeCXXCompilerABI.cpp.o.d -skip-unused-modulemap-deps -MT CMakeFiles/cmTC_9fc18.dir/CMakeCXXCompilerABI.cpp.o -sys-header-deps -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -I/usr/local/include -internal-isystem /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1 -internal-isystem /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/include -internal-externc-isystem /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include -internal-externc-isystem /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -Wno-reorder-init-list -Wno-implicit-int-float-conversion -Wno-c99-designator -Wno-final-dtor-non-final-class -Wno-extra-semi-stmt -Wno-misleading-indentation -Wno-quoted-include-in-framework-header -Wno-implicit-fallthrough -Wno-enum-enum-conversion -Wno-enum-float-conversion -Wno-elaborated-enum-base -Wno-reserved-identifier -Wno-gnu-folding-constant -fdeprecated-macro -ferror-limit 19 -stack-protector 1 -fstack-check -mdarwin-stkchk-strong-link -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fno-cxx-modules -fskip-odr-check-in-gmf -fcxx-exceptions -fexceptions -fmax-type-align=16 -fcommon -clang-vendor-feature=+disableNonDependentMemberExprInCurrentInstantiation -fno-odr-hash-protocols -clang-vendor-feature=+enableAggressiveVLAFolding -clang-vendor-feature=+revert09abecef7bbf -clang-vendor-feature=+thisNoAlignAttr -clang-vendor-feature=+thisNoNullAttr -clang-vendor-feature=+disableAtImportPrivateFrameworkInImplementationError -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_9fc18.dir/CMakeCXXCompilerABI.cpp.o -x c++ /opt/homebrew/share/cmake/Modules/CMakeCXXCompilerABI.cpp]
         ignore line: [clang -cc1 version 17.0.0 (clang-1700.0.13.5) default target arm64-apple-darwin24.5.0]
         ignore line: [ignoring nonexistent directory "/usr/local/include"]
         ignore line: [ignoring nonexistent directory "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/local/include"]
@@ -1462,13 +1498,12 @@ events:
         ignore line: [ /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include]
         ignore line: [ /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks (framework directory)]
         ignore line: [End of search list.]
-        ignore line: [Linking CXX executable cmTC_99053]
-        ignore line: [/opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_99053.dir/link.txt --verbose=1]
+        ignore line: [[2/2] : && /usr/bin/c++ -arch arm64 -Wl -search_paths_first -Wl -headerpad_max_install_names -v -Wl -v CMakeFiles/cmTC_9fc18.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_9fc18   && :]
         ignore line: [Apple clang version 17.0.0 (clang-1700.0.13.5)]
         ignore line: [Target: arm64-apple-darwin24.5.0]
         ignore line: [Thread model: posix]
         ignore line: [InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin]
-        link line: [ "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld" -demangle -lto_library /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libLTO.dylib -dynamic -arch arm64 -platform_version macos 15.0.0 15.5 -syslibroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mllvm -enable-linkonceodr-outlining -o cmTC_99053 -L/usr/local/lib -search_paths_first -headerpad_max_install_names -v CMakeFiles/cmTC_99053.dir/CMakeCXXCompilerABI.cpp.o -lc++ -lSystem /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a]
+        link line: [ "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld" -demangle -lto_library /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libLTO.dylib -dynamic -arch arm64 -platform_version macos 15.0.0 15.5 -syslibroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mllvm -enable-linkonceodr-outlining -o cmTC_9fc18 -L/usr/local/lib -search_paths_first -headerpad_max_install_names -v CMakeFiles/cmTC_9fc18.dir/CMakeCXXCompilerABI.cpp.o -lc++ -lSystem /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a]
           arg [/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld] ==> ignore
           arg [-demangle] ==> ignore
           arg [-lto_library] ==> ignore, skip following value
@@ -1485,12 +1520,12 @@ events:
           arg [-mllvm] ==> ignore
           arg [-enable-linkonceodr-outlining] ==> ignore
           arg [-o] ==> ignore
-          arg [cmTC_99053] ==> ignore
+          arg [cmTC_9fc18] ==> ignore
           arg [-L/usr/local/lib] ==> dir [/usr/local/lib]
           arg [-search_paths_first] ==> ignore
           arg [-headerpad_max_install_names] ==> ignore
           arg [-v] ==> ignore
-          arg [CMakeFiles/cmTC_99053.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+          arg [CMakeFiles/cmTC_9fc18.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
           arg [-lc++] ==> lib [c++]
           arg [-lSystem] ==> lib [System]
           arg [/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a] ==> lib [/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a]
@@ -1516,7 +1551,7 @@ events:
       - "/opt/homebrew/share/cmake/Modules/Internal/CMakeDetermineLinkerId.cmake:36 (message)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:299 (cmake_determine_linker_id)"
       - "/opt/homebrew/share/cmake/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     message: |
       Running the CXX compiler's linker: "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld" "-v"
       @(#)PROGRAM:ld PROJECT:ld-1167.5
@@ -1525,346 +1560,12 @@ events:
       will use ld-classic for: armv6 armv7 armv7s i386 armv6m armv7k armv7m armv7em
       LTO support using: LLVM version 17.0.0 (static support for 29, runtime is 29)
       TAPI support using: Apple TAPI version 17.0.0 (tapi-1700.0.3.5)
-...
-
----
-events:
-  -
-    kind: "find_package-v1"
-    backtrace:
-      - "CMakeLists.txt:7 (find_package)"
-    name: "Boost"
-    configs:
-      -
-        filename: "BoostConfig.cmake"
-        kind: "cmake"
-      -
-        filename: "boost-config.cmake"
-        kind: "cmake"
-    version_request:
-      exact: false
-    settings:
-      required: "required_explicit"
-      quiet: false
-      global: false
-      policy_scope: true
-      bypass_provider: false
-      names:
-        - "Boost"
-      path_suffixes:
-        - ""
-      paths:
-        CMAKE_FIND_USE_CMAKE_PATH: true
-        CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
-        CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
-        CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
-        CMAKE_FIND_USE_INSTALL_PREFIX: true
-        CMAKE_FIND_USE_PACKAGE_ROOT_PATH: true
-        CMAKE_FIND_USE_CMAKE_PACKAGE_REGISTRY: true
-        CMAKE_FIND_USE_SYSTEM_PACKAGE_REGISTRY: true
-        CMAKE_FIND_ROOT_PATH_MODE: "BOTH"
-    candidates:
-      -
-        path: "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/pkgRedirects/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/pkgRedirects/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Users/jerrylu/.nvm/versions/node/v22.20.0/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Users/jerrylu/.nvm/versions/node/v22.20.0/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Users/jerrylu/Downloads/google-cloud-sdk/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Users/jerrylu/Downloads/google-cloud-sdk/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/opt/homebrew/opt/llvm/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/opt/homebrew/opt/llvm/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Users/jerrylu/.swiftly/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Users/jerrylu/.swiftly/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/opt/homebrew/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/opt/homebrew/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Library/Frameworks/Python.framework/Versions/3.13/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Library/Frameworks/Python.framework/Versions/3.13/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Library/Frameworks/Python.framework/Versions/3.12/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Library/Frameworks/Python.framework/Versions/3.12/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/usr/local/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/usr/local/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/System/Cryptexes/App/usr/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/System/Cryptexes/App/usr/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/usr/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/usr/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/opt/X11/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/opt/X11/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Library/Apple/usr/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Library/Apple/usr/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/usr/local/share/dotnet/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/usr/local/share/dotnet/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/usr/local/go/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/usr/local/go/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Users/jerrylu/.cargo/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Users/jerrylu/.cargo/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Applications/kitty.app/Contents/MacOS/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Applications/kitty.app/Contents/MacOS/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/usr/X11R6/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/usr/X11R6/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/opt/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/opt/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Library/Frameworks/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Library/Frameworks/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/System/Library/Frameworks/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/System/Library/Frameworks/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Users/jerrylu/Applications/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Users/jerrylu/Applications/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Applications/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Applications/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Applications/Xcode.app/Contents/Applications/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Applications/Xcode.app/Contents/Applications/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Applications/Xcode.app/Contents/Developer/Applications/BoostConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/Applications/Xcode.app/Contents/Developer/Applications/boost-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-    found: null
-    search_context:
-      ENV{PATH}:
-        - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin"
-        - "/Users/jerrylu/Downloads/google-cloud-sdk/bin"
-        - "/opt/homebrew/opt/llvm/bin"
-        - "/Users/jerrylu/.swiftly/bin"
-        - "/opt/homebrew/bin"
-        - "/opt/homebrew/sbin"
-        - "/Library/Frameworks/Python.framework/Versions/3.13/bin"
-        - "/Library/Frameworks/Python.framework/Versions/3.12/bin"
-        - "/usr/local/bin"
-        - "/System/Cryptexes/App/usr/bin"
-        - "/usr/bin"
-        - "/bin"
-        - "/usr/sbin"
-        - "/sbin"
-        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
-        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
-        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
-        - "/opt/X11/bin"
-        - "/Library/Apple/usr/bin"
-        - "/usr/local/share/dotnet"
-        - "~/.dotnet/tools"
-        - "/usr/local/go/bin"
-        - "/Users/jerrylu/.cargo/bin"
-        - "/Applications/kitty.app/Contents/MacOS"
-      CMAKE_INSTALL_PREFIX: "/usr/local"
-      CMAKE_SYSTEM_PREFIX_PATH:
-        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr"
-        - "/opt/homebrew"
-        - "/usr/local"
-        - "/usr"
-        - "/"
-        - "/opt/homebrew"
-        - "/usr/local"
-        - "/usr/X11R6"
-        - "/usr/pkg"
-        - "/opt"
-        - "/sw"
-        - "/opt/local"
-      CMAKE_SYSTEM_FRAMEWORK_PATH:
-        - "~/Library/Frameworks"
-        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Library/Frameworks"
-        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Network/Library/Frameworks"
-        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
-        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks"
-        - "/Applications/Xcode.app/Contents/Developer/Library/Frameworks"
-        - "/Library/Frameworks"
-        - "/Network/Library/Frameworks"
-        - "/System/Library/Frameworks"
-...
-
----
-events:
   -
     kind: "find_package-v1"
     backtrace:
       - "/opt/homebrew/lib/cmake/Boost-1.89.0/BoostConfig.cmake:141 (find_package)"
       - "/opt/homebrew/lib/cmake/Boost-1.89.0/BoostConfig.cmake:215 (boost_find_component)"
-      - "CMakeLists.txt:7 (find_package)"
+      - "CMakeLists.txt:9 (find_package)"
     name: "boost_headers"
     configs:
       -
@@ -1946,7 +1647,7 @@ events:
         - "/opt/X11/bin"
         - "/Library/Apple/usr/bin"
         - "/usr/local/share/dotnet"
-        - "~/.dotnet/tools"
+        - "/Users/jerrylu/.dotnet/tools"
         - "/usr/local/go/bin"
         - "/Users/jerrylu/.cargo/bin"
         - "/Applications/kitty.app/Contents/MacOS"
@@ -1974,10 +1675,351 @@ events:
         - "/Library/Frameworks"
         - "/Network/Library/Frameworks"
         - "/System/Library/Frameworks"
-...
-
----
-events:
+  -
+    kind: "find_package-v1"
+    backtrace:
+      - "CMakeLists.txt:9 (find_package)"
+    name: "Boost"
+    configs:
+      -
+        filename: "BoostConfig.cmake"
+        kind: "cmake"
+      -
+        filename: "boost-config.cmake"
+        kind: "cmake"
+    version_request:
+      exact: false
+    settings:
+      required: "required_explicit"
+      quiet: false
+      global: false
+      policy_scope: true
+      bypass_provider: false
+      names:
+        - "Boost"
+      path_suffixes:
+        - ""
+      paths:
+        CMAKE_FIND_USE_CMAKE_PATH: true
+        CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+        CMAKE_FIND_USE_INSTALL_PREFIX: true
+        CMAKE_FIND_USE_PACKAGE_ROOT_PATH: true
+        CMAKE_FIND_USE_CMAKE_PACKAGE_REGISTRY: true
+        CMAKE_FIND_USE_SYSTEM_PACKAGE_REGISTRY: true
+        CMAKE_FIND_ROOT_PATH_MODE: "BOTH"
+    candidates:
+      -
+        path: "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/pkgRedirects/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/pkgRedirects/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Users/jerrylu/.nvm/versions/node/v22.20.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Users/jerrylu/.nvm/versions/node/v22.20.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Users/jerrylu/Downloads/google-cloud-sdk/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Users/jerrylu/Downloads/google-cloud-sdk/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/opt/llvm/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/opt/llvm/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Users/jerrylu/.swiftly/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Users/jerrylu/.swiftly/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_stacktrace_addr2line-1.89.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_stacktrace_addr2line-1.89.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_wserialization-1.89.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_wserialization-1.89.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_type_erasure-1.89.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_type_erasure-1.89.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_date_time-1.89.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_date_time-1.89.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_math_tr1f-1.89.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_math_tr1f-1.89.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_container-1.89.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_container-1.89.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_graph_parallel-1.89.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_graph_parallel-1.89.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_log_setup-1.89.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_log_setup-1.89.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_json-1.89.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_json-1.89.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_regex-1.89.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_regex-1.89.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_stacktrace_basic-1.89.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_stacktrace_basic-1.89.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_thread-1.89.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_thread-1.89.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_math_tr1l-1.89.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_math_tr1l-1.89.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_random-1.89.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_random-1.89.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_coroutine-1.89.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_coroutine-1.89.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_log-1.89.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_log-1.89.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_context-1.89.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_context-1.89.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_program_options-1.89.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_program_options-1.89.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_headers-1.89.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_headers-1.89.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_filesystem-1.89.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_filesystem-1.89.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_test_exec_monitor-1.89.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_test_exec_monitor-1.89.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_unit_test_framework-1.89.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_unit_test_framework-1.89.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_process-1.89.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_process-1.89.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_graph-1.89.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_graph-1.89.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_fiber-1.89.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_fiber-1.89.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_stacktrace_noop-1.89.0/BoostConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/lib/cmake/boost_stacktrace_noop-1.89.0/boost-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+    found:
+      path: "/opt/homebrew/lib/cmake/Boost-1.89.0/BoostConfig.cmake"
+      mode: "config"
+      version: "1.89.0"
+    search_context:
+      ENV{PATH}:
+        - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin"
+        - "/Users/jerrylu/Downloads/google-cloud-sdk/bin"
+        - "/opt/homebrew/opt/llvm/bin"
+        - "/Users/jerrylu/.swiftly/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/Library/Frameworks/Python.framework/Versions/3.13/bin"
+        - "/Library/Frameworks/Python.framework/Versions/3.12/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/X11/bin"
+        - "/Library/Apple/usr/bin"
+        - "/usr/local/share/dotnet"
+        - "/Users/jerrylu/.dotnet/tools"
+        - "/usr/local/go/bin"
+        - "/Users/jerrylu/.cargo/bin"
+        - "/Applications/kitty.app/Contents/MacOS"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr"
+        - "/opt/homebrew"
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/opt/homebrew"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+        - "/sw"
+        - "/opt/local"
+      CMAKE_SYSTEM_FRAMEWORK_PATH:
+        - "~/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Network/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Library/Frameworks"
+        - "/Library/Frameworks"
+        - "/Network/Library/Frameworks"
+        - "/System/Library/Frameworks"
   -
     kind: "try_compile-v1"
     backtrace:
@@ -1986,12 +2028,12 @@ events:
       - "/opt/homebrew/share/cmake/Modules/FindThreads.cmake:99 (check_cxx_source_compiles)"
       - "/opt/homebrew/share/cmake/Modules/FindThreads.cmake:163 (_threads_check_libc)"
       - "/opt/homebrew/lib/cmake/spdlog/spdlogConfig.cmake:30 (find_package)"
-      - "CMakeLists.txt:8 (find_package)"
+      - "CMakeLists.txt:10 (find_package)"
     checks:
       - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
     directories:
-      source: "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-V0Jt9o"
-      binary: "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-V0Jt9o"
+      source: "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-WmJRua"
+      binary: "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-WmJRua"
     cmakeVariables:
       CMAKE_CXX_FLAGS: ""
       CMAKE_CXX_FLAGS_DEBUG: "-g"
@@ -2003,17 +2045,11 @@ events:
       variable: "CMAKE_HAVE_LIBC_PTHREAD"
       cached: true
       stdout: |
-        Change Dir: '/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-V0Jt9o'
+        Change Dir: '/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-WmJRua'
         
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /opt/homebrew/bin/gmake -f Makefile cmTC_439b7/fast
-        /opt/homebrew/bin/gmake  -f CMakeFiles/cmTC_439b7.dir/build.make CMakeFiles/cmTC_439b7.dir/build
-        gmake[1]: Entering directory '/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-V0Jt9o'
-        Building CXX object CMakeFiles/cmTC_439b7.dir/src.cxx.o
-        /usr/bin/c++ -DCMAKE_HAVE_LIBC_PTHREAD  -std=gnu++2b -arch arm64 -MD -MT CMakeFiles/cmTC_439b7.dir/src.cxx.o -MF CMakeFiles/cmTC_439b7.dir/src.cxx.o.d -o CMakeFiles/cmTC_439b7.dir/src.cxx.o -c /Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-V0Jt9o/src.cxx
-        Linking CXX executable cmTC_439b7
-        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_439b7.dir/link.txt --verbose=1
-        /usr/bin/c++  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_439b7.dir/src.cxx.o -o cmTC_439b7
-        gmake[1]: Leaving directory '/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-V0Jt9o'
+        Run Build Command(s): /opt/homebrew/bin/ninja -v cmTC_5358f
+        [1/2] /usr/bin/c++ -DCMAKE_HAVE_LIBC_PTHREAD  -std=gnu++2b -arch arm64 -MD -MT CMakeFiles/cmTC_5358f.dir/src.cxx.o -MF CMakeFiles/cmTC_5358f.dir/src.cxx.o.d -o CMakeFiles/cmTC_5358f.dir/src.cxx.o -c /Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/CMakeScratch/TryCompile-WmJRua/src.cxx
+        [2/2] : && /usr/bin/c++ -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_5358f.dir/src.cxx.o -o cmTC_5358f   && :
         
       exitCode: 0
   -
@@ -2021,7 +2057,7 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeFindDependencyMacro.cmake:78 (find_package)"
       - "/opt/homebrew/lib/cmake/spdlog/spdlogConfig.cmake:38 (find_dependency)"
-      - "CMakeLists.txt:8 (find_package)"
+      - "CMakeLists.txt:10 (find_package)"
     name: "fmt"
     configs:
       -
@@ -2131,7 +2167,7 @@ events:
         - "/opt/X11/bin"
         - "/Library/Apple/usr/bin"
         - "/usr/local/share/dotnet"
-        - "~/.dotnet/tools"
+        - "/Users/jerrylu/.dotnet/tools"
         - "/usr/local/go/bin"
         - "/Users/jerrylu/.cargo/bin"
         - "/Applications/kitty.app/Contents/MacOS"
@@ -2162,7 +2198,7 @@ events:
   -
     kind: "find_package-v1"
     backtrace:
-      - "CMakeLists.txt:8 (find_package)"
+      - "CMakeLists.txt:10 (find_package)"
     name: "spdlog"
     configs:
       -
@@ -2268,7 +2304,7 @@ events:
         - "/opt/X11/bin"
         - "/Library/Apple/usr/bin"
         - "/usr/local/share/dotnet"
-        - "~/.dotnet/tools"
+        - "/Users/jerrylu/.dotnet/tools"
         - "/usr/local/go/bin"
         - "/Users/jerrylu/.cargo/bin"
         - "/Applications/kitty.app/Contents/MacOS"
@@ -2286,6 +2322,1444 @@ events:
         - "/opt"
         - "/sw"
         - "/opt/local"
+      CMAKE_SYSTEM_FRAMEWORK_PATH:
+        - "~/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Network/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Library/Frameworks"
+        - "/Library/Frameworks"
+        - "/Network/Library/Frameworks"
+        - "/System/Library/Frameworks"
+  -
+    kind: "find_package-v1"
+    backtrace:
+      - "CMakeLists.txt:11 (find_package)"
+    name: "nlohmann_json"
+    configs:
+      -
+        filename: "nlohmann_jsonConfig.cmake"
+        kind: "cmake"
+      -
+        filename: "nlohmann_json-config.cmake"
+        kind: "cmake"
+    version_request:
+      exact: false
+    settings:
+      required: "required_explicit"
+      quiet: false
+      global: false
+      policy_scope: true
+      bypass_provider: false
+      names:
+        - "nlohmann_json"
+      path_suffixes:
+        - ""
+      paths:
+        CMAKE_FIND_USE_CMAKE_PATH: true
+        CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+        CMAKE_FIND_USE_INSTALL_PREFIX: true
+        CMAKE_FIND_USE_PACKAGE_ROOT_PATH: true
+        CMAKE_FIND_USE_CMAKE_PACKAGE_REGISTRY: true
+        CMAKE_FIND_USE_SYSTEM_PACKAGE_REGISTRY: true
+        CMAKE_FIND_ROOT_PATH_MODE: "BOTH"
+    candidates:
+      -
+        path: "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/pkgRedirects/nlohmann_jsonConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/pkgRedirects/nlohmann_json-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Users/jerrylu/.nvm/versions/node/v22.20.0/nlohmann_jsonConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Users/jerrylu/.nvm/versions/node/v22.20.0/nlohmann_json-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Users/jerrylu/Downloads/google-cloud-sdk/nlohmann_jsonConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Users/jerrylu/Downloads/google-cloud-sdk/nlohmann_json-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/opt/llvm/nlohmann_jsonConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/opt/llvm/nlohmann_json-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Users/jerrylu/.swiftly/nlohmann_jsonConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Users/jerrylu/.swiftly/nlohmann_json-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/nlohmann_jsonConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/nlohmann_json-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+    found:
+      path: "/opt/homebrew/share/cmake/nlohmann_json/nlohmann_jsonConfig.cmake"
+      mode: "config"
+      version: "3.12.0"
+    search_context:
+      ENV{PATH}:
+        - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin"
+        - "/Users/jerrylu/Downloads/google-cloud-sdk/bin"
+        - "/opt/homebrew/opt/llvm/bin"
+        - "/Users/jerrylu/.swiftly/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/Library/Frameworks/Python.framework/Versions/3.13/bin"
+        - "/Library/Frameworks/Python.framework/Versions/3.12/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/X11/bin"
+        - "/Library/Apple/usr/bin"
+        - "/usr/local/share/dotnet"
+        - "/Users/jerrylu/.dotnet/tools"
+        - "/usr/local/go/bin"
+        - "/Users/jerrylu/.cargo/bin"
+        - "/Applications/kitty.app/Contents/MacOS"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr"
+        - "/opt/homebrew"
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/opt/homebrew"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+        - "/sw"
+        - "/opt/local"
+      CMAKE_SYSTEM_FRAMEWORK_PATH:
+        - "~/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Network/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Library/Frameworks"
+        - "/Library/Frameworks"
+        - "/Network/Library/Frameworks"
+        - "/System/Library/Frameworks"
+  -
+    kind: "find_package-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/FindCURL.cmake:170 (find_package)"
+      - "CMakeLists.txt:12 (find_package)"
+    name: "CURL"
+    configs:
+      -
+        filename: "CURLConfig.cmake"
+        kind: "cmake"
+      -
+        filename: "curl-config.cmake"
+        kind: "cmake"
+    version_request:
+      exact: false
+    settings:
+      required: "optional"
+      quiet: true
+      global: false
+      policy_scope: true
+      bypass_provider: false
+      names:
+        - "CURL"
+      path_suffixes:
+        - ""
+      paths:
+        CMAKE_FIND_USE_CMAKE_PATH: true
+        CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+        CMAKE_FIND_USE_INSTALL_PREFIX: true
+        CMAKE_FIND_USE_PACKAGE_ROOT_PATH: true
+        CMAKE_FIND_USE_CMAKE_PACKAGE_REGISTRY: true
+        CMAKE_FIND_USE_SYSTEM_PACKAGE_REGISTRY: true
+        CMAKE_FIND_ROOT_PATH_MODE: "BOTH"
+    candidates:
+      -
+        path: "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/pkgRedirects/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/pkgRedirects/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Users/jerrylu/.nvm/versions/node/v22.20.0/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Users/jerrylu/.nvm/versions/node/v22.20.0/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Users/jerrylu/Downloads/google-cloud-sdk/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Users/jerrylu/Downloads/google-cloud-sdk/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/opt/llvm/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/opt/llvm/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Users/jerrylu/.swiftly/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Users/jerrylu/.swiftly/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/homebrew/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Library/Frameworks/Python.framework/Versions/3.13/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Library/Frameworks/Python.framework/Versions/3.13/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Library/Frameworks/Python.framework/Versions/3.12/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Library/Frameworks/Python.framework/Versions/3.12/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/local/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/local/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/System/Cryptexes/App/usr/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/System/Cryptexes/App/usr/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/X11/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/X11/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Library/Apple/usr/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Library/Apple/usr/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/local/share/dotnet/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/local/share/dotnet/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/local/go/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/local/go/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Users/jerrylu/.cargo/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Users/jerrylu/.cargo/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Applications/kitty.app/Contents/MacOS/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Applications/kitty.app/Contents/MacOS/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/X11R6/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/X11R6/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Library/Frameworks/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Library/Frameworks/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/System/Library/Frameworks/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/System/Library/Frameworks/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Users/jerrylu/Applications/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Users/jerrylu/Applications/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Applications/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Applications/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Applications/Xcode.app/Contents/Applications/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Applications/Xcode.app/Contents/Applications/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Applications/Xcode.app/Contents/Developer/Applications/CURLConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/Applications/Xcode.app/Contents/Developer/Applications/curl-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+    found: null
+    search_context:
+      ENV{PATH}:
+        - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin"
+        - "/Users/jerrylu/Downloads/google-cloud-sdk/bin"
+        - "/opt/homebrew/opt/llvm/bin"
+        - "/Users/jerrylu/.swiftly/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/Library/Frameworks/Python.framework/Versions/3.13/bin"
+        - "/Library/Frameworks/Python.framework/Versions/3.12/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/X11/bin"
+        - "/Library/Apple/usr/bin"
+        - "/usr/local/share/dotnet"
+        - "/Users/jerrylu/.dotnet/tools"
+        - "/usr/local/go/bin"
+        - "/Users/jerrylu/.cargo/bin"
+        - "/Applications/kitty.app/Contents/MacOS"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr"
+        - "/opt/homebrew"
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/opt/homebrew"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+        - "/sw"
+        - "/opt/local"
+      CMAKE_SYSTEM_FRAMEWORK_PATH:
+        - "~/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Network/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Library/Frameworks"
+        - "/Library/Frameworks"
+        - "/Network/Library/Frameworks"
+        - "/System/Library/Frameworks"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/FindPkgConfig.cmake:69 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/FindCURL.cmake:185 (find_package)"
+      - "CMakeLists.txt:12 (find_package)"
+    mode: "program"
+    variable: "PKG_CONFIG_EXECUTABLE"
+    description: "pkg-config executable"
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "pkg-config"
+      - "pkgconf"
+    candidate_directories:
+      - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin/"
+      - "/Users/jerrylu/Downloads/google-cloud-sdk/bin/"
+      - "/opt/homebrew/opt/llvm/bin/"
+      - "/Users/jerrylu/.swiftly/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.13/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.12/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/X11/bin/"
+      - "/Library/Apple/usr/bin/"
+      - "/usr/local/share/dotnet/"
+      - "/Users/jerrylu/.dotnet/tools/"
+      - "/usr/local/go/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
+      - "/Applications/kitty.app/Contents/MacOS/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/bin/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/sbin/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/opt/homebrew/"
+      - "/usr/local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/"
+      - "/usr/bin/"
+      - "/usr/sbin/"
+      - "/usr/"
+      - "/bin/"
+      - "/sbin/"
+      - "/usr/X11R6/bin/"
+      - "/usr/X11R6/sbin/"
+      - "/usr/X11R6/"
+      - "/usr/pkg/bin/"
+      - "/usr/pkg/sbin/"
+      - "/usr/pkg/"
+      - "/opt/bin/"
+      - "/opt/sbin/"
+      - "/opt/"
+      - "/sw/bin/"
+      - "/sw/sbin/"
+      - "/sw/"
+      - "/opt/local/bin/"
+      - "/opt/local/sbin/"
+      - "/opt/local/"
+      - "/Users/jerrylu/Applications/"
+      - "/Applications/"
+      - "/Applications/Xcode.app/Contents/Applications/"
+      - "/Applications/Xcode.app/Contents/Developer/Applications/"
+    searched_directories:
+      - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin/pkg-config"
+      - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin/pkgconf"
+      - "/Users/jerrylu/Downloads/google-cloud-sdk/bin/pkg-config"
+      - "/Users/jerrylu/Downloads/google-cloud-sdk/bin/pkgconf"
+      - "/opt/homebrew/opt/llvm/bin/pkg-config"
+      - "/opt/homebrew/opt/llvm/bin/pkgconf"
+      - "/Users/jerrylu/.swiftly/bin/pkg-config"
+      - "/Users/jerrylu/.swiftly/bin/pkgconf"
+    found: "/opt/homebrew/bin/pkg-config"
+    search_context:
+      ENV{PATH}:
+        - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin"
+        - "/Users/jerrylu/Downloads/google-cloud-sdk/bin"
+        - "/opt/homebrew/opt/llvm/bin"
+        - "/Users/jerrylu/.swiftly/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/Library/Frameworks/Python.framework/Versions/3.13/bin"
+        - "/Library/Frameworks/Python.framework/Versions/3.12/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/X11/bin"
+        - "/Library/Apple/usr/bin"
+        - "/usr/local/share/dotnet"
+        - "/Users/jerrylu/.dotnet/tools"
+        - "/usr/local/go/bin"
+        - "/Users/jerrylu/.cargo/bin"
+        - "/Applications/kitty.app/Contents/MacOS"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr"
+        - "/opt/homebrew"
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/opt/homebrew"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+        - "/sw"
+        - "/opt/local"
+      CMAKE_SYSTEM_APPBUNDLE_PATH:
+        - "/Users/jerrylu/Applications"
+        - "/Applications"
+        - "/Applications/Xcode.app/Contents/Applications"
+        - "/Applications/Xcode.app/Contents/Developer/Applications"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/FindPkgConfig.cmake:307 (find_library)"
+      - "/opt/homebrew/share/cmake/Modules/FindPkgConfig.cmake:357 (_pkg_find_libs)"
+      - "/opt/homebrew/share/cmake/Modules/FindPkgConfig.cmake:695 (_pkg_recalculate)"
+      - "/opt/homebrew/share/cmake/Modules/FindPkgConfig.cmake:867 (_pkg_check_modules_internal)"
+      - "/opt/homebrew/share/cmake/Modules/FindCURL.cmake:187 (pkg_check_modules)"
+      - "CMakeLists.txt:12 (find_package)"
+    mode: "library"
+    variable: "pkgcfg_lib_PC_CURL_curl"
+    description: "Path to a library."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "curl"
+    candidate_directories:
+      - "/usr/lib/"
+    searched_directories:
+      - "/usr/lib/"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin"
+        - "/Users/jerrylu/Downloads/google-cloud-sdk/bin"
+        - "/opt/homebrew/opt/llvm/bin"
+        - "/Users/jerrylu/.swiftly/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/Library/Frameworks/Python.framework/Versions/3.13/bin"
+        - "/Library/Frameworks/Python.framework/Versions/3.12/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/X11/bin"
+        - "/Library/Apple/usr/bin"
+        - "/usr/local/share/dotnet"
+        - "/Users/jerrylu/.dotnet/tools"
+        - "/usr/local/go/bin"
+        - "/Users/jerrylu/.cargo/bin"
+        - "/Applications/kitty.app/Contents/MacOS"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr"
+        - "/opt/homebrew"
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/opt/homebrew"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+        - "/sw"
+        - "/opt/local"
+      CMAKE_SYSTEM_LIBRARY_PATH:
+        - "/usr/lib/X11"
+      CMAKE_SYSTEM_FRAMEWORK_PATH:
+        - "~/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Network/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Library/Frameworks"
+        - "/Library/Frameworks"
+        - "/Network/Library/Frameworks"
+        - "/System/Library/Frameworks"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/FindPkgConfig.cmake:311 (find_library)"
+      - "/opt/homebrew/share/cmake/Modules/FindPkgConfig.cmake:357 (_pkg_find_libs)"
+      - "/opt/homebrew/share/cmake/Modules/FindPkgConfig.cmake:695 (_pkg_recalculate)"
+      - "/opt/homebrew/share/cmake/Modules/FindPkgConfig.cmake:867 (_pkg_check_modules_internal)"
+      - "/opt/homebrew/share/cmake/Modules/FindCURL.cmake:187 (pkg_check_modules)"
+      - "CMakeLists.txt:12 (find_package)"
+    mode: "library"
+    variable: "pkgcfg_lib_PC_CURL_curl"
+    description: "Path to a library."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "curl"
+    candidate_directories:
+      - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin/"
+      - "/Users/jerrylu/Downloads/google-cloud-sdk/bin/"
+      - "/opt/homebrew/opt/llvm/bin/"
+      - "/Users/jerrylu/.swiftly/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.13/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.12/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/opt/X11/bin/"
+      - "/Library/Apple/usr/bin/"
+      - "/usr/local/share/dotnet/"
+      - "/usr/local/go/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
+      - "/Applications/kitty.app/Contents/MacOS/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/"
+      - "/opt/homebrew/lib/"
+      - "/opt/homebrew/"
+      - "/usr/local/lib/"
+      - "/usr/local/"
+      - "/usr/lib/"
+      - "/usr/"
+      - "/usr/X11R6/lib/"
+      - "/usr/X11R6/"
+      - "/opt/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks/"
+      - "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/"
+      - "/Library/Frameworks/"
+      - "/System/Library/Frameworks/"
+    searched_directories:
+      - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin/"
+      - "/Users/jerrylu/Downloads/google-cloud-sdk/bin/"
+      - "/opt/homebrew/opt/llvm/bin/"
+      - "/Users/jerrylu/.swiftly/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.13/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.12/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/opt/X11/bin/"
+      - "/Library/Apple/usr/bin/"
+      - "/usr/local/share/dotnet/"
+      - "/usr/local/go/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
+      - "/Applications/kitty.app/Contents/MacOS/"
+    found: "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib/libcurl.tbd"
+    search_context:
+      ENV{PATH}:
+        - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin"
+        - "/Users/jerrylu/Downloads/google-cloud-sdk/bin"
+        - "/opt/homebrew/opt/llvm/bin"
+        - "/Users/jerrylu/.swiftly/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/Library/Frameworks/Python.framework/Versions/3.13/bin"
+        - "/Library/Frameworks/Python.framework/Versions/3.12/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/X11/bin"
+        - "/Library/Apple/usr/bin"
+        - "/usr/local/share/dotnet"
+        - "/Users/jerrylu/.dotnet/tools"
+        - "/usr/local/go/bin"
+        - "/Users/jerrylu/.cargo/bin"
+        - "/Applications/kitty.app/Contents/MacOS"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr"
+        - "/opt/homebrew"
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/opt/homebrew"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+        - "/sw"
+        - "/opt/local"
+      CMAKE_SYSTEM_LIBRARY_PATH:
+        - "/usr/lib/X11"
+      CMAKE_SYSTEM_FRAMEWORK_PATH:
+        - "~/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Network/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Library/Frameworks"
+        - "/Library/Frameworks"
+        - "/Network/Library/Frameworks"
+        - "/System/Library/Frameworks"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/FindCURL.cmake:197 (find_path)"
+      - "CMakeLists.txt:12 (find_package)"
+    mode: "path"
+    variable: "CURL_INCLUDE_DIR"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "curl/curl.h"
+    candidate_directories:
+      - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin/"
+      - "/Users/jerrylu/Downloads/google-cloud-sdk/bin/"
+      - "/opt/homebrew/opt/llvm/bin/"
+      - "/Users/jerrylu/.swiftly/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.13/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.12/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/X11/bin/"
+      - "/Library/Apple/usr/bin/"
+      - "/usr/local/share/dotnet/"
+      - "/Users/jerrylu/.dotnet/tools/"
+      - "/usr/local/go/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
+      - "/Applications/kitty.app/Contents/MacOS/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/"
+      - "/opt/homebrew/include/"
+      - "/opt/homebrew/"
+      - "/usr/local/include/"
+      - "/usr/local/"
+      - "/usr/include/"
+      - "/usr/"
+      - "/include/"
+      - "/usr/X11R6/include/"
+      - "/usr/X11R6/"
+      - "/usr/pkg/include/"
+      - "/usr/pkg/"
+      - "/opt/include/"
+      - "/opt/"
+      - "/sw/include/"
+      - "/sw/"
+      - "/opt/local/include/"
+      - "/opt/local/"
+      - "/usr/include/X11/"
+      - "/Users/jerrylu/Library/Frameworks/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Library/Frameworks/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Network/Library/Frameworks/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks/"
+      - "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/"
+      - "/Library/Frameworks/"
+      - "/Network/Library/Frameworks/"
+      - "/System/Library/Frameworks/"
+    searched_directories:
+      - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin/curl.framework/Headers/curl.h"
+      - "/Users/jerrylu/Downloads/google-cloud-sdk/bin/curl.framework/Headers/curl.h"
+      - "/opt/homebrew/opt/llvm/bin/curl.framework/Headers/curl.h"
+      - "/Users/jerrylu/.swiftly/bin/curl.framework/Headers/curl.h"
+      - "/opt/homebrew/bin/curl.framework/Headers/curl.h"
+      - "/opt/homebrew/sbin/curl.framework/Headers/curl.h"
+      - "/Library/Frameworks/Python.framework/Versions/3.13/bin/curl.framework/Headers/curl.h"
+      - "/Library/Frameworks/Python.framework/Versions/3.12/bin/curl.framework/Headers/curl.h"
+      - "/usr/local/bin/curl.framework/Headers/curl.h"
+      - "/System/Cryptexes/App/usr/bin/curl.framework/Headers/curl.h"
+      - "/usr/bin/curl.framework/Headers/curl.h"
+      - "/bin/curl.framework/Headers/curl.h"
+      - "/usr/sbin/curl.framework/Headers/curl.h"
+      - "/sbin/curl.framework/Headers/curl.h"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/curl.framework/Headers/curl.h"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/curl.framework/Headers/curl.h"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/curl.framework/Headers/curl.h"
+      - "/opt/X11/bin/curl.framework/Headers/curl.h"
+      - "/Library/Apple/usr/bin/curl.framework/Headers/curl.h"
+      - "/usr/local/share/dotnet/curl.framework/Headers/curl.h"
+      - "/Users/jerrylu/.dotnet/tools/curl.framework/Headers/curl.h"
+      - "/usr/local/go/bin/curl.framework/Headers/curl.h"
+      - "/Users/jerrylu/.cargo/bin/curl.framework/Headers/curl.h"
+      - "/Applications/kitty.app/Contents/MacOS/curl.framework/Headers/curl.h"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/curl.framework/Headers/curl.h"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/curl.framework/Headers/curl.h"
+      - "/opt/homebrew/include/curl.framework/Headers/curl.h"
+      - "/opt/homebrew/curl.framework/Headers/curl.h"
+      - "/usr/local/include/curl.framework/Headers/curl.h"
+      - "/usr/local/curl.framework/Headers/curl.h"
+      - "/usr/include/curl.framework/Headers/curl.h"
+      - "/usr/curl.framework/Headers/curl.h"
+      - "/include/curl.framework/Headers/curl.h"
+      - "/usr/X11R6/include/curl.framework/Headers/curl.h"
+      - "/usr/X11R6/curl.framework/Headers/curl.h"
+      - "/usr/pkg/include/curl.framework/Headers/curl.h"
+      - "/usr/pkg/curl.framework/Headers/curl.h"
+      - "/opt/include/curl.framework/Headers/curl.h"
+      - "/opt/curl.framework/Headers/curl.h"
+      - "/sw/include/curl.framework/Headers/curl.h"
+      - "/sw/curl.framework/Headers/curl.h"
+      - "/opt/local/include/curl.framework/Headers/curl.h"
+      - "/opt/local/curl.framework/Headers/curl.h"
+      - "/usr/include/X11/curl.framework/Headers/curl.h"
+      - "/Users/jerrylu/Library/Frameworks/curl.framework/Headers/curl.h"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Library/Frameworks/curl.framework/Headers/curl.h"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Network/Library/Frameworks/curl.framework/Headers/curl.h"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/curl.framework/Headers/curl.h"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks/curl.framework/Headers/curl.h"
+      - "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/curl.framework/Headers/curl.h"
+      - "/Library/Frameworks/curl.framework/Headers/curl.h"
+      - "/Network/Library/Frameworks/curl.framework/Headers/curl.h"
+      - "/System/Library/Frameworks/curl.framework/Headers/curl.h"
+      - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin/curl/curl.h"
+      - "/Users/jerrylu/Downloads/google-cloud-sdk/bin/curl/curl.h"
+      - "/opt/homebrew/opt/llvm/bin/curl/curl.h"
+      - "/Users/jerrylu/.swiftly/bin/curl/curl.h"
+      - "/opt/homebrew/bin/curl/curl.h"
+      - "/opt/homebrew/sbin/curl/curl.h"
+      - "/Library/Frameworks/Python.framework/Versions/3.13/bin/curl/curl.h"
+      - "/Library/Frameworks/Python.framework/Versions/3.12/bin/curl/curl.h"
+      - "/usr/local/bin/curl/curl.h"
+      - "/System/Cryptexes/App/usr/bin/curl/curl.h"
+      - "/usr/bin/curl/curl.h"
+      - "/bin/curl/curl.h"
+      - "/usr/sbin/curl/curl.h"
+      - "/sbin/curl/curl.h"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/curl/curl.h"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/curl/curl.h"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/curl/curl.h"
+      - "/opt/X11/bin/curl/curl.h"
+      - "/Library/Apple/usr/bin/curl/curl.h"
+      - "/usr/local/share/dotnet/curl/curl.h"
+      - "/Users/jerrylu/.dotnet/tools/curl/curl.h"
+      - "/usr/local/go/bin/curl/curl.h"
+      - "/Users/jerrylu/.cargo/bin/curl/curl.h"
+      - "/Applications/kitty.app/Contents/MacOS/curl/curl.h"
+    found: "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/"
+    search_context:
+      ENV{PATH}:
+        - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin"
+        - "/Users/jerrylu/Downloads/google-cloud-sdk/bin"
+        - "/opt/homebrew/opt/llvm/bin"
+        - "/Users/jerrylu/.swiftly/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/Library/Frameworks/Python.framework/Versions/3.13/bin"
+        - "/Library/Frameworks/Python.framework/Versions/3.12/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/X11/bin"
+        - "/Library/Apple/usr/bin"
+        - "/usr/local/share/dotnet"
+        - "/Users/jerrylu/.dotnet/tools"
+        - "/usr/local/go/bin"
+        - "/Users/jerrylu/.cargo/bin"
+        - "/Applications/kitty.app/Contents/MacOS"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr"
+        - "/opt/homebrew"
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/opt/homebrew"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+        - "/sw"
+        - "/opt/local"
+      CMAKE_SYSTEM_INCLUDE_PATH:
+        - "/usr/include/X11"
+      CMAKE_SYSTEM_FRAMEWORK_PATH:
+        - "~/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Network/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Library/Frameworks"
+        - "/Library/Frameworks"
+        - "/Network/Library/Frameworks"
+        - "/System/Library/Frameworks"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/FindCURL.cmake:204 (find_library)"
+      - "CMakeLists.txt:12 (find_package)"
+    mode: "library"
+    variable: "CURL_LIBRARY_RELEASE"
+    description: "Path to a library."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "curl"
+      - "curllib"
+      - "libcurl_imp"
+      - "curllib_static"
+      - "libcurl"
+      - "libcurl_a"
+    candidate_directories:
+      - "/usr/lib/"
+      - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin/"
+      - "/Users/jerrylu/Downloads/google-cloud-sdk/bin/"
+      - "/opt/homebrew/opt/llvm/bin/"
+      - "/Users/jerrylu/.swiftly/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.13/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.12/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/opt/X11/bin/"
+      - "/Library/Apple/usr/bin/"
+      - "/usr/local/share/dotnet/"
+      - "/usr/local/go/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
+      - "/Applications/kitty.app/Contents/MacOS/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/"
+      - "/opt/homebrew/lib/"
+      - "/opt/homebrew/"
+      - "/usr/local/lib/"
+      - "/usr/local/"
+      - "/usr/lib/"
+      - "/usr/"
+      - "/usr/X11R6/lib/"
+      - "/usr/X11R6/"
+      - "/opt/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks/"
+      - "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/"
+      - "/Library/Frameworks/"
+      - "/System/Library/Frameworks/"
+    searched_directories:
+      - "/usr/lib/"
+      - "/usr/lib/"
+      - "/usr/lib/"
+      - "/usr/lib/"
+      - "/usr/lib/"
+      - "/usr/lib/"
+      - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin/"
+      - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin/"
+      - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin/"
+      - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin/"
+      - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin/"
+      - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin/"
+      - "/Users/jerrylu/Downloads/google-cloud-sdk/bin/"
+      - "/Users/jerrylu/Downloads/google-cloud-sdk/bin/"
+      - "/Users/jerrylu/Downloads/google-cloud-sdk/bin/"
+      - "/Users/jerrylu/Downloads/google-cloud-sdk/bin/"
+      - "/Users/jerrylu/Downloads/google-cloud-sdk/bin/"
+      - "/Users/jerrylu/Downloads/google-cloud-sdk/bin/"
+      - "/opt/homebrew/opt/llvm/bin/"
+      - "/opt/homebrew/opt/llvm/bin/"
+      - "/opt/homebrew/opt/llvm/bin/"
+      - "/opt/homebrew/opt/llvm/bin/"
+      - "/opt/homebrew/opt/llvm/bin/"
+      - "/opt/homebrew/opt/llvm/bin/"
+      - "/Users/jerrylu/.swiftly/bin/"
+      - "/Users/jerrylu/.swiftly/bin/"
+      - "/Users/jerrylu/.swiftly/bin/"
+      - "/Users/jerrylu/.swiftly/bin/"
+      - "/Users/jerrylu/.swiftly/bin/"
+      - "/Users/jerrylu/.swiftly/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/opt/homebrew/sbin/"
+      - "/opt/homebrew/sbin/"
+      - "/opt/homebrew/sbin/"
+      - "/opt/homebrew/sbin/"
+      - "/opt/homebrew/sbin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.13/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.13/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.13/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.13/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.13/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.13/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.12/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.12/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.12/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.12/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.12/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.12/bin/"
+      - "/usr/local/bin/"
+      - "/usr/local/bin/"
+      - "/usr/local/bin/"
+      - "/usr/local/bin/"
+      - "/usr/local/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/usr/bin/"
+      - "/usr/bin/"
+      - "/usr/bin/"
+      - "/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/bin/"
+      - "/bin/"
+      - "/bin/"
+      - "/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/usr/sbin/"
+      - "/usr/sbin/"
+      - "/usr/sbin/"
+      - "/usr/sbin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/sbin/"
+      - "/sbin/"
+      - "/sbin/"
+      - "/sbin/"
+      - "/sbin/"
+      - "/opt/X11/bin/"
+      - "/opt/X11/bin/"
+      - "/opt/X11/bin/"
+      - "/opt/X11/bin/"
+      - "/opt/X11/bin/"
+      - "/opt/X11/bin/"
+      - "/Library/Apple/usr/bin/"
+      - "/Library/Apple/usr/bin/"
+      - "/Library/Apple/usr/bin/"
+      - "/Library/Apple/usr/bin/"
+      - "/Library/Apple/usr/bin/"
+      - "/Library/Apple/usr/bin/"
+      - "/usr/local/share/dotnet/"
+      - "/usr/local/share/dotnet/"
+      - "/usr/local/share/dotnet/"
+      - "/usr/local/share/dotnet/"
+      - "/usr/local/share/dotnet/"
+      - "/usr/local/share/dotnet/"
+      - "/usr/local/go/bin/"
+      - "/usr/local/go/bin/"
+      - "/usr/local/go/bin/"
+      - "/usr/local/go/bin/"
+      - "/usr/local/go/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
+      - "/Applications/kitty.app/Contents/MacOS/"
+      - "/Applications/kitty.app/Contents/MacOS/"
+      - "/Applications/kitty.app/Contents/MacOS/"
+      - "/Applications/kitty.app/Contents/MacOS/"
+      - "/Applications/kitty.app/Contents/MacOS/"
+      - "/Applications/kitty.app/Contents/MacOS/"
+    found: "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib/libcurl.tbd"
+    search_context:
+      ENV{PATH}:
+        - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin"
+        - "/Users/jerrylu/Downloads/google-cloud-sdk/bin"
+        - "/opt/homebrew/opt/llvm/bin"
+        - "/Users/jerrylu/.swiftly/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/Library/Frameworks/Python.framework/Versions/3.13/bin"
+        - "/Library/Frameworks/Python.framework/Versions/3.12/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/X11/bin"
+        - "/Library/Apple/usr/bin"
+        - "/usr/local/share/dotnet"
+        - "/Users/jerrylu/.dotnet/tools"
+        - "/usr/local/go/bin"
+        - "/Users/jerrylu/.cargo/bin"
+        - "/Applications/kitty.app/Contents/MacOS"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr"
+        - "/opt/homebrew"
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/opt/homebrew"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+        - "/sw"
+        - "/opt/local"
+      CMAKE_SYSTEM_LIBRARY_PATH:
+        - "/usr/lib/X11"
+      CMAKE_SYSTEM_FRAMEWORK_PATH:
+        - "~/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Network/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks"
+        - "/Applications/Xcode.app/Contents/Developer/Library/Frameworks"
+        - "/Library/Frameworks"
+        - "/Network/Library/Frameworks"
+        - "/System/Library/Frameworks"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/FindCURL.cmake:219 (find_library)"
+      - "CMakeLists.txt:12 (find_package)"
+    mode: "library"
+    variable: "CURL_LIBRARY_DEBUG"
+    description: "Path to a library."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "libcurl-d_imp"
+      - "libcurl-d"
+    candidate_directories:
+      - "/usr/lib/"
+      - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin/"
+      - "/Users/jerrylu/Downloads/google-cloud-sdk/bin/"
+      - "/opt/homebrew/opt/llvm/bin/"
+      - "/Users/jerrylu/.swiftly/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.13/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.12/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/opt/X11/bin/"
+      - "/Library/Apple/usr/bin/"
+      - "/usr/local/share/dotnet/"
+      - "/usr/local/go/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
+      - "/Applications/kitty.app/Contents/MacOS/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/"
+      - "/opt/homebrew/lib/"
+      - "/opt/homebrew/"
+      - "/usr/local/lib/"
+      - "/usr/local/"
+      - "/usr/lib/"
+      - "/usr/"
+      - "/usr/X11R6/lib/"
+      - "/usr/X11R6/"
+      - "/opt/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks/"
+      - "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/"
+      - "/Library/Frameworks/"
+      - "/System/Library/Frameworks/"
+    searched_directories:
+      - "/usr/lib/"
+      - "/usr/lib/"
+      - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin/"
+      - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin/"
+      - "/Users/jerrylu/Downloads/google-cloud-sdk/bin/"
+      - "/Users/jerrylu/Downloads/google-cloud-sdk/bin/"
+      - "/opt/homebrew/opt/llvm/bin/"
+      - "/opt/homebrew/opt/llvm/bin/"
+      - "/Users/jerrylu/.swiftly/bin/"
+      - "/Users/jerrylu/.swiftly/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/opt/homebrew/sbin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.13/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.13/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.12/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.12/bin/"
+      - "/usr/local/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/sbin/"
+      - "/opt/X11/bin/"
+      - "/opt/X11/bin/"
+      - "/Library/Apple/usr/bin/"
+      - "/Library/Apple/usr/bin/"
+      - "/usr/local/share/dotnet/"
+      - "/usr/local/share/dotnet/"
+      - "/usr/local/go/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
+      - "/Users/jerrylu/.cargo/bin/"
+      - "/Applications/kitty.app/Contents/MacOS/"
+      - "/Applications/kitty.app/Contents/MacOS/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/"
+      - "/opt/homebrew/lib/"
+      - "/opt/homebrew/lib/"
+      - "/opt/homebrew/"
+      - "/opt/homebrew/"
+      - "/usr/local/lib/"
+      - "/usr/local/lib/"
+      - "/usr/local/"
+      - "/usr/local/"
+      - "/usr/lib/"
+      - "/usr/lib/"
+      - "/usr/"
+      - "/usr/"
+      - "/usr/X11R6/lib/"
+      - "/usr/X11R6/lib/"
+      - "/usr/X11R6/"
+      - "/usr/X11R6/"
+      - "/opt/"
+      - "/opt/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks/"
+      - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks/"
+      - "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/"
+      - "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/"
+      - "/Library/Frameworks/"
+      - "/Library/Frameworks/"
+      - "/System/Library/Frameworks/"
+      - "/System/Library/Frameworks/"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/Users/jerrylu/.nvm/versions/node/v22.20.0/bin"
+        - "/Users/jerrylu/Downloads/google-cloud-sdk/bin"
+        - "/opt/homebrew/opt/llvm/bin"
+        - "/Users/jerrylu/.swiftly/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/Library/Frameworks/Python.framework/Versions/3.13/bin"
+        - "/Library/Frameworks/Python.framework/Versions/3.12/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/X11/bin"
+        - "/Library/Apple/usr/bin"
+        - "/usr/local/share/dotnet"
+        - "/Users/jerrylu/.dotnet/tools"
+        - "/usr/local/go/bin"
+        - "/Users/jerrylu/.cargo/bin"
+        - "/Applications/kitty.app/Contents/MacOS"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr"
+        - "/opt/homebrew"
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/opt/homebrew"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+        - "/sw"
+        - "/opt/local"
+      CMAKE_SYSTEM_LIBRARY_PATH:
+        - "/usr/lib/X11"
       CMAKE_SYSTEM_FRAMEWORK_PATH:
         - "~/Library/Frameworks"
         - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Library/Frameworks"

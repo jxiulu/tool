@@ -1,45 +1,68 @@
 // materials
 
 #include "mats.hpp"
+#include "utils.hpp"
+#include <filesystem>
+#include <system_error>
 
-namespace settei {
+namespace materials {
 
 //
 // mat class
 //
 
-Mat::Mat(const Episode *parent_episode, const fs::path &path, MatType type)
+material::material(const org::episode *parent_episode, const fs::path &path,
+                   material_type type)
     : parent_episode_(parent_episode), path_(path), uuid_(generate_uuid()),
       type_(type) {}
 
-void Mat::set_notes(const std::string &notes) { notes_ = notes; }
+material::material(const org::episode *parent_episode, const fs::path &path,
+                   material_type type, boost::uuids::uuid uuid)
+    : parent_episode_(parent_episode), path_(path), uuid_(uuid), type_(type) {}
 
-void Mat::set_alias(const std::string &alias) { alias_ = alias; }
+void material::set_notes(const std::string &notes) { notes_ = notes; }
+
+void material::set_alias(const std::string &alias) { alias_ = alias; }
+
+std::error_code material::move_to(const fs::path &parentfolder) {
+    // caller needs to verify the validity of the target path
+    std::error_code ec;
+    fs::path dest = parentfolder / path().filename();
+    fs::rename(path_, parentfolder, ec);
+    if (ec)
+        return ec;
+
+    path_ = parentfolder / path().filename();
+
+    return std::error_code(); // success
+}
 
 //
 // file class
 //
 
-File::File(const Episode *parent_episode, const fs::path &path, MatType type)
-    : Mat(parent_episode, path, type) {}
+file::file(const org::episode *parent_episode, const fs::path &path,
+           material_type type)
+    : material(parent_episode, path, type) {}
 
 //
 // folder class
 //
+//
 
-Folder::Folder(const Episode *parent_episode, const fs::path &path,
-               MatType type)
-    : Mat(parent_episode, path, type) {}
+folder::folder(const org::episode *parent_episode, const fs::path &path,
+               material_type type)
+    : material(parent_episode, path, type) {}
 
-const std::vector<std::unique_ptr<Mat>> &Folder::children() const {
+const std::vector<std::unique_ptr<material>> &folder::children() const {
     return children_;
 }
 
-void Folder::add_child(std::unique_ptr<Mat> child) {
+void folder::add_child(std::unique_ptr<material> child) {
     children_.push_back(std::move(child));
 }
 
-Mat *Folder::find_child(const boost::uuids::uuid &uuid) {
+material *folder::find_child(const boost::uuids::uuid &uuid) {
     for (auto &child : children_) {
         if (child->uuid() == uuid) {
             return child.get();
@@ -52,24 +75,27 @@ Mat *Folder::find_child(const boost::uuids::uuid &uuid) {
 // cut class
 //
 
-Cut::Cut(const Episode *parent_episode, const fs::path &path,
+cut::cut(const org::episode *parent_episode, const fs::path &path,
          const std::optional<int> &scene_num, const int number,
-         const CutStage type)
-    : stage_(type), scene_num_(scene_num), num_(number),
-      Folder(parent_episode, path, MatType::CutFolder) {
+         const std::string &stage)
+    : stage_(stage), scene_num_(scene_num), num_(number),
+      folder(parent_episode, path, material_type::cut_folder) {
     progress_history_.push_back(
-        {CutStatus::NotStarted, std::chrono::system_clock::now()});
+        {cut_status::not_started, std::chrono::system_clock::now()});
 }
 
-CutStatus Cut::status() const { return progress_history_.back().status; }
+const cut_status cut::status() const { return progress_history_.back().status; }
 
-void Cut::update_status(const CutStatus new_status) {
+void cut::mark(const cut_status new_status) {
     progress_history_.push_back({new_status, std::chrono::system_clock::now()});
 }
 
-bool Cut::is_same_as(const Cut &other) const {
-    return (parent_episode() == other.parent_episode() &&
-            number() == other.number() && scene_num() == other.scene_num());
+bool cut::matches_with(const cut &other) const {
+    return are_matches(*this, other);
 }
 
-} // namespace settei
+bool cut::conflicts_with(const cut &other) const {
+    return are_conflicts(*this, other);
+}
+
+} // namespace materials
