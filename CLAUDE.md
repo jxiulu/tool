@@ -1,0 +1,2 @@
+- please just give diffs
+- keep edits short so i can ask questions

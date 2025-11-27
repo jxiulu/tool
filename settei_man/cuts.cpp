@@ -45,7 +45,7 @@ build_from(setman::episode *episode, const fs::path &pathtocut) {
         episode->series()->parse_cut_name(pathtocut.filename().string());
 
     if (!result)
-        return std::unexpected(setman::error(setman::errc::parse_failed,
+        return std::unexpected(setman::error(setman::code::parse_failed,
                                              "Failed to parse file name."));
 
     auto newcut = std::make_unique<cut>(episode, pathtocut, result->scene,
@@ -54,7 +54,7 @@ build_from(setman::episode *episode, const fs::path &pathtocut) {
     for (auto &cut : episode->view_active_cuts()) {
         if (newcut->conflicts(*cut))
             return std::unexpected(
-                setman::error(setman::errc::existing_cut_conflicts,
+                setman::error(setman::code::existing_cut_conflicts,
                               "Cut with same identity and stage "
                               "already exists in episode."));
     }

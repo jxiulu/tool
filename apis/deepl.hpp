@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "clients.hpp"
+#include "ai.hpp"
 #include <curl/curl.h>
 #include <memory>
 #include <nlohmann/json.hpp>
@@ -44,9 +44,9 @@ class request {
         return *this;
     }
 
-    const std::vector<std::string> &content() const { return content_; }
+    const std::vector<std::string> &contents() const { return content_; }
 
-    request &set_content(const std::vector<std::string> &content) {
+    request &set_contents(const std::vector<std::string> &content) {
         content_ = content;
         return *this;
     }
@@ -120,10 +120,11 @@ class response : public apis::base_response {
   private:
 };
 
-class client : public apis::base_ai_client {
+class client : public apis::base_client {
   public:
     client(const std::string &api_key, CURL *curl)
-        : apis::base_ai_client(api_key, curl) {
+        : apis::base_client(api_key, curl) {
+        // caller should validate curl
         headers_ =
             curl_slist_append(headers_, "Content-Type: application/json");
         const std::string auth = "Authorization: DeepL-Auth-Key " + api_key_;

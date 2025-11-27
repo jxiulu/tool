@@ -1,15 +1,18 @@
-// clients
+// general ai stuff
 
 #pragma once
 
+#include "types.hpp"
 #include <curl/curl.h>
 #include <curl/easy.h>
-#include <memory>
+#include <expected>
+#include <filesystem>
 #include <nlohmann/json.hpp>
 #include <optional>
 #include <string>
 
 using nlohmann::json;
+namespace fs = std::filesystem;
 
 namespace apis {
 
@@ -85,12 +88,12 @@ class base_response {
     std::optional<long> http_code_;
 };
 
-class base_ai_client {
+class base_client {
   public:
-    base_ai_client(const std::string &api_key, CURL *curl)
+    base_client(const std::string &api_key, CURL *curl)
         : api_key_(api_key), curl_(curl) {}
 
-    ~base_ai_client() noexcept {
+    ~base_client() noexcept {
         if (headers_)
             curl_slist_free_all(headers_);
         if (curl_)
@@ -109,5 +112,12 @@ class base_ai_client {
     CURL *curl_;
     struct curl_slist *headers_ = nullptr;
 };
+
+std::string encode_base64(const unsigned char *buf, size_t len);
+
+std::string encode_base64(const std::vector<unsigned char> &data);
+
+std::expected<std::vector<unsigned char>, setman::error>
+read_to_bytes(const fs::path &path);
 
 } // namespace apis

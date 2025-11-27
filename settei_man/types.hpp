@@ -5,6 +5,7 @@
 #include <chrono>
 #include <optional>
 #include <string>
+#include <string_view>
 
 namespace setman::materials {
 
@@ -62,36 +63,70 @@ enum class material_type {
 
 namespace setman {
 
-enum class errc {
+enum class code {
     success,
     parse_failed,
     existing_cut_conflicts,
     cels_folder_exists,
     up_folder_exists,
+    file_open_failed,
+    file_read_failed,
+    file_size_count_failed,
+
 };
 
-enum class errsev {
-    success,
+enum class severity {
+    none,
     info,
     warning,
     error,
     critical,
 };
 
+constexpr std::string_view default_error_message(code code) {
+    switch (code) {
+    case code::success:
+        return "Operation completed successfully";
+    case code::parse_failed:
+        return "Failed to parse input";
+    case code::existing_cut_conflicts:
+        return "Cut with same identity and stage already exists";
+    case code::cels_folder_exists:
+        return "Cels folder already exists";
+    case code::up_folder_exists:
+        return "Up folder already exists";
+    case code::file_open_failed:
+        return "Failed to open file";
+    case code::file_read_failed:
+        return "Failed to read file";
+    case code::file_size_count_failed:
+        return "Failed to determine file size";
+    default:
+        return "Unknown error";
+    }
+}
+
 class error {
   public:
-    constexpr error(const errc errc, const std::string &msg)
-        : sev_(errsev::error), errc_(errc), msg_(std::move(msg)) {}
-    constexpr error(const errsev sev, const errc errc, const std::string &msg)
+    constexpr error(const severity sev, const code errc, const std::string &msg)
         : sev_(sev), errc_(errc), msg_(std::move(msg)) {}
+    constexpr error(const code errc, const std::string &msg)
+        : sev_(severity::error), errc_(errc), msg_(std::move(msg)) {}
+
+    constexpr error(const code errc)
+        : sev_(severity::error), errc_(errc),
+          msg_(default_error_message(errc)) {}
+
+    constexpr error(const severity sev, const code errc)
+        : sev_(sev), errc_(errc), msg_(default_error_message(errc)) {}
 
     constexpr const std::string &what() const { return msg_; }
-    constexpr errc code() const { return errc_; }
-    constexpr errsev severity() const { return sev_; }
+    constexpr code code() const { return errc_; }
+    constexpr severity severity() const { return sev_; }
 
   private:
-    const errsev sev_;
-    const errc errc_;
+    const enum severity sev_;
+    const enum code errc_;
     const std::string msg_;
 };
 

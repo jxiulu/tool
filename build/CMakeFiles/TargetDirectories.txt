@@ -1,4 +1,11 @@
-/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/ai.dir
+/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/apis.dir
 /Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/SetteiMan.dir
+/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/Application.dir
 /Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/edit_cache.dir
 /Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/rebuild_cache.dir
+/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/apis_autogen_timestamp_deps.dir
+/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/apis_autogen.dir
+/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/SetteiMan_autogen_timestamp_deps.dir
+/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/SetteiMan_autogen.dir
+/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/Application_autogen_timestamp_deps.dir
+/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/Application_autogen.dir
