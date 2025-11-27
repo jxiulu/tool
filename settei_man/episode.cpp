@@ -1,12 +1,13 @@
 // episode
 
 #include "company.hpp"
+#include "cuts.hpp"
 #include "episode.hpp"
-#include "mats.hpp"
+#include "materials.hpp"
 #include <filesystem>
 #include <stdexcept>
 
-namespace org {
+namespace setman {
 
 episode::episode(const class series *series, const fs::path &parent_dir)
     : series_(series), root_(parent_dir) {}
@@ -45,17 +46,13 @@ void episode::scan_cuts() {
     }
 }
 
-materials::cut *episode::cut_number(const int cut_num) {
-    for (auto &cutptr : active_cuts_) {
-        if (cutptr->number() == cut_num)
-            return cutptr.get();
+std::vector<materials::cut *> episode::find_cut(const int number) const {
+    std::vector<materials::cut *> matches{};
+    for (auto &cut : active_cuts_) {
+        if (cut->number() == number)
+            matches.push_back(cut.get());
     }
-    return nullptr;
-}
-
-const materials::cut *episode::cut_number(const int cut_num) const {
-    return const_cast<const materials::cut *>(
-        const_cast<episode *>(this)->cut_number(cut_num));
+    return matches;
 }
 
 materials::cut *episode::find_cut(const boost::uuids::uuid &uuid) const {
@@ -69,14 +66,14 @@ materials::cut *episode::find_cut(const boost::uuids::uuid &uuid) const {
 }
 
 std::vector<materials::cut *>
-episode::find_exact_duplicates(const materials::cut &cut) const {
+episode::find_conflicts(const materials::cut &cut) const {
     std::vector<materials::cut *> duplicates;
 
     for (auto &entry : active_cuts_) {
         if (entry.get() == &cut)
             continue;
 
-        if (cut.conflicts_with(*entry)) {
+        if (cut.conflicts(*entry)) {
             duplicates.push_back(entry.get());
         }
     }
@@ -85,7 +82,7 @@ episode::find_exact_duplicates(const materials::cut &cut) const {
         if (entry.get() == &cut)
             continue;
 
-        if (cut.conflicts_with(*entry)) {
+        if (cut.conflicts(*entry)) {
             duplicates.push_back(entry.get());
         }
     }
@@ -153,4 +150,4 @@ episode::init_project_status episode::fill_project() {
     return init_project_status::success;
 }
 
-} // namespace org
+} // namespace settman

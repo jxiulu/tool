@@ -2,7 +2,7 @@
 #include "episode.hpp"
 #include <map>
 
-namespace org {
+namespace setman {
 
 //
 // series
@@ -105,4 +105,4 @@ void company::add_series(const std::string &series_code,
         this, series_code, naming_convention, season));
 }
 
-} // namespace org
+} // namespace settman

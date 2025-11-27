@@ -2,7 +2,8 @@
 
 #pragma once
 
-#include "mats.hpp"
+#include "cuts.hpp"
+#include "materials.hpp"
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -14,7 +15,7 @@
 
 namespace fs = std::filesystem;
 
-namespace org {
+namespace setman {
 
 class series;
 
@@ -76,11 +77,10 @@ class episode {
     //
 
     void scan_cuts();
-    materials::cut *cut_number(const int cut_num);
-    const materials::cut *cut_number(const int cut_num) const;
+    std::vector<materials::cut *> find_cut(const int cut_num) const;
     materials::cut *find_cut(const boost::uuids::uuid &) const;
     std::vector<materials::cut *>
-    find_exact_duplicates(const materials::cut &cut) const;
+    find_conflicts(const materials::cut &cut) const;
 
     //
     // material operations
@@ -110,4 +110,4 @@ class episode {
 
 std::unique_ptr<episode> create_project_from(const fs::path &path);
 
-} // namespace org
+} // namespace settman

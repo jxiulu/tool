@@ -13,7 +13,8 @@
 
 namespace fs = std::filesystem;
 
-namespace org {
+namespace setman {
+
 //
 // series
 //
@@ -84,4 +85,4 @@ class company {
     }
 };
 
-} // namespace org
+} // namespace settman

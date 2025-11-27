@@ -1,13 +1,9 @@
-#include "clients.hpp"
+// deepl client implementation
+
+#include "deepl.hpp"
 #include <curl/curl.h>
 
-namespace ai::base {
-bool response::process() {
-    return true; // placeholder
-}
-} // namespace ai::base
-
-namespace ai::deepl {
+namespace apis::deepl {
 
 std::unique_ptr<client> new_client(const std::string &key) {
     CURL *curl = curl_easy_init();
@@ -59,6 +55,7 @@ bool response::process() {
     content_.reserve(translations->size());
 
     // Validate each translation object has required fields
+    // we'll only validate the absolutely necessary fields.
     for (size_t i = 0; i < translations->size(); i++) {
         const auto &translation = (*translations)[i];
 
@@ -97,15 +94,28 @@ bool response::process() {
     return true;
 }
 
-int *response::billed_characters() const {
+std::optional<int> response::billed_characters() const {
     if (!json_.contains("billed_characters"))
-        return nullptr;
+        return std::nullopt;
 
-    // Cannot return pointer to local JSON value
-    // This method signature needs to be reconsidered
-    // For now, return nullptr - consider changing to return int or
-    // std::optional<int>
-    return nullptr;
+    const auto &billed = json_["billed_characters"];
+
+    if (!billed.is_number_integer())
+        return std::nullopt;
+
+    return billed.get<int>();
 }
 
-} // namespace ai::deepl
+std::optional<std::string> response::model_type_used() const {
+    if (!json_.contains("model_type_used"))
+        return std::nullopt;
+
+    const auto &model = json_["model_type_used"];
+
+    if (!model.is_string())
+        return std::nullopt;
+
+    return model.get<std::string>();
+}
+
+} // namespace apis::deepl

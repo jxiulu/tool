@@ -6,7 +6,7 @@
 #include <optional>
 #include <string>
 
-namespace materials {
+namespace setman::materials {
 
 enum class cut_stage {
     lo,
@@ -58,4 +58,41 @@ enum class material_type {
     null,
 };
 
-} // namespace materials
+} // namespace setman::materials
+
+namespace setman {
+
+enum class errc {
+    success,
+    parse_failed,
+    existing_cut_conflicts,
+    cels_folder_exists,
+    up_folder_exists,
+};
+
+enum class errsev {
+    success,
+    info,
+    warning,
+    error,
+    critical,
+};
+
+class error {
+  public:
+    constexpr error(const errc errc, const std::string &msg)
+        : sev_(errsev::error), errc_(errc), msg_(std::move(msg)) {}
+    constexpr error(const errsev sev, const errc errc, const std::string &msg)
+        : sev_(sev), errc_(errc), msg_(std::move(msg)) {}
+
+    constexpr const std::string &what() const { return msg_; }
+    constexpr errc code() const { return errc_; }
+    constexpr errsev severity() const { return sev_; }
+
+  private:
+    const errsev sev_;
+    const errc errc_;
+    const std::string msg_;
+};
+
+} // namespace setman

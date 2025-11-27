@@ -11,7 +11,7 @@ find_package(spdlog REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(CURL REQUIRED)
 
-add_library(ai SHARED ai/clients.cpp ai/context.cpp)
+add_library(ai SHARED ai/deepl.cpp ai/context.cpp)
 target_include_directories(ai PUBLIC ai/)
 target_link_libraries(ai PUBLIC nlohmann_json::nlohmann_json CURL::libcurl)
 
@@ -21,7 +21,8 @@ target_sources(SetteiMan
     settei_man/settei_man.cpp
     settei_man/company.cpp
     settei_man/episode.cpp
-    settei_man/mats.cpp
+    settei_man/materials.cpp
+    settei_man/cuts.cpp
 )
 target_include_directories(SetteiMan PRIVATE settei_man ${Boost_INCLUDE_DIRS})
 target_link_libraries(SetteiMan ${Boost_LIBRARIES} spdlog::spdlog ai)

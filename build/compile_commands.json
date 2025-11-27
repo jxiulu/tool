@@ -1,9 +1,9 @@
 [
 {
   "directory": "/Users/jerrylu/Documents/Projects/SetteiMan/build",
-  "command": "/usr/bin/c++ -Dai_EXPORTS -I/Users/jerrylu/Documents/Projects/SetteiMan/ai -isystem /opt/homebrew/include -std=gnu++2b -arch arm64 -fPIC -o CMakeFiles/ai.dir/ai/clients.cpp.o -c /Users/jerrylu/Documents/Projects/SetteiMan/ai/clients.cpp",
-  "file": "/Users/jerrylu/Documents/Projects/SetteiMan/ai/clients.cpp",
-  "output": "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/ai.dir/ai/clients.cpp.o"
+  "command": "/usr/bin/c++ -Dai_EXPORTS -I/Users/jerrylu/Documents/Projects/SetteiMan/ai -isystem /opt/homebrew/include -std=gnu++2b -arch arm64 -fPIC -o CMakeFiles/ai.dir/ai/deepl.cpp.o -c /Users/jerrylu/Documents/Projects/SetteiMan/ai/deepl.cpp",
+  "file": "/Users/jerrylu/Documents/Projects/SetteiMan/ai/deepl.cpp",
+  "output": "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/ai.dir/ai/deepl.cpp.o"
 },
 {
   "directory": "/Users/jerrylu/Documents/Projects/SetteiMan/build",
@@ -31,8 +31,14 @@
 },
 {
   "directory": "/Users/jerrylu/Documents/Projects/SetteiMan/build",
-  "command": "/usr/bin/c++ -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/Users/jerrylu/Documents/Projects/SetteiMan/settei_man -I/Users/jerrylu/Documents/Projects/SetteiMan/ai -isystem /opt/homebrew/include -std=gnu++2b -arch arm64 -o CMakeFiles/SetteiMan.dir/settei_man/mats.cpp.o -c /Users/jerrylu/Documents/Projects/SetteiMan/settei_man/mats.cpp",
-  "file": "/Users/jerrylu/Documents/Projects/SetteiMan/settei_man/mats.cpp",
-  "output": "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/SetteiMan.dir/settei_man/mats.cpp.o"
+  "command": "/usr/bin/c++ -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/Users/jerrylu/Documents/Projects/SetteiMan/settei_man -I/Users/jerrylu/Documents/Projects/SetteiMan/ai -isystem /opt/homebrew/include -std=gnu++2b -arch arm64 -o CMakeFiles/SetteiMan.dir/settei_man/materials.cpp.o -c /Users/jerrylu/Documents/Projects/SetteiMan/settei_man/materials.cpp",
+  "file": "/Users/jerrylu/Documents/Projects/SetteiMan/settei_man/materials.cpp",
+  "output": "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/SetteiMan.dir/settei_man/materials.cpp.o"
+},
+{
+  "directory": "/Users/jerrylu/Documents/Projects/SetteiMan/build",
+  "command": "/usr/bin/c++ -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/Users/jerrylu/Documents/Projects/SetteiMan/settei_man -I/Users/jerrylu/Documents/Projects/SetteiMan/ai -isystem /opt/homebrew/include -std=gnu++2b -arch arm64 -o CMakeFiles/SetteiMan.dir/settei_man/cuts.cpp.o -c /Users/jerrylu/Documents/Projects/SetteiMan/settei_man/cuts.cpp",
+  "file": "/Users/jerrylu/Documents/Projects/SetteiMan/settei_man/cuts.cpp",
+  "output": "/Users/jerrylu/Documents/Projects/SetteiMan/build/CMakeFiles/SetteiMan.dir/settei_man/cuts.cpp.o"
 }
 ]
