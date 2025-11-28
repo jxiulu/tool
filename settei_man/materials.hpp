@@ -147,4 +147,13 @@ inline boost::uuids::uuid generate_uuid() {
 std::pair<std::regex, std::vector<std::string>>
 build_regex(const std::string &naming_convention);
 
+std::expected<bool, setman::error> is_image(const fs::path &file);
+
+std::string encode_base64(const unsigned char *buf, size_t len);
+
+std::string encode_base64(const std::vector<unsigned char> &data);
+
+std::expected<std::vector<unsigned char>, setman::error>
+read_to_bytes(const fs::path &path);
+
 } // namespace setman::materials

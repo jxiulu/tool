@@ -108,10 +108,10 @@ class request {
     std::optional<models> model_;
 };
 
-class response : public apis::base_response {
+class response : public apis::ai::base_response {
   public:
     response(const std::string &raw, long http_code)
-        : apis::base_response(raw, http_code) {}
+        : apis::ai::base_response(raw, http_code) {}
     bool process() override;
 
     std::optional<int> billed_characters() const;
@@ -120,10 +120,10 @@ class response : public apis::base_response {
   private:
 };
 
-class client : public apis::base_client {
+class client : public apis::ai::base_client {
   public:
     client(const std::string &api_key, CURL *curl)
-        : apis::base_client(api_key, curl) {
+        : apis::ai::base_client(api_key, curl) {
         // caller should validate curl
         headers_ =
             curl_slist_append(headers_, "Content-Type: application/json");

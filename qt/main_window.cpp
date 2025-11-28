@@ -1,6 +1,6 @@
 // main window imp
 
-#include "mainwin.hpp"
+#include "main_window.hpp"
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QStatusBar>

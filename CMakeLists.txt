@@ -18,9 +18,10 @@ find_package(CURL REQUIRED)
 find_package(Qt6 REQUIRED COMPONENTS Widgets Core Gui)
 
 add_library(APIs)
-target_sources(APIs PRIVATE 
+target_sources(APIs PRIVATE
     apis/ai.cpp
     apis/deepl.cpp
+    apis/openrouter.cpp
 )
 target_include_directories(APIs PUBLIC apis/ settei_man/)
 target_link_libraries(APIs PUBLIC nlohmann_json::nlohmann_json CURL::libcurl)
@@ -34,7 +35,7 @@ target_sources(SetteiMan
     settei_man/cuts.cpp
 )
 target_include_directories(SetteiMan PRIVATE settei_man ${Boost_INCLUDE_DIRS})
-target_link_libraries(SetteiMan ${Boost_LIBRARIES} spdlog::spdlog apis)
+target_link_libraries(SetteiMan ${Boost_LIBRARIES} spdlog::spdlog APIs)
 
 add_executable(Application)
 target_sources(Application PRIVATE qt/main.cpp qt/main_window.cpp)
