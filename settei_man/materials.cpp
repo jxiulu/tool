@@ -2,7 +2,9 @@
 
 #include "materials.hpp"
 #include <array>
+#include <cstddef>
 #include <cstring>
+#include <expected>
 #include <filesystem>
 #include <fstream>
 #include <map>
@@ -63,6 +65,21 @@ material *folder::find_child(const boost::uuids::uuid &uuid) {
         }
     }
     return nullptr;
+}
+
+//
+// image
+//
+//
+
+std::expected<std::string, setman::error> image::tob64() const {
+    return img_tob64(path_);
+}
+
+std::optional<std::string> image::ext() const { return file_ext(path_); }
+
+std::expected<size_t, setman::error> image::fsize() const {
+    return setman::materials::file_size(path_);
 }
 
 //
@@ -133,7 +150,7 @@ build_regex(const std::string &naming_convention) {
         std::regex(pattern, std::regex::icase), field_order);
 }
 
-std::expected<bool, setman::error> is_image(const fs::path &path) {
+std::expected<bool, setman::error> isimg(const fs::path &path) {
     // Check if file exists and is a regular file
     if (!fs::exists(path)) {
         return std::unexpected(setman::error(setman::code::file_doesnt_exist));
@@ -209,7 +226,34 @@ std::expected<bool, setman::error> is_image(const fs::path &path) {
     return false;
 }
 
-std::string encode_base64(const unsigned char *bytes, size_t len) {
+std::optional<std::string> file_ext(const fs::path &path) {
+    std::string ext = path.extension().string();
+    if (ext.empty())
+        return std::nullopt;
+
+    if (ext[0] == '.')
+        ext = ext.substr(1);
+
+    std::transform(ext.begin(), ext.end(), ext.begin(),
+                   [](unsigned char c) { return std::tolower(c); });
+
+    return ext;
+}
+
+std::expected<size_t, setman::error> file_size(const fs::path &path) {
+    if (!fs::exists(path))
+        return std::unexpected(setman::code::file_doesnt_exist);
+
+    std::error_code ec;
+    size_t size = fs::file_size(path, ec);
+    if (ec)
+        return std::unexpected(
+            setman::error(setman::code::file_size_count_failed, ec.message()));
+
+    return size;
+}
+
+std::string tob64(const unsigned char *bytes, size_t len) {
     static constexpr char alphabet[] =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     if (len == 0) {
@@ -251,37 +295,112 @@ std::string encode_base64(const unsigned char *bytes, size_t len) {
     return output;
 }
 
-std::string encode_base64(const std::vector<unsigned char> &bytes) {
+std::string tob64(const std::vector<unsigned char> &bytes) {
     if (bytes.empty()) {
         return {};
     }
-    return encode_base64(bytes.data(), bytes.size());
+    return tob64(bytes.data(), bytes.size());
 }
 
 std::expected<std::vector<unsigned char>, setman::error>
-read_to_bytes(const fs::path &path) {
+file_tobytes(const fs::path &path) {
     std::vector<unsigned char> buffer;
     std::ifstream ifs(path, std::ios::binary);
     if (!ifs) {
-        return std::unexpected(setman::error(setman::code::file_open_failed));
+        return std::unexpected(setman::code::file_open_failed);
     }
 
     ifs.seekg(0, std::ios::end);
     std::streamsize size = ifs.tellg();
     if (size < 0) {
-        return std::unexpected(
-            setman::error(setman::code::file_size_count_failed));
+        return std::unexpected(setman::code::file_size_count_failed);
     }
     ifs.seekg(0, std::ios::beg);
 
     buffer.resize(static_cast<size_t>(size));
     if (size > 0) {
         if (!ifs.read(reinterpret_cast<char *>(buffer.data()), size)) {
-            return std::unexpected(
-                setman::error(setman::code::file_read_failed));
+            return std::unexpected(setman::code::file_read_failed);
         }
     }
     return buffer;
+}
+
+std::expected<std::string, setman::error> img_tob64(const fs::path &path) {
+    auto check = isimg(path);
+    if (!check.has_value())
+        return std::unexpected(check.error());
+    if (check.value() == false)
+        return std::unexpected(
+            setman::error(setman::code::file_not_valid, "File not an image."));
+
+    auto bytes = file_tobytes(path);
+    if (!bytes.has_value())
+        return std::unexpected(bytes.error());
+
+    return tob64(bytes.value_or(std::vector<unsigned char>({})));
+}
+
+std::expected<std::pair<int, int>, setman::error>
+img_dimensions(const fs::path &path) { // <width, height>
+    // Check if it's an image first
+    auto check = isimg(path);
+    if (!check.has_value())
+        return std::unexpected(check.error());
+    if (check.value() == false)
+        return std::unexpected(
+            setman::error(setman::code::file_not_valid, "File not an image."));
+
+    // Read first bytes to determine dimensions
+    std::ifstream file(path, std::ios::binary);
+    if (!file)
+        return std::unexpected(setman::error(setman::code::file_open_failed));
+
+    std::array<unsigned char, 24> header{};
+    file.read(reinterpret_cast<char *>(header.data()), header.size());
+    const std::streamsize bytes_read = file.gcount();
+
+    if (bytes_read < 24)
+        return std::unexpected(
+            setman::error(setman::code::file_read_failed,
+                          "Not enough bytes to read image dimensions"));
+
+    int w = -1, h = -1;
+
+    // PNG: width at bytes 16-19, height at 20-23 (big-endian)
+    if (header[0] == 0x89 && header[1] == 0x50 && header[2] == 0x4E &&
+        header[3] == 0x47) {
+        w = (header[16] << 24) | (header[17] << 16) | (header[18] << 8) |
+            header[19];
+        h = (header[20] << 24) | (header[21] << 16) | (header[22] << 8) |
+            header[23];
+    }
+    // JPEG: need to scan for SOF marker
+    else if (header[0] == 0xFF && header[1] == 0xD8) {
+        return std::unexpected(
+            setman::error(setman::code::file_not_valid,
+                          "JPEG dimension reading not yet implemented"));
+    }
+    // GIF: width at bytes 6-7, height at 8-9 (little-endian)
+    else if ((std::memcmp(header.data(), "GIF87a", 6) == 0 ||
+              std::memcmp(header.data(), "GIF89a", 6) == 0)) {
+        w = header[6] | (header[7] << 8);
+        h = header[8] | (header[9] << 8);
+    }
+    // BMP: width at bytes 18-21, height at 22-25 (little-endian)
+    else if (header[0] == 0x42 && header[1] == 0x4D) {
+        w = header[18] | (header[19] << 8) | (header[20] << 16) |
+            (header[21] << 24);
+        h = header[22] | (header[23] << 8) | (header[24] << 16) |
+            (header[25] << 24);
+    }
+
+    if (w == -1 || h == -1)
+        return std::unexpected(
+            setman::error(setman::code::file_not_valid,
+                          "Unknown or unsupported image format"));
+
+    return std::make_pair(w, h);
 }
 
 } // namespace setman::materials

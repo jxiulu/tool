@@ -2,17 +2,13 @@
 
 #pragma once
 
-#include "types.hpp"
 #include <curl/curl.h>
 #include <curl/easy.h>
-#include <expected>
-#include <filesystem>
 #include <nlohmann/json.hpp>
 #include <optional>
 #include <string>
 
 using nlohmann::json;
-namespace fs = std::filesystem;
 
 namespace apis {
 
