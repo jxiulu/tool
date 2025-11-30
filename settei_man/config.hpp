@@ -12,9 +12,11 @@
 
 namespace fs = std::filesystem;
 
-namespace setman {
+namespace setman
+{
 
-class config {
+class config
+{
   public:
     constexpr config() = default;
 
@@ -22,11 +24,11 @@ class config {
 
     std::string find_or(const std::string &key, const std::string &def) const;
 
+    void set(std::string key, std::string val);
+
     bool has(const std::string &key) const;
 
     std::vector<std::string> keys() const;
-
-    bool set_entry(std::string key, std::string val);
 
   private:
     std::unordered_map<std::string, std::string> map_;

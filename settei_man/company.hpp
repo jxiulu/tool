@@ -13,13 +13,15 @@
 
 namespace fs = std::filesystem;
 
-namespace setman {
+namespace setman
+{
 
 //
 // series
 //
 
-class series {
+class series
+{
   private:
     const class company *parent_company_;
     std::string naming_convention_;
@@ -43,24 +45,17 @@ class series {
     const std::vector<std::unique_ptr<episode>> &episodes() const;
 
     std::optional<materials::cut_info>
-
     parse_cut_name(const std::string &folder_name) const;
 
-    const episode *find_episode(const int number) {
-        for (auto &episode : episodes_) {
-            if (episode->number() == number) {
-                return episode.get();
-            }
-        }
-        return nullptr;
-    }
+    const episode *find_episode(const int number);
 };
 
 //
 // company
 //
 
-class company {
+class company
+{
   private:
     std::string name_;
     fs::path root_;
@@ -69,20 +64,14 @@ class company {
   public:
     company(const std::string &name);
 
-    const std::string &company_name() const { return name_; }
+    const std::string &name() const { return name_; }
     const std::vector<std::unique_ptr<series>> &series() const;
 
     void set_path(const fs::path &path);
     void add_series(const std::string &series_code,
                     const std::string &naming_convention, const int season);
 
-    const class series *find_series(const std::string &code) {
-        for (auto &entry : series_) {
-            if (entry->code() == code)
-                return entry.get();
-        }
-        return nullptr;
-    }
+    const class series *find_series(const std::string &code);
 };
 
-} // namespace settman
+} // namespace setman

@@ -15,11 +15,13 @@
 
 namespace fs = std::filesystem;
 
-namespace setman {
+namespace setman
+{
 
 class series;
 
-class episode {
+class episode
+{
   private:
     const series *series_;
     int episode_num_;
@@ -46,20 +48,25 @@ class episode {
     const fs::path &root() const { return root_; }
     const fs::path &up_path() const { return up_folder_; }
     const fs::path &cels_path() const { return cels_folder_; }
-    const std::optional<fs::path> &pureref_path() const {
+    const std::optional<fs::path> &pureref_path() const
+    {
         return pureref_file_;
     }
+
     int num_todo() const { return active_cuts_.size(); }
 
     const std::string &notes() const { return notes_; }
 
-    const std::vector<std::unique_ptr<materials::material>> &materials() const {
+    const std::vector<std::unique_ptr<materials::material>> &materials() const
+    {
         return materials_;
     }
-    const std::vector<std::unique_ptr<materials::cut>> &active() const {
+    const std::vector<std::unique_ptr<materials::cut>> &active() const
+    {
         return active_cuts_;
     }
-    const std::vector<std::unique_ptr<materials::cut>> &archived() const {
+    const std::vector<std::unique_ptr<materials::cut>> &archived() const
+    {
         return archived_cuts_;
     }
 

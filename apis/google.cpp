@@ -3,9 +3,11 @@
 #include "google.hpp"
 #include <curl/curl.h>
 
-namespace apis::google {
+namespace apis::google
+{
 
-std::unique_ptr<client> new_client(const std::string &key) {
+std::unique_ptr<client> new_client(const std::string &key)
+{
     CURL *curl = curl_easy_init();
     if (!curl)
         return nullptr;
@@ -14,15 +16,17 @@ std::unique_ptr<client> new_client(const std::string &key) {
 }
 
 client::client(const std::string &api_key, CURL *curl)
-    : base_client(api_key, curl) {
+    : base_client(api_key, curl)
+{
     headers_ = curl_slist_append(headers_, "Content-Type: application/json");
 
     curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers_);
     curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, apis::write_callback);
 }
 
-json request::payload() const {
-    json j;
+json request::payload() const
+{
+    json payload;
 
     // Build parts array
     json parts_array = json::array();
@@ -49,8 +53,8 @@ json request::payload() const {
     }
 
     // Build contents
-    j["contents"] = json::array();
-    j["contents"].push_back({{"parts", parts_array}});
+    payload["contents"] = json::array();
+    payload["contents"].push_back({{"parts", parts_array}});
 
     // Generation config
     json gen_config;
@@ -68,7 +72,7 @@ json request::payload() const {
         gen_config["stopSequences"] = stop_sequences_;
 
     if (!gen_config.empty())
-        j["generationConfig"] = gen_config;
+        payload["generationConfig"] = gen_config;
 
     // Safety settings
     if (!safety_settings_.empty()) {
@@ -77,13 +81,14 @@ json request::payload() const {
             safety_array.push_back({{"category", setting.category},
                                     {"threshold", setting.threshold}});
         }
-        j["safetySettings"] = safety_array;
+        payload["safetySettings"] = safety_array;
     }
 
-    return j;
+    return payload;
 }
 
-response client::send(const request &req) {
+response client::send(const request &req)
+{
     std::string response_body;
     std::string request_body = req.payload().dump();
 
@@ -109,7 +114,8 @@ response client::send(const request &req) {
     return response(response_body, http_code);
 }
 
-bool response::process() {
+bool response::process()
+{
     // Check for prompt feedback (blocks)
     if (json_.contains("promptFeedback")) {
         const auto &feedback = json_["promptFeedback"];

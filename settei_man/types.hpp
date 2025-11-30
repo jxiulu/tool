@@ -7,7 +7,8 @@
 #include <string>
 #include <string_view>
 
-namespace setman::materials {
+namespace setman::materials
+{
 
 enum class cut_stage {
     lo,
@@ -61,7 +62,8 @@ enum class material_type {
 
 } // namespace setman::materials
 
-namespace setman {
+namespace setman
+{
 
 enum class code {
     success,
@@ -98,7 +100,8 @@ enum class severity {
     critical,
 };
 
-constexpr std::string_view standard_message(enum code code) {
+constexpr std::string_view standard_message(enum code code)
+{
     switch (code) {
     case code::success:
         return "Operation completed successfully";
@@ -149,30 +152,43 @@ constexpr std::string_view standard_message(enum code code) {
     }
 }
 
-class error {
+class error
+{
   public:
     constexpr error(const severity sev, const code errc, const std::string &msg)
-        : sev_(sev), errc_(errc), msg_(std::move(msg)) {}
+        : sev_(sev), errc_(errc), msg_(std::move(msg))
+    {
+    }
 
     constexpr error(const code errc, const std::string &msg)
-        : sev_(severity::error), errc_(errc), msg_(std::move(msg)) {}
+        : sev_(severity::error), errc_(errc), msg_(std::move(msg))
+    {
+    }
 
     constexpr error(const code errc)
-        : sev_(severity::error), errc_(errc), msg_(std::nullopt) {}
+        : sev_(severity::error), errc_(errc), msg_(std::nullopt)
+    {
+    }
 
     constexpr error(const severity sev, const code errc)
-        : sev_(sev), errc_(errc), msg_(std::nullopt) {}
+        : sev_(sev), errc_(errc), msg_(std::nullopt)
+    {
+    }
 
     constexpr error(const std::string &msg)
-        : sev_(severity::error), errc_(code::generic), msg_(std::move(msg)) {}
+        : sev_(severity::error), errc_(code::generic), msg_(std::move(msg))
+    {
+    }
 
-    constexpr operator std::string() const {
+    constexpr operator std::string() const
+    {
         return msg_.value_or(std::string(standard_message(errc_)));
     }
     constexpr operator bool() const { return errc_ == code::success; }
     constexpr operator code() const { return errc_; }
 
-    constexpr const std::string message() const {
+    constexpr const std::string message() const
+    {
         return msg_.value_or(std::string(standard_message(errc_)));
     }
     constexpr code code() const { return errc_; }

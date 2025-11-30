@@ -1,19 +1,22 @@
 // episode
 
+#include "episode.hpp"
 #include "company.hpp"
 #include "cuts.hpp"
-#include "episode.hpp"
 #include "materials.hpp"
 #include <filesystem>
 #include <stdexcept>
 
-namespace setman 
+namespace setman
 {
 
 episode::episode(const class series *series, const fs::path &parent_dir)
-    : series_(series), root_(parent_dir) {}
+    : series_(series), root_(parent_dir)
+{
+}
 
-void episode::scan_path() {
+void episode::scan_path()
+{
     for (auto &entry : fs::directory_iterator(root_)) {
         if (!entry.is_directory())
             continue;
@@ -47,7 +50,8 @@ void episode::scan_path() {
     }
 }
 
-std::vector<materials::cut *> episode::find_cut(const int number) const {
+std::vector<materials::cut *> episode::find_cut(const int number) const
+{
     std::vector<materials::cut *> matches{};
     for (auto &cut : active_cuts_) {
         if (cut->number() == number)
@@ -56,7 +60,8 @@ std::vector<materials::cut *> episode::find_cut(const int number) const {
     return matches;
 }
 
-materials::cut *episode::find_cut(const boost::uuids::uuid &uuid) const {
+materials::cut *episode::find_cut(const boost::uuids::uuid &uuid) const
+{
     for (auto &cut : active_cuts_) {
         if (cut->uuid() == uuid) {
             return cut.get();
@@ -67,7 +72,8 @@ materials::cut *episode::find_cut(const boost::uuids::uuid &uuid) const {
 }
 
 std::vector<materials::cut *>
-episode::find_conflicts(const materials::cut &cut) const {
+episode::find_conflicts(const materials::cut &cut) const
+{
     std::vector<materials::cut *> duplicates;
 
     for (auto &entry : active_cuts_) {
@@ -91,8 +97,8 @@ episode::find_conflicts(const materials::cut &cut) const {
     return duplicates;
 }
 
-materials::material *
-episode::find_material(const boost::uuids::uuid &mat_uuid) {
+materials::material *episode::find_material(const boost::uuids::uuid &mat_uuid)
+{
     for (auto &mat : materials_) {
         if (mat->uuid() == mat_uuid) {
             return mat.get();
@@ -103,18 +109,21 @@ episode::find_material(const boost::uuids::uuid &mat_uuid) {
 }
 
 const materials::material *
-episode::find_material(const boost::uuids::uuid &mat_uuid) const {
+episode::find_material(const boost::uuids::uuid &mat_uuid) const
+{
     return const_cast<const materials::material *>(
         const_cast<episode *>(this)->find_material(mat_uuid));
 }
 
-void episode::add_cut(std::unique_ptr<materials::cut> new_cut) {
+void episode::add_cut(std::unique_ptr<materials::cut> new_cut)
+{
     active_cuts_.push_back(std::move(new_cut));
 }
 
 void episode::reserve_active_cuts(size_t n) { active_cuts_.reserve(n); }
 
-error episode::up_cut(materials::cut &cut) {
+error episode::up_cut(materials::cut &cut)
+{
     if (cut.status() != materials::cut_status::done)
         throw std::logic_error("Precondition violation: check if cut is marked "
                                "done before upping");
@@ -131,13 +140,15 @@ error episode::up_cut(materials::cut &cut) {
     return code::success;
 }
 
-void episode::add_material(std::unique_ptr<materials::material> new_mat) {
+void episode::add_material(std::unique_ptr<materials::material> new_mat)
+{
     materials_.push_back(std::move(new_mat));
 }
 
 void episode::reserve_materials(size_t n) { materials_.reserve(n); }
 
-error episode::fill_project() {
+error episode::fill_project()
+{
     if (!fs::create_directory(root() / "cels")) {
         return code::cels_folder_exists;
     }

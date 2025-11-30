@@ -11,33 +11,40 @@
 
 using nlohmann::json;
 
-namespace apis::openrouter {
+namespace apis::openrouter
+{
 
-class request : public apis::ai::base_request {
+class request : public apis::ai::base_request
+{
   public:
     request() { endpoint_ = "https://openrouter.ai/api/v1/chat/completions"; }
 
     json payload() const override;
 
     // OpenRouter-specific options
-    const std::optional<std::vector<std::string>> &models() const {
+    const std::optional<std::vector<std::string>> &models() const
+    {
         return models_;
     }
-    request &set_models(const std::vector<std::string> &models) {
+    request &set_models(const std::vector<std::string> &models)
+    {
         models_ = models;
         return *this;
     }
 
     const std::optional<std::string> &route() const { return route_; }
-    request &set_route(const std::string &route) {
+    request &set_route(const std::string &route)
+    {
         route_ = route;
         return *this;
     }
 
-    const std::optional<std::vector<std::string>> &provider_order() const {
+    const std::optional<std::vector<std::string>> &provider_order() const
+    {
         return provider_order_;
     }
-    request &set_provider_order(const std::vector<std::string> &providers) {
+    request &set_provider_order(const std::vector<std::string> &providers)
+    {
         provider_order_ = providers;
         return *this;
     }
@@ -48,10 +55,13 @@ class request : public apis::ai::base_request {
     std::optional<std::vector<std::string>> provider_order_;
 };
 
-class response : public apis::ai::base_response {
+class response : public apis::ai::base_response
+{
   public:
     response(std::string raw, long http_code)
-        : base_response(std::move(raw), http_code) {}
+        : base_response(std::move(raw), http_code)
+    {
+    }
 
     bool process() override;
 
@@ -74,7 +84,8 @@ class response : public apis::ai::base_response {
     std::optional<std::string> finish_reason_;
 };
 
-class client : public apis::ai::base_client {
+class client : public apis::ai::base_client
+{
   public:
     client(const std::string &api_key, CURL *curl);
 

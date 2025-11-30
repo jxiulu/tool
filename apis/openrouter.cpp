@@ -3,9 +3,11 @@
 #include "openrouter.hpp"
 #include <curl/curl.h>
 
-namespace apis::openrouter {
+namespace apis::openrouter
+{
 
-std::unique_ptr<client> new_client(const std::string &key) {
+std::unique_ptr<client> new_client(const std::string &key)
+{
     CURL *curl = curl_easy_init();
     if (!curl)
         return nullptr;
@@ -14,7 +16,8 @@ std::unique_ptr<client> new_client(const std::string &key) {
 }
 
 client::client(const std::string &api_key, CURL *curl)
-    : base_client(api_key, curl) {
+    : base_client(api_key, curl)
+{
     headers_ = curl_slist_append(headers_, "Content-Type: application/json");
     headers_ = curl_slist_append(
         headers_, std::string("Authorization: Bearer " + api_key).c_str());
@@ -23,7 +26,8 @@ client::client(const std::string &api_key, CURL *curl)
     curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, apis::write_callback);
 }
 
-json request::payload() const {
+json request::payload() const
+{
     json j;
 
     // Model selection
@@ -85,7 +89,8 @@ json request::payload() const {
     return j;
 }
 
-response client::chat(const request &request) {
+response client::chat(const request &request)
+{
     std::string response_body;
     std::string request_body = request.payload().dump();
 
@@ -107,7 +112,8 @@ response client::chat(const request &request) {
     return response(response_body, http_code);
 }
 
-bool response::process() {
+bool response::process()
+{
     // Extract model used
     if (json_.contains("model")) {
         const auto &model = json_["model"];

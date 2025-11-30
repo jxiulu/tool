@@ -3,11 +3,12 @@
 #include "config.hpp"
 #include <filesystem>
 #include <fstream>
-#include <sstream>
 
-namespace setman {
+namespace setman
+{
 
-static std::string without_padding_whitespace(std::string in) {
+static std::string without_padding_whitespace(std::string in)
+{
     constexpr char whitespace[] = " \t\r\n";
     size_t start = in.find_first_not_of(whitespace);
     size_t end = in.find_last_not_of(whitespace);
@@ -17,7 +18,8 @@ static std::string without_padding_whitespace(std::string in) {
     return in.substr(start, end - start + 1);
 }
 
-std::expected<config, error> load_config(const fs::path &path) {
+std::expected<config, error> load_config(const fs::path &path)
+{
     if (!fs::exists(path)) {
         return std::unexpected(
             error(code::file_doesnt_exist, path.string() + " does not exist."));
@@ -65,13 +67,14 @@ std::expected<config, error> load_config(const fs::path &path) {
             value = value.substr(1, value.length() - 2);
         }
 
-        cfg.set_entry(key, value);
+        cfg.set(key, value);
     }
 
     return cfg;
 }
 
-std::optional<fs::path> find_config(const std::string &filename) {
+std::optional<fs::path> find_config(const std::string &filename)
+{
     fs::path cdcfg = fs::current_path() / filename;
     if (fs::exists(cdcfg))
         return cdcfg;
@@ -86,7 +89,8 @@ std::optional<fs::path> find_config(const std::string &filename) {
     return std::nullopt;
 }
 
-std::optional<std::string> config::find(const std::string &key) const {
+std::optional<std::string> config::find(const std::string &key) const
+{
     auto it = map_.find(key);
     if (it == map_.end()) {
         return std::nullopt;
@@ -95,7 +99,8 @@ std::optional<std::string> config::find(const std::string &key) const {
 }
 
 std::string config::find_or(const std::string &key,
-                            const std::string &def) const {
+                            const std::string &def) const
+{
     auto it = map_.find(key);
     if (it == map_.end()) {
         return def;
@@ -103,11 +108,13 @@ std::string config::find_or(const std::string &key,
     return it->second;
 }
 
-bool config::has(const std::string &key) const {
+bool config::has(const std::string &key) const
+{
     return map_.find(key) != map_.end();
 }
 
-std::vector<std::string> config::keys() const {
+std::vector<std::string> config::keys() const
+{
     std::vector<std::string> result;
     result.reserve(map_.size());
 
@@ -117,6 +124,6 @@ std::vector<std::string> config::keys() const {
     return result;
 }
 
-bool config::set_entry(std::string key, std::string val) { map_[key] = val; }
+void config::set(std::string key, std::string val) { map_[key] = val; }
 
 } // namespace setman

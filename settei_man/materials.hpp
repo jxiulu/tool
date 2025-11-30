@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "types.hpp"
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <expected>
@@ -12,15 +11,17 @@
 #include <string>
 #include <vector>
 
+#include "types.hpp"
+
 namespace fs = std::filesystem;
 
-namespace setman {
-
+namespace setman
+{
 class episode;
-
 }
 
-namespace setman::materials {
+namespace setman::materials
+{
 
 //
 // classes
@@ -31,7 +32,8 @@ class file;
 class folder;
 class cut;
 
-class material {
+class material
+{
   private:
     const boost::uuids::uuid uuid_;
 
@@ -52,7 +54,8 @@ class material {
     virtual constexpr bool is_folder() const = 0;
     constexpr material_type type() const { return type_; }
 
-    constexpr const setman::episode *parent_episode() const {
+    constexpr const setman::episode *parent_episode() const
+    {
         return parent_episode_;
     }
 
@@ -67,7 +70,8 @@ class material {
     void set_alias(const std::string &alias) { alias_ = alias; }
 };
 
-class file : public material {
+class file : public material
+{
   public:
     constexpr bool is_folder() const override { return false; }
 
@@ -75,16 +79,19 @@ class file : public material {
          material_type type);
 };
 
-class folder : public material {
+class folder : public material
+{
   protected:
     std::vector<std::unique_ptr<material>> children_;
 
   public:
     constexpr bool is_folder() const override { return true; }
 
-    constexpr const std::vector<std::unique_ptr<material>> &children() const {
+    constexpr const std::vector<std::unique_ptr<material>> &children() const
+    {
         return children_;
     }
+
     void add_child(std::unique_ptr<material> child);
     material *find_child(const boost::uuids::uuid &uuid);
 
@@ -92,10 +99,13 @@ class folder : public material {
            material_type type);
 };
 
-class image : public file {
+class image : public file
+{
   public:
     image(const setman::episode *parent, const fs::path &path)
-        : file(parent, path, material_type::file) {}
+        : file(parent, path, material_type::file)
+    {
+    }
 
     std::expected<std::string, setman::error> tob64() const;
 
@@ -126,12 +136,15 @@ enum class kftype {
     kae,
 };
 
-class keyframe : public file {
+class keyframe : public file
+{
   public:
     keyframe(const episode *parent_episode, const fs::path &path,
              const char cel, const kftype type)
         : file(parent_episode, path, material_type::keyframe), cel_(cel),
-          kftype_(type) {}
+          kftype_(type)
+    {
+    }
 
     constexpr char cel() const { return cel_; }
     std::string name() const { return path_.filename().stem().string(); }
@@ -142,11 +155,13 @@ class keyframe : public file {
     std::string name_;
 };
 
-class kf_folder : public folder {
+class kf_folder : public folder
+{
   public:
     // todo
-    // honestly not worth the trouble. the most important information is in the
-    // keyframe
+    // honestly not worth the trouble. the most important information is in
+    // the keyframe
+
     constexpr char cel() const { return cel_; }
 
     std::vector<keyframe *> keyframes() const;
@@ -161,7 +176,8 @@ class kf_folder : public folder {
 // functions
 //
 
-inline boost::uuids::uuid generate_uuid() {
+inline boost::uuids::uuid generate_uuid()
+{
     static boost::uuids::random_generator gen;
     return gen();
 }
@@ -171,12 +187,11 @@ build_regex(const std::string &naming_convention);
 
 std::expected<bool, setman::error> isimg(const fs::path &file);
 
+std::string tob64(const unsigned char *buf, size_t len);
+std::string tob64(const std::vector<unsigned char> &data);
+
 std::optional<std::string> file_ext(const fs::path &path);
 std::expected<size_t, setman::error> file_size(const fs::path &path);
-
-std::string tob64(const unsigned char *buf, size_t len);
-
-std::string tob64(const std::vector<unsigned char> &data);
 
 std::expected<std::vector<unsigned char>, setman::error>
 file_tobytes(const fs::path &path);

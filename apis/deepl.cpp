@@ -3,9 +3,11 @@
 #include "deepl.hpp"
 #include <curl/curl.h>
 
-namespace apis::deepl {
+namespace apis::deepl
+{
 
-std::unique_ptr<client> new_client(const std::string &key) {
+std::unique_ptr<client> new_client(const std::string &key)
+{
     CURL *curl = curl_easy_init();
     if (!curl)
         return nullptr;
@@ -13,7 +15,8 @@ std::unique_ptr<client> new_client(const std::string &key) {
     return std::make_unique<client>(key, curl);
 }
 
-response client::translate(const request &request) {
+response client::translate(const request &request)
+{
     std::string response_body;
     std::string request_body = request.payload().dump();
     curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, request_body.c_str());
@@ -33,7 +36,8 @@ response client::translate(const request &request) {
     return response(response_body, http_code);
 }
 
-bool response::process() {
+bool response::process()
+{
     json *translations = find("translations");
 
     if (!translations) {
@@ -94,7 +98,8 @@ bool response::process() {
     return true;
 }
 
-std::optional<int> response::billed_characters() const {
+std::optional<int> response::billed_characters() const
+{
     if (!json_.contains("billed_characters"))
         return std::nullopt;
 
@@ -106,7 +111,8 @@ std::optional<int> response::billed_characters() const {
     return billed.get<int>();
 }
 
-std::optional<std::string> response::model_type_used() const {
+std::optional<std::string> response::model_type_used() const
+{
     if (!json_.contains("model_type_used"))
         return std::nullopt;
 

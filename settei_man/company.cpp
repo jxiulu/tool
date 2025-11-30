@@ -1,8 +1,11 @@
 #include "company.hpp"
-#include "episode.hpp"
+
 #include <map>
 
-namespace setman {
+#include "episode.hpp"
+
+namespace setman
+{
 
 //
 // series
@@ -11,20 +14,23 @@ namespace setman {
 series::series(const company *parent_company, const std::string &series_code,
                const std::string &naming_convention, const int season)
     : parent_company_(parent_company), code_(series_code),
-      naming_convention_(naming_convention), season_(season) {
+      naming_convention_(naming_convention), season_(season)
+{
     build_regex();
 }
 
-const std::vector<std::unique_ptr<episode>> &series::episodes() const {
+const std::vector<std::unique_ptr<episode>> &series::episodes() const
+{
     return episodes_;
 }
 
-void series::build_regex() {
+void series::build_regex()
+{
     std::string pattern = naming_convention_;
 
-    const char *alphanumeric = "([A-Za-z0-9]+)";
-    const char *alphanumeric_with_underscores = "([A-Za-z0-9_]+)";
-    const char *numeric = "(\\d+)";
+    constexpr char alphanumeric[] = "([A-Za-z0-9]+)";
+    constexpr char alphanumeric_with_underscores[] = "([A-Za-z0-9_]+)";
+    constexpr char numeric[] = "(\\d+)";
 
     std::map<std::string, std::string> mapping = {
         {"{series}", alphanumeric},
@@ -60,7 +66,8 @@ void series::build_regex() {
 }
 
 std::optional<materials::cut_info>
-series::parse_cut_name(const std::string &folder_name) const {
+series::parse_cut_name(const std::string &folder_name) const
+{
     std::smatch matches;
     if (!std::regex_match(folder_name, matches, naming_regex_)) {
         return std::nullopt;
@@ -86,23 +93,43 @@ series::parse_cut_name(const std::string &folder_name) const {
     return info;
 }
 
+const episode *series::find_episode(const int number)
+{
+    for (auto &episode : episodes_) {
+        if (episode->number() == number) {
+            return episode.get();
+        }
+    }
+    return nullptr;
+}
+
 //
 // company
 //
 
 company::company(const std::string &name) : name_(name) {}
 
-const std::vector<std::unique_ptr<series>> &company::series() const {
+const std::vector<std::unique_ptr<series>> &company::series() const
+{
     return series_;
 }
 
 void company::set_path(const fs::path &path) { root_ = path; }
 
 void company::add_series(const std::string &series_code,
-                         const std::string &naming_convention,
-                         const int season) {
+                         const std::string &naming_convention, const int season)
+{
     series_.push_back(std::make_unique<class series>(
         this, series_code, naming_convention, season));
+}
+
+const class series *company::find_series(const std::string &code)
+{
+    for (auto &entry : series_) {
+        if (entry->code() == code)
+            return entry.get();
+    }
+    return nullptr;
 }
 
 } // namespace setman
