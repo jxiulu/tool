@@ -18,46 +18,37 @@ namespace fs = std::filesystem;
 namespace setman
 {
 class episode;
-}
-
-namespace setman::materials
-{
 
 //
-// classes
+// Material classes
 //
 
 class material;
 class file;
 class folder;
-class cut;
 
 class material
 {
-  private:
-    const boost::uuids::uuid uuid_;
-
-  protected:
-    std::string notes_;
-    std::string alias_;
-    const setman::episode *parent_episode_;
-    material_type type_;
-    fs::path path_;
-
-    material(const setman::episode *parent_episode, const fs::path &path,
-             material_type type);
-    material(const setman::episode *parent, const fs::path &path,
-             material_type type, boost::uuids::uuid uuid);
-
   public:
+    enum class type {
+        cut_folder,
+        cut_cels_folder,
+        cut_file,
+        keyframe,
+        csp,
+        pur,
+        notes,
+        folder,
+        file,
+        other,
+        null,
+    };
+
     virtual ~material() = default;
     virtual constexpr bool is_folder() const = 0;
-    constexpr material_type type() const { return type_; }
+    constexpr type type() const { return type_; }
 
-    constexpr const setman::episode *parent_episode() const
-    {
-        return parent_episode_;
-    }
+    constexpr const episode *parent_episode() const { return parent_episode_; }
 
     constexpr const fs::path &path() const { return path_; }
     constexpr const std::string &notes() const { return notes_; }
@@ -68,6 +59,20 @@ class material
 
     void set_notes(const std::string &notes) { notes_ = notes; }
     void set_alias(const std::string &alias) { alias_ = alias; }
+
+  private:
+    const boost::uuids::uuid uuid_;
+
+  protected:
+    std::string notes_;
+    std::string alias_;
+    const episode *parent_episode_;
+    enum type type_;
+    fs::path path_;
+
+    material(const episode *parent_episode, const fs::path &path, enum type type);
+    material(const episode *parent, const fs::path &path, enum type type,
+             boost::uuids::uuid uuid);
 };
 
 class file : public material
@@ -75,8 +80,8 @@ class file : public material
   public:
     constexpr bool is_folder() const override { return false; }
 
-    file(const setman::episode *parent_episode, const fs::path &path,
-         material_type type);
+    file(const episode *parent_episode, const fs::path &path,
+         enum material::type type);
 };
 
 class folder : public material
@@ -95,28 +100,28 @@ class folder : public material
     void add_child(std::unique_ptr<material> child);
     material *find_child(const boost::uuids::uuid &uuid);
 
-    folder(const setman::episode *parent_episode, const fs::path &path,
-           material_type type);
+    folder(const episode *parent_episode, const fs::path &path,
+           enum material::type type);
 };
 
 class image : public file
 {
   public:
-    image(const setman::episode *parent, const fs::path &path)
-        : file(parent, path, material_type::file)
+    image(const episode *parent, const fs::path &path)
+        : file(parent, path, type::file)
     {
     }
 
-    std::expected<std::string, setman::error> tob64() const;
+    std::expected<std::string, error> tob64() const;
 
     std::optional<std::string> ext() const;
-    std::expected<size_t, setman::error> fsize() const;
+    std::expected<size_t, error> fsize() const;
 
-    std::expected<fs::path, setman::error> gen_thumbnail(const fs::path &where,
-                                                         int maxsz = 256) const;
+    std::expected<fs::path, error> gen_thumbnail(const fs::path &where,
+                                                 int maxsz = 256) const;
 
-    std::expected<int, setman::error> width() const;
-    std::expected<int, setman::error> height() const;
+    std::expected<int, error> width() const;
+    std::expected<int, error> height() const;
 
   protected:
   private:
@@ -124,25 +129,14 @@ class image : public file
     mutable int cached_height;
 };
 
-enum class kftype {
-    lo,
-    ls,
-    lss,
-    le,
-    lk,
-    ka,
-    kas,
-    kass,
-    kae,
-};
-
 class keyframe : public file
 {
   public:
-    keyframe(const episode *parent_episode, const fs::path &path,
-             const char cel, const kftype type)
-        : file(parent_episode, path, material_type::keyframe), cel_(cel),
-          kftype_(type)
+    enum class type { lo, ls, lss, le, lk, ka, kas, kass, kae, other };
+
+    keyframe(const episode *parent, const fs::path &path, const char cel,
+             const type type)
+        : file(parent, path, material::type::keyframe), cel_(cel), kftype_(type)
     {
     }
 
@@ -150,30 +144,18 @@ class keyframe : public file
     std::string name() const { return path_.filename().stem().string(); }
 
   private:
-    kftype kftype_;
+    type kftype_;
     char cel_;
     std::string name_;
 };
 
-class kf_folder : public folder
+} // namespace setman
+
+namespace setman::materials
 {
-  public:
-    // todo
-    // honestly not worth the trouble. the most important information is in
-    // the keyframe
-
-    constexpr char cel() const { return cel_; }
-
-    std::vector<keyframe *> keyframes() const;
-
-    int frame_count() const { return keyframes().size(); }
-
-  private:
-    char cel_;
-};
 
 //
-// functions
+// Utility functions
 //
 
 inline boost::uuids::uuid generate_uuid()
@@ -185,20 +167,20 @@ inline boost::uuids::uuid generate_uuid()
 std::pair<std::regex, std::vector<std::string>>
 build_regex(const std::string &naming_convention);
 
-std::expected<bool, setman::error> isimg(const fs::path &file);
+std::expected<bool, error> isimg(const fs::path &file);
 
 std::string tob64(const unsigned char *buf, size_t len);
 std::string tob64(const std::vector<unsigned char> &data);
 
 std::optional<std::string> file_ext(const fs::path &path);
-std::expected<size_t, setman::error> file_size(const fs::path &path);
+std::expected<size_t, error> file_size(const fs::path &path);
 
-std::expected<std::vector<unsigned char>, setman::error>
+std::expected<std::vector<unsigned char>, error>
 file_tobytes(const fs::path &path);
 
-std::expected<std::string, setman::error> img_tob64(const fs::path &path);
+std::expected<std::string, error> img_tob64(const fs::path &path);
 
-std::expected<std::pair<int, int>, setman::error>
+std::expected<std::pair<int, int>, error>
 img_dimensions(const fs::path &path); // <width, height>
 
 } // namespace setman::materials

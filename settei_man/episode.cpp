@@ -25,7 +25,7 @@ void episode::scan_path()
         // todo: skip non-cut folders
 
         if (auto cut_info = series_->parse_cut_name(fname)) {
-            auto cut = std::make_unique<materials::cut>(
+            auto cut = std::make_unique<class cut>(
                 this, entry.path(), cut_info->scene, cut_info->number,
                 cut_info->stage);
             active_cuts_.push_back(std::move(cut));
@@ -40,19 +40,19 @@ void episode::scan_path()
             std::string fname = entry.path().filename().string();
 
             if (auto cut_info = series_->parse_cut_name(fname)) {
-                auto cut = std::make_unique<materials::cut>(
+                auto cut = std::make_unique<class cut>(
                     this, entry.path(), cut_info->scene, cut_info->number,
                     cut_info->stage);
-                cut->mark(materials::cut_status::up);
+                cut->mark(cuts::status::up);
                 archived_cuts_.push_back(std::move(cut));
             }
         }
     }
 }
 
-std::vector<materials::cut *> episode::find_cut(const int number) const
+std::vector<cut *> episode::find_cut(const int number) const
 {
-    std::vector<materials::cut *> matches{};
+    std::vector<cut *> matches{};
     for (auto &cut : active_cuts_) {
         if (cut->number() == number)
             matches.push_back(cut.get());
@@ -60,7 +60,7 @@ std::vector<materials::cut *> episode::find_cut(const int number) const
     return matches;
 }
 
-materials::cut *episode::find_cut(const boost::uuids::uuid &uuid) const
+cut *episode::find_cut(const boost::uuids::uuid &uuid) const
 {
     for (auto &cut : active_cuts_) {
         if (cut->uuid() == uuid) {
@@ -71,10 +71,10 @@ materials::cut *episode::find_cut(const boost::uuids::uuid &uuid) const
     return nullptr;
 }
 
-std::vector<materials::cut *>
-episode::find_conflicts(const materials::cut &cut) const
+std::vector<cut *>
+episode::find_conflicts(const cut &cut) const
 {
-    std::vector<materials::cut *> duplicates;
+    std::vector<class cut *> duplicates;
 
     for (auto &entry : active_cuts_) {
         if (entry.get() == &cut)
@@ -97,7 +97,7 @@ episode::find_conflicts(const materials::cut &cut) const
     return duplicates;
 }
 
-materials::material *episode::find_material(const boost::uuids::uuid &mat_uuid)
+material *episode::find_material(const boost::uuids::uuid &mat_uuid)
 {
     for (auto &mat : materials_) {
         if (mat->uuid() == mat_uuid) {
@@ -108,23 +108,23 @@ materials::material *episode::find_material(const boost::uuids::uuid &mat_uuid)
     return nullptr;
 }
 
-const materials::material *
+const material *
 episode::find_material(const boost::uuids::uuid &mat_uuid) const
 {
-    return const_cast<const materials::material *>(
+    return const_cast<const material *>(
         const_cast<episode *>(this)->find_material(mat_uuid));
 }
 
-void episode::add_cut(std::unique_ptr<materials::cut> new_cut)
+void episode::add_cut(std::unique_ptr<cut> new_cut)
 {
     active_cuts_.push_back(std::move(new_cut));
 }
 
 void episode::reserve_active_cuts(size_t n) { active_cuts_.reserve(n); }
 
-error episode::up_cut(materials::cut &cut)
+error episode::up_cut(cut &cut)
 {
-    if (cut.status() != materials::cut_status::done)
+    if (cut.status() != cuts::status::done)
         throw std::logic_error("Precondition violation: check if cut is marked "
                                "done before upping");
 
@@ -136,11 +136,11 @@ error episode::up_cut(materials::cut &cut)
     if (ec)
         return {code::filesystem_error, ec.message()};
 
-    cut.mark(materials::cut_status::up);
+    cut.mark(cuts::status::up);
     return code::success;
 }
 
-void episode::add_material(std::unique_ptr<materials::material> new_mat)
+void episode::add_material(std::unique_ptr<material> new_mat)
 {
     materials_.push_back(std::move(new_mat));
 }

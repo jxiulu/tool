@@ -65,7 +65,7 @@ void series::build_regex()
     naming_regex_ = std::regex(pattern, std::regex::icase);
 }
 
-std::optional<materials::cut_info>
+std::optional<cuts::info>
 series::parse_cut_name(const std::string &folder_name) const
 {
     std::smatch matches;
@@ -73,7 +73,7 @@ series::parse_cut_name(const std::string &folder_name) const
         return std::nullopt;
     }
 
-    materials::cut_info info;
+    cuts::info info;
     info.series_code = code_;
 
     for (size_t i = 0; i < field_order_.size(); i++) {

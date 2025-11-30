@@ -11,29 +11,27 @@
 #include <map>
 #include <system_error>
 
-namespace setman::materials
+namespace setman
 {
 
 //
 // material class
 //
 
-material::material(const setman::episode* parent_episode, const fs::path& path,
-                   material_type type)
-    : parent_episode_(parent_episode),
-      path_(path),
-      uuid_(generate_uuid()),
-      type_(type)
+material::material(const episode *parent_episode, const fs::path &path,
+                   enum type type)
+    : parent_episode_(parent_episode), path_(path),
+      uuid_(materials::generate_uuid()), type_(type)
 {
 }
 
-material::material(const setman::episode* parent_episode, const fs::path& path,
-                   material_type type, boost::uuids::uuid uuid)
+material::material(const episode *parent_episode, const fs::path &path,
+                   enum type type, boost::uuids::uuid uuid)
     : parent_episode_(parent_episode), path_(path), uuid_(uuid), type_(type)
 {
 }
 
-std::error_code material::move_to(const fs::path& parentfolder)
+std::error_code material::move_to(const fs::path &parentfolder)
 {
     // caller needs to verify the validity of the target path
     std::error_code ec;
@@ -44,15 +42,15 @@ std::error_code material::move_to(const fs::path& parentfolder)
 
     path_ = parentfolder / path().filename();
 
-    return std::error_code();  // success
+    return std::error_code(); // success
 }
 
 //
 // file class
 //
 
-file::file(const setman::episode* parent_episode, const fs::path& path,
-           material_type type)
+file::file(const episode *parent_episode, const fs::path &path,
+           enum material::type type)
     : material(parent_episode, path, type)
 {
 }
@@ -61,8 +59,8 @@ file::file(const setman::episode* parent_episode, const fs::path& path,
 // folder class
 //
 
-folder::folder(const setman::episode* parent_episode, const fs::path& path,
-               material_type type)
+folder::folder(const episode *parent_episode, const fs::path &path,
+               enum material::type type)
     : material(parent_episode, path, type)
 {
 }
@@ -72,9 +70,9 @@ void folder::add_child(std::unique_ptr<material> child)
     children_.push_back(std::move(child));
 }
 
-material* folder::find_child(const boost::uuids::uuid& uuid)
+material *folder::find_child(const boost::uuids::uuid &uuid)
 {
-    for (auto& child : children_) {
+    for (auto &child : children_) {
         if (child->uuid() == uuid) {
             return child.get();
         }
@@ -87,53 +85,42 @@ material* folder::find_child(const boost::uuids::uuid& uuid)
 //
 //
 
-std::expected<std::string, setman::error> image::tob64() const
+std::expected<std::string, error> image::tob64() const
 {
-    return img_tob64(path_);
+    return materials::img_tob64(path_);
 }
 
-std::optional<std::string> image::ext() const { return file_ext(path_); }
-
-std::expected<size_t, setman::error> image::fsize() const
+std::optional<std::string> image::ext() const
 {
-    return setman::materials::file_size(path_);
+    return materials::file_ext(path_);
+}
+
+std::expected<size_t, error> image::fsize() const
+{
+    return materials::file_size(path_);
 }
 
 //
 // keyframe class
 //
 
-//
-// keyframe folder class
-//
+} // namespace setman
 
-std::vector<keyframe*> kf_folder::keyframes() const
+namespace setman::materials
 {
-    std::vector<keyframe*> found = {};
-    found.reserve(children_.size());
-
-    for (auto& file : children_) {
-        if (auto* keyframe = dynamic_cast<class keyframe*>(file.get())) {
-            found.push_back(keyframe);
-        }
-    }
-
-    found.shrink_to_fit();
-    return found;
-}
 
 //
 // Utility functions
 //
 
-std::pair<std::regex, std::vector<std::string>> build_regex(
-    const std::string& naming_convention)
+std::pair<std::regex, std::vector<std::string>>
+build_regex(const std::string &naming_convention)
 {
     std::string pattern = naming_convention;
 
-    const char* alphanumeric = "([A-Za-z0-9]+)";
-    const char* alphanumeric_with_underscores = "([A-Za-z0-9_]+)";
-    const char* numeric = "(\\d+)";
+    const char *alphanumeric = "([A-Za-z0-9]+)";
+    const char *alphanumeric_with_underscores = "([A-Za-z0-9_]+)";
+    const char *numeric = "(\\d+)";
 
     std::map<std::string, std::string> mapping = {
         {"{series}", alphanumeric},
@@ -148,7 +135,7 @@ std::pair<std::regex, std::vector<std::string>> build_regex(
     while (p < pattern.length()) {
         bool found_placeholder = false;
 
-        for (const auto& [placeholder, regex_pattern] : mapping) {
+        for (const auto &[placeholder, regex_pattern] : mapping) {
             if (pattern.substr(p, placeholder.length()) == placeholder) {
                 std::string field =
                     placeholder.substr(1, placeholder.length() - 2);
@@ -169,28 +156,28 @@ std::pair<std::regex, std::vector<std::string>> build_regex(
         std::regex(pattern, std::regex::icase), field_order);
 }
 
-std::expected<bool, setman::error> isimg(const fs::path& path)
+std::expected<bool, error> isimg(const fs::path &path)
 {
     // Check if file exists and is a regular file
     if (!fs::exists(path)) {
-        return std::unexpected(setman::error(setman::code::file_doesnt_exist));
+        return std::unexpected(error(code::file_doesnt_exist));
     }
     if (!fs::is_regular_file(path)) {
-        return std::unexpected(setman::error(setman::code::file_not_valid));
+        return std::unexpected(error(code::file_not_valid));
     }
 
     // Open file and read first 16 bytes for magic number detection
     std::ifstream file(path, std::ios::binary);
     if (!file) {
-        return std::unexpected(setman::error(setman::code::file_read_failed));
+        return std::unexpected(error(code::file_read_failed));
     }
 
     std::array<unsigned char, 16> header{};
-    file.read(reinterpret_cast<char*>(header.data()), header.size());
+    file.read(reinterpret_cast<char *>(header.data()), header.size());
     const std::streamsize bytes_read = file.gcount();
 
     if (bytes_read < 4) {
-        return false;  // Not enough bytes to check
+        return false; // Not enough bytes to check
     }
 
     // PNG: 89 50 4E 47 0D 0A 1A 0A
@@ -246,7 +233,7 @@ std::expected<bool, setman::error> isimg(const fs::path& path)
     return false;
 }
 
-std::optional<std::string> file_ext(const fs::path& path)
+std::optional<std::string> file_ext(const fs::path &path)
 {
     std::string ext = path.extension().string();
     if (ext.empty())
@@ -261,21 +248,21 @@ std::optional<std::string> file_ext(const fs::path& path)
     return ext;
 }
 
-std::expected<size_t, setman::error> file_size(const fs::path& path)
+std::expected<size_t, error> file_size(const fs::path &path)
 {
     if (!fs::exists(path))
-        return std::unexpected(setman::code::file_doesnt_exist);
+        return std::unexpected(code::file_doesnt_exist);
 
     std::error_code ec;
     size_t size = fs::file_size(path, ec);
     if (ec)
         return std::unexpected(
-            setman::error(setman::code::file_size_count_failed, ec.message()));
+            error(code::file_size_count_failed, ec.message()));
 
     return size;
 }
 
-std::string tob64(const unsigned char* bytes, size_t len)
+std::string tob64(const unsigned char *bytes, size_t len)
 {
     static constexpr char alphabet[] =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -318,7 +305,7 @@ std::string tob64(const unsigned char* bytes, size_t len)
     return output;
 }
 
-std::string tob64(const std::vector<unsigned char>& bytes)
+std::string tob64(const std::vector<unsigned char> &bytes)
 {
     if (bytes.empty()) {
         return {};
@@ -326,39 +313,39 @@ std::string tob64(const std::vector<unsigned char>& bytes)
     return tob64(bytes.data(), bytes.size());
 }
 
-std::expected<std::vector<unsigned char>, setman::error> file_tobytes(
-    const fs::path& path)
+std::expected<std::vector<unsigned char>, error>
+file_tobytes(const fs::path &path)
 {
     std::vector<unsigned char> buffer;
     std::ifstream ifs(path, std::ios::binary);
     if (!ifs) {
-        return std::unexpected(setman::code::file_open_failed);
+        return std::unexpected(code::file_open_failed);
     }
 
     ifs.seekg(0, std::ios::end);
     std::streamsize size = ifs.tellg();
     if (size < 0) {
-        return std::unexpected(setman::code::file_size_count_failed);
+        return std::unexpected(code::file_size_count_failed);
     }
     ifs.seekg(0, std::ios::beg);
 
     buffer.resize(static_cast<size_t>(size));
     if (size > 0) {
-        if (!ifs.read(reinterpret_cast<char*>(buffer.data()), size)) {
-            return std::unexpected(setman::code::file_read_failed);
+        if (!ifs.read(reinterpret_cast<char *>(buffer.data()), size)) {
+            return std::unexpected(code::file_read_failed);
         }
     }
     return buffer;
 }
 
-std::expected<std::string, setman::error> img_tob64(const fs::path& path)
+std::expected<std::string, error> img_tob64(const fs::path &path)
 {
     auto check = isimg(path);
     if (!check.has_value())
         return std::unexpected(check.error());
     if (check.value() == false)
         return std::unexpected(
-            setman::error(setman::code::file_not_valid, "File not an image."));
+            error(code::file_not_valid, "File not an image."));
 
     auto bytes = file_tobytes(path);
     if (!bytes.has_value())
@@ -367,30 +354,29 @@ std::expected<std::string, setman::error> img_tob64(const fs::path& path)
     return tob64(bytes.value_or(std::vector<unsigned char>({})));
 }
 
-std::expected<std::pair<int, int>, setman::error> img_dimensions(
-    const fs::path& path)
-{  // <width, height>
+std::expected<std::pair<int, int>, error> img_dimensions(const fs::path &path)
+{ // <width, height>
     // Check if it's an image first
     auto check = isimg(path);
     if (!check.has_value())
         return std::unexpected(check.error());
     if (check.value() == false)
         return std::unexpected(
-            setman::error(setman::code::file_not_valid, "File not an image."));
+            error(code::file_not_valid, "File not an image."));
 
     // Read first bytes to determine dimensions
     std::ifstream file(path, std::ios::binary);
     if (!file)
-        return std::unexpected(setman::error(setman::code::file_open_failed));
+        return std::unexpected(error(code::file_open_failed));
 
     std::array<unsigned char, 24> header{};
-    file.read(reinterpret_cast<char*>(header.data()), header.size());
+    file.read(reinterpret_cast<char *>(header.data()), header.size());
     const std::streamsize bytes_read = file.gcount();
 
     if (bytes_read < 24)
         return std::unexpected(
-            setman::error(setman::code::file_read_failed,
-                          "Not enough bytes to read image dimensions"));
+            error(code::file_read_failed,
+                  "Not enough bytes to read image dimensions"));
 
     int w = -1, h = -1;
 
@@ -427,10 +413,9 @@ std::expected<std::pair<int, int>, setman::error> img_dimensions(
 
     if (w == -1 || h == -1)
         return std::unexpected(
-            setman::error(setman::code::file_not_valid,
-                          "Unknown or unsupported image format"));
+            error(code::file_not_valid, "Unknown or unsupported image format"));
 
     return std::make_pair(w, h);
 }
 
-}  // namespace setman::materials
+} // namespace setman::materials

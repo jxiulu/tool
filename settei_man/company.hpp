@@ -3,7 +3,6 @@
 #pragma once
 
 #include "episode.hpp"
-#include "types.hpp"
 #include <filesystem>
 #include <memory>
 #include <optional>
@@ -44,7 +43,7 @@ class series
     const std::string &code() const { return code_; }
     const std::vector<std::unique_ptr<episode>> &episodes() const;
 
-    std::optional<materials::cut_info>
+    std::optional<cuts::info>
     parse_cut_name(const std::string &folder_name) const;
 
     const episode *find_episode(const int number);
