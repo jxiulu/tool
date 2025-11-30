@@ -15,7 +15,7 @@
 #include <QWidget>
 
 namespace apis::google {
-class client;
+class Client;
 }
 
 class main_window : public QMainWindow {
@@ -46,6 +46,6 @@ class main_window : public QMainWindow {
     QTextEdit *ocr_content;
     QLabel *image_preview;
 
-    std::unique_ptr<apis::google::client> ocr_client_;
+    std::unique_ptr<apis::google::Client> ocr_client_;
     QString current_img_path_;
 };

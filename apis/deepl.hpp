@@ -15,21 +15,21 @@ using nlohmann::json;
 namespace apis::deepl
 {
 
-enum class models {
+enum class model {
     latency_optimized = 0,
     quality_optimized,
     prefer_quality_optimized,
 };
 
-class request
+class Request
 {
   public:
-    request(const std::string &content, const std::string &target_lang)
+    Request(const std::string &content, const std::string &target_lang)
         : content_({content}), target_lang_(target_lang)
     {
     }
 
-    request(const std::vector<std::string> &content,
+    Request(const std::vector<std::string> &content,
             const std::string &target_lang)
         : content_(content), target_lang_(target_lang)
     {
@@ -39,7 +39,7 @@ class request
     {
         return source_lang_;
     }
-    request &set_source_lang(const std::string &langcode)
+    Request &set_source_lang(const std::string &langcode)
     {
         source_lang_ = langcode;
         return *this;
@@ -47,7 +47,7 @@ class request
 
     const std::string &target_lang() const { return target_lang_; }
 
-    request &set_target_lang(const std::string &langcode)
+    Request &set_target_lang(const std::string &langcode)
     {
         target_lang_ = langcode;
         return *this;
@@ -55,13 +55,13 @@ class request
 
     const std::vector<std::string> &contents() const { return content_; }
 
-    request &set_contents(const std::vector<std::string> &content)
+    Request &set_contents(const std::vector<std::string> &content)
     {
         content_ = content;
         return *this;
     }
 
-    request &set_content(const std::string &content)
+    Request &set_content(const std::string &content)
     {
         content_.clear();
         content_.push_back(content);
@@ -70,15 +70,15 @@ class request
 
     const std::optional<std::string> &context() const { return context_; }
 
-    request &set_context(const std::string &ctx)
+    Request &set_context(const std::string &ctx)
     {
         context_ = ctx;
         return *this;
     }
 
-    const std::optional<models> &model() const { return model_; }
+    const std::optional<model> &model() const { return model_; }
 
-    request &set_model(models model)
+    Request &set_model(enum model model)
     {
         model_ = model;
         return *this;
@@ -99,13 +99,13 @@ class request
 
         if (model_) {
             switch (*model_) {
-            case models::latency_optimized:
+            case model::latency_optimized:
                 request["model_type"] = "latency_optimized";
                 break;
-            case models::quality_optimized:
+            case model::quality_optimized:
                 request["model_type"] = "quality_optimized";
                 break;
-            case models::prefer_quality_optimized:
+            case model::prefer_quality_optimized:
                 request["model_type"] = "prefer_quality_optimized";
                 break;
             }
@@ -119,14 +119,14 @@ class request
     std::string target_lang_;
     std::optional<std::string> source_lang_;
     std::optional<std::string> context_;
-    std::optional<models> model_;
+    std::optional<enum model> model_;
 };
 
-class response : public apis::ai::base_response
+class Response : public apis::ai::GenericResponse
 {
   public:
-    response(const std::string &raw, long http_code)
-        : apis::ai::base_response(raw, http_code)
+    Response(const std::string &raw, long http_code)
+        : apis::ai::GenericResponse(raw, http_code)
     {
     }
     bool process() override;
@@ -137,11 +137,11 @@ class response : public apis::ai::base_response
   private:
 };
 
-class client : public apis::ai::base_client
+class Client : public apis::ai::GenericClient
 {
   public:
-    client(const std::string &api_key, CURL *curl)
-        : apis::ai::base_client(api_key, curl)
+    Client(const std::string &api_key, CURL *curl)
+        : apis::ai::GenericClient(api_key, curl)
     {
         // caller should validate curl
         headers_ =
@@ -158,11 +158,11 @@ class client : public apis::ai::base_client
         curl_easy_setopt(curl_, CURLOPT_CONNECTTIMEOUT, 30L);
     };
 
-    response translate(const request &req);
+    Response translate(const Request &req);
 
   private:
 };
 
-std::unique_ptr<client> new_client(const std::string &key);
+std::unique_ptr<Client> new_client(const std::string &key);
 
 } // namespace apis::deepl

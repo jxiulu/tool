@@ -15,7 +15,7 @@ namespace apis::google
 {
 
 // Content part - can be text or image
-struct content_part {
+struct Content {
     enum class type { text, inline_image, file_uri };
 
     type part_type;
@@ -24,10 +24,10 @@ struct content_part {
     std::string data;         // base64 data or file_uri
 };
 
-class request : public apis::ai::base_request
+class Request : public apis::ai::GenericRequest
 {
   public:
-    request()
+    Request()
     {
         endpoint_ = "https://generativelanguage.googleapis.com/v1beta/models/";
         model_ = "gemini-2.0-flash-exp";
@@ -36,31 +36,31 @@ class request : public apis::ai::base_request
     json payload() const override;
 
     // Add content parts (text, images)
-    request &add_text(const std::string &text)
+    Request &add_text(const std::string &text)
     {
-        content_part part;
-        part.part_type = content_part::type::text;
+        Content part;
+        part.part_type = Content::type::text;
         part.text_content = text;
         parts_.push_back(part);
         return *this;
     }
 
-    request &add_inline_image(const std::string &base64_data,
+    Request &add_inline_image(const std::string &base64_data,
                               const std::string &mime_type = "image/jpeg")
     {
-        content_part part;
-        part.part_type = content_part::type::inline_image;
+        Content part;
+        part.part_type = Content::type::inline_image;
         part.data = base64_data;
         part.mime_type = mime_type;
         parts_.push_back(part);
         return *this;
     }
 
-    request &add_file_uri(const std::string &file_uri,
+    Request &add_file_uri(const std::string &file_uri,
                           const std::string &mime_type = "image/jpeg")
     {
-        content_part part;
-        part.part_type = content_part::type::file_uri;
+        Content part;
+        part.part_type = Content::type::file_uri;
         part.data = file_uri;
         part.mime_type = mime_type;
         parts_.push_back(part);
@@ -73,7 +73,7 @@ class request : public apis::ai::base_request
         std::string threshold;
     };
 
-    request &add_safety_setting(const std::string &category,
+    Request &add_safety_setting(const std::string &category,
                                 const std::string &threshold)
     {
         safety_settings_.push_back({category, threshold});
@@ -81,23 +81,23 @@ class request : public apis::ai::base_request
     }
 
     // Generation config shortcuts
-    request &set_candidate_count(int count)
+    Request &set_candidate_count(int count)
     {
         candidate_count_ = count;
         return *this;
     }
 
   private:
-    std::vector<content_part> parts_;
+    std::vector<Content> parts_;
     std::vector<safety_setting> safety_settings_;
     std::optional<int> candidate_count_;
 };
 
-class response : public apis::ai::base_response
+class Response : public apis::ai::GenericResponse
 {
   public:
-    response(std::string raw, long http_code)
-        : base_response(std::move(raw), http_code)
+    Response(std::string raw, long http_code)
+        : GenericResponse(std::move(raw), http_code)
     {
     }
 
@@ -139,14 +139,14 @@ class response : public apis::ai::base_response
     std::optional<int> total_tokens_;
 };
 
-class client : public apis::ai::base_client
+class Client : public apis::ai::GenericClient
 {
   public:
-    client(const std::string &api_key, CURL *curl);
+    Client(const std::string &api_key, CURL *curl);
 
-    response send(const request &request);
+    Response send(const Request &request);
 };
 
-std::unique_ptr<client> new_client(const std::string &key);
+std::unique_ptr<Client> new_client(const std::string &key);
 
 } // namespace apis::google

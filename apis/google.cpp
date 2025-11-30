@@ -6,17 +6,17 @@
 namespace apis::google
 {
 
-std::unique_ptr<client> new_client(const std::string &key)
+std::unique_ptr<Client> new_client(const std::string &key)
 {
     CURL *curl = curl_easy_init();
     if (!curl)
         return nullptr;
 
-    return std::make_unique<client>(key, curl);
+    return std::make_unique<Client>(key, curl);
 }
 
-client::client(const std::string &api_key, CURL *curl)
-    : base_client(api_key, curl)
+Client::Client(const std::string &api_key, CURL *curl)
+    : GenericClient(api_key, curl)
 {
     headers_ = curl_slist_append(headers_, "Content-Type: application/json");
 
@@ -24,7 +24,7 @@ client::client(const std::string &api_key, CURL *curl)
     curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, apis::write_callback);
 }
 
-json request::payload() const
+json Request::payload() const
 {
     json payload;
 
@@ -34,16 +34,16 @@ json request::payload() const
         json part_obj;
 
         switch (part.part_type) {
-        case content_part::type::text:
+        case Content::type::text:
             part_obj["text"] = part.text_content;
             break;
 
-        case content_part::type::inline_image:
+        case Content::type::inline_image:
             part_obj["inline_data"] = {{"mime_type", part.mime_type},
                                        {"data", part.data}};
             break;
 
-        case content_part::type::file_uri:
+        case Content::type::file_uri:
             part_obj["file_data"] = {{"mime_type", part.mime_type},
                                      {"file_uri", part.data}};
             break;
@@ -87,7 +87,7 @@ json request::payload() const
     return payload;
 }
 
-response client::send(const request &req)
+Response Client::send(const Request &req)
 {
     std::string response_body;
     std::string request_body = req.payload().dump();
@@ -103,7 +103,7 @@ response client::send(const request &req)
 
     CURLcode ec = curl_easy_perform(curl_);
     if (ec != CURLE_OK) {
-        response res("", 0);
+        Response res("", 0);
         res.invalidate(std::string("[CURL ERROR] ") + curl_easy_strerror(ec));
         return res;
     }
@@ -111,10 +111,10 @@ response client::send(const request &req)
     long http_code = 0;
     curl_easy_getinfo(curl_, CURLINFO_RESPONSE_CODE, &http_code);
 
-    return response(response_body, http_code);
+    return Response(response_body, http_code);
 }
 
-bool response::process()
+bool Response::process()
 {
     // Check for prompt feedback (blocks)
     if (json_.contains("promptFeedback")) {

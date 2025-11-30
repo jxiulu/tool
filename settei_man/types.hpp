@@ -96,30 +96,26 @@ constexpr std::string_view standard_message(enum code code)
     }
 }
 
-class error
+class Error
 {
   public:
-    constexpr error(const severity sev, const code errc, const std::string &msg)
+    constexpr Error(const severity sev, const code errc, const std::string &msg)
         : sev_(sev), errc_(errc), msg_(std::move(msg))
     {
     }
-
-    constexpr error(const code errc, const std::string &msg)
+    constexpr Error(const code errc, const std::string &msg)
         : sev_(severity::error), errc_(errc), msg_(std::move(msg))
     {
     }
-
-    constexpr error(const code errc)
+    constexpr Error(const code errc)
         : sev_(severity::error), errc_(errc), msg_(std::nullopt)
     {
     }
-
-    constexpr error(const severity sev, const code errc)
+    constexpr Error(const severity sev, const code errc)
         : sev_(sev), errc_(errc), msg_(std::nullopt)
     {
     }
-
-    constexpr error(const std::string &msg)
+    constexpr Error(const std::string &msg)
         : sev_(severity::error), errc_(code::generic), msg_(std::move(msg))
     {
     }

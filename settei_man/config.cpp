@@ -18,20 +18,20 @@ static std::string without_padding_whitespace(std::string in)
     return in.substr(start, end - start + 1);
 }
 
-std::expected<config, error> load_config(const fs::path &path)
+std::expected<Config, Error> load_config(const fs::path &path)
 {
     if (!fs::exists(path)) {
         return std::unexpected(
-            error(code::file_doesnt_exist, path.string() + " does not exist."));
+            Error(code::file_doesnt_exist, path.string() + " does not exist."));
     }
 
     std::ifstream file(path);
     if (!file) {
         return std::unexpected(
-            error(code::file_open_failed, "Failed to open " + path.string()));
+            Error(code::file_open_failed, "Failed to open " + path.string()));
     }
 
-    config cfg;
+    Config cfg;
     std::string line;
     int linepos = 0;
 
@@ -89,7 +89,7 @@ std::optional<fs::path> find_config(const std::string &filename)
     return std::nullopt;
 }
 
-std::optional<std::string> config::find(const std::string &key) const
+std::optional<std::string> Config::find(const std::string &key) const
 {
     auto it = map_.find(key);
     if (it == map_.end()) {
@@ -98,7 +98,7 @@ std::optional<std::string> config::find(const std::string &key) const
     return it->second;
 }
 
-std::string config::find_or(const std::string &key,
+std::string Config::find_or(const std::string &key,
                             const std::string &def) const
 {
     auto it = map_.find(key);
@@ -108,12 +108,12 @@ std::string config::find_or(const std::string &key,
     return it->second;
 }
 
-bool config::has(const std::string &key) const
+bool Config::has(const std::string &key) const
 {
     return map_.find(key) != map_.end();
 }
 
-std::vector<std::string> config::keys() const
+std::vector<std::string> Config::keys() const
 {
     std::vector<std::string> result;
     result.reserve(map_.size());
@@ -124,6 +124,6 @@ std::vector<std::string> config::keys() const
     return result;
 }
 
-void config::set(std::string key, std::string val) { map_[key] = val; }
+void Config::set(std::string key, std::string val) { map_[key] = val; }
 
 } // namespace setman

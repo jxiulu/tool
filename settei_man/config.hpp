@@ -15,10 +15,10 @@ namespace fs = std::filesystem;
 namespace setman
 {
 
-class config
+class Config
 {
   public:
-    constexpr config() = default;
+    constexpr Config() = default;
 
     std::optional<std::string> find(const std::string &key) const;
 
@@ -34,7 +34,7 @@ class config
     std::unordered_map<std::string, std::string> map_;
 };
 
-std::expected<config, error> load_config(const fs::path &path);
+std::expected<Config, Error> load_config(const fs::path &path);
 
 std::optional<fs::path> find_config(const std::string &filename = "config.ini");
 

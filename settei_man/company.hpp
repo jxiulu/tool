@@ -19,10 +19,10 @@ namespace setman
 // series
 //
 
-class series
+class Series
 {
   private:
-    const class company *parent_company_;
+    const class Company *parent_company_;
     std::string naming_convention_;
     std::string code_;
     int season_;
@@ -30,47 +30,47 @@ class series
     std::regex naming_regex_;
     std::vector<std::string> field_order_;
 
-    std::vector<std::unique_ptr<episode>> episodes_;
+    std::vector<std::unique_ptr<Episode>> episodes_;
 
     void build_regex();
 
   public:
-    series(const company *parent_company, const std::string &series_code,
+    Series(const Company *parent_company, const std::string &series_code,
            const std::string &naming_convention, const int season);
 
-    const company *parent_company() const { return parent_company_; }
+    const Company *parent_company() const { return parent_company_; }
     const std::string &naming_convention() const { return naming_convention_; }
     const std::string &code() const { return code_; }
-    const std::vector<std::unique_ptr<episode>> &episodes() const;
+    const std::vector<std::unique_ptr<Episode>> &episodes() const;
 
-    std::optional<cuts::info>
+    std::optional<cuts::Info>
     parse_cut_name(const std::string &folder_name) const;
 
-    const episode *find_episode(const int number);
+    const Episode *find_episode(const int number);
 };
 
 //
 // company
 //
 
-class company
+class Company
 {
   private:
     std::string name_;
     fs::path root_;
-    std::vector<std::unique_ptr<series>> series_;
+    std::vector<std::unique_ptr<Series>> series_;
 
   public:
-    company(const std::string &name);
+    Company(const std::string &name);
 
     const std::string &name() const { return name_; }
-    const std::vector<std::unique_ptr<series>> &series() const;
+    const std::vector<std::unique_ptr<Series>> &series() const;
 
     void set_path(const fs::path &path);
     void add_series(const std::string &series_code,
                     const std::string &naming_convention, const int season);
 
-    const class series *find_series(const std::string &code);
+    const class Series *find_series(const std::string &code);
 };
 
 } // namespace setman

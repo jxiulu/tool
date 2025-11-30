@@ -17,17 +17,17 @@ namespace fs = std::filesystem;
 
 namespace setman
 {
-class episode;
+class Episode;
 
 //
 // Material classes
 //
 
-class material;
-class file;
-class folder;
+class Material;
+class File;
+class Folder;
 
-class material
+class Material
 {
   public:
     enum class type {
@@ -44,11 +44,11 @@ class material
         null,
     };
 
-    virtual ~material() = default;
+    virtual ~Material() = default;
     virtual constexpr bool is_folder() const = 0;
     constexpr type type() const { return type_; }
 
-    constexpr const episode *parent_episode() const { return parent_episode_; }
+    constexpr const Episode *parent_episode() const { return parent_episode_; }
 
     constexpr const fs::path &path() const { return path_; }
     constexpr const std::string &notes() const { return notes_; }
@@ -66,62 +66,62 @@ class material
   protected:
     std::string notes_;
     std::string alias_;
-    const episode *parent_episode_;
+    const Episode *parent_episode_;
     enum type type_;
     fs::path path_;
 
-    material(const episode *parent_episode, const fs::path &path, enum type type);
-    material(const episode *parent, const fs::path &path, enum type type,
+    Material(const Episode *parent_episode, const fs::path &path, enum type type);
+    Material(const Episode *parent, const fs::path &path, enum type type,
              boost::uuids::uuid uuid);
 };
 
-class file : public material
+class File : public Material
 {
   public:
     constexpr bool is_folder() const override { return false; }
 
-    file(const episode *parent_episode, const fs::path &path,
-         enum material::type type);
+    File(const Episode *parent_episode, const fs::path &path,
+         enum Material::type type);
 };
 
-class folder : public material
+class Folder : public Material
 {
   protected:
-    std::vector<std::unique_ptr<material>> children_;
+    std::vector<std::unique_ptr<Material>> children_;
 
   public:
     constexpr bool is_folder() const override { return true; }
 
-    constexpr const std::vector<std::unique_ptr<material>> &children() const
+    constexpr const std::vector<std::unique_ptr<Material>> &children() const
     {
         return children_;
     }
 
-    void add_child(std::unique_ptr<material> child);
-    material *find_child(const boost::uuids::uuid &uuid);
+    void add_child(std::unique_ptr<Material> child);
+    Material *find_child(const boost::uuids::uuid &uuid);
 
-    folder(const episode *parent_episode, const fs::path &path,
-           enum material::type type);
+    Folder(const Episode *parent_episode, const fs::path &path,
+           enum Material::type type);
 };
 
-class image : public file
+class Image : public File
 {
   public:
-    image(const episode *parent, const fs::path &path)
-        : file(parent, path, type::file)
+    Image(const Episode *parent, const fs::path &path)
+        : File(parent, path, type::file)
     {
     }
 
-    std::expected<std::string, error> tob64() const;
+    std::expected<std::string, Error> tob64() const;
 
     std::optional<std::string> ext() const;
-    std::expected<size_t, error> fsize() const;
+    std::expected<size_t, Error> fsize() const;
 
-    std::expected<fs::path, error> gen_thumbnail(const fs::path &where,
+    std::expected<fs::path, Error> gen_thumbnail(const fs::path &where,
                                                  int maxsz = 256) const;
 
-    std::expected<int, error> width() const;
-    std::expected<int, error> height() const;
+    std::expected<int, Error> width() const;
+    std::expected<int, Error> height() const;
 
   protected:
   private:
@@ -129,14 +129,14 @@ class image : public file
     mutable int cached_height;
 };
 
-class keyframe : public file
+class Keyframe : public File
 {
   public:
     enum class type { lo, ls, lss, le, lk, ka, kas, kass, kae, other };
 
-    keyframe(const episode *parent, const fs::path &path, const char cel,
+    Keyframe(const Episode *parent, const fs::path &path, const char cel,
              const type type)
-        : file(parent, path, material::type::keyframe), cel_(cel), kftype_(type)
+        : File(parent, path, Material::type::keyframe), cel_(cel), kftype_(type)
     {
     }
 
@@ -151,12 +151,12 @@ class keyframe : public file
 
 } // namespace setman
 
+//
+// functions
+//
+
 namespace setman::materials
 {
-
-//
-// Utility functions
-//
 
 inline boost::uuids::uuid generate_uuid()
 {
@@ -167,20 +167,20 @@ inline boost::uuids::uuid generate_uuid()
 std::pair<std::regex, std::vector<std::string>>
 build_regex(const std::string &naming_convention);
 
-std::expected<bool, error> isimg(const fs::path &file);
+std::expected<bool, Error> isimg(const fs::path &file);
 
 std::string tob64(const unsigned char *buf, size_t len);
 std::string tob64(const std::vector<unsigned char> &data);
 
 std::optional<std::string> file_ext(const fs::path &path);
-std::expected<size_t, error> file_size(const fs::path &path);
+std::expected<size_t, Error> file_size(const fs::path &path);
 
-std::expected<std::vector<unsigned char>, error>
+std::expected<std::vector<unsigned char>, Error>
 file_tobytes(const fs::path &path);
 
-std::expected<std::string, error> img_tob64(const fs::path &path);
+std::expected<std::string, Error> img_tob64(const fs::path &path);
 
-std::expected<std::pair<int, int>, error>
+std::expected<std::pair<int, int>, Error>
 img_dimensions(const fs::path &path); // <width, height>
 
 } // namespace setman::materials

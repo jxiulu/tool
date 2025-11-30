@@ -14,37 +14,37 @@ namespace setman
 // class
 //
 
-cut::cut(const episode *parent_episode, const fs::path &path,
+Cut::Cut(const Episode *parent_episode, const fs::path &path,
          const std::optional<int> &scene_num, const int number,
          const std::string &stage)
     : stage_(stage), scene_num_(scene_num), num_(number),
-      folder(parent_episode, path, material::type::cut_folder)
+      Folder(parent_episode, path, Material::type::cut_folder)
 {
     history_.push_back(
         {cuts::status::not_started, std::chrono::system_clock::now()});
 }
 
-cuts::status cut::status() const { return history_.back().status; }
+cuts::status Cut::status() const { return history_.back().status; }
 
-void cut::mark(const cuts::status new_status)
+void Cut::mark(const cuts::status new_status)
 {
     history_.push_back({new_status, std::chrono::system_clock::now()});
 }
 
-bool cut::matches(const cut &other) const
+bool Cut::matches(const Cut &other) const
 {
     return parent_episode() == other.parent_episode() &&
            scene() == other.scene() && number() == other.number();
 }
 
-bool cut::matches(const cut &one, const cut &two) { return one.conflicts(two); }
+bool Cut::matches(const Cut &one, const Cut &two) { return one.conflicts(two); }
 
-bool cut::conflicts(const cut &other) const
+bool Cut::conflicts(const Cut &other) const
 {
     return matches(other) && stage() == other.stage();
 }
 
-bool cut::conflicts(const cut &one, const cut &two)
+bool Cut::conflicts(const Cut &one, const Cut &two)
 {
     return one.conflicts(two);
 }
@@ -58,8 +58,8 @@ namespace setman::cuts
 // functions
 //
 
-std::expected<std::unique_ptr<cut>, error>
-build_from(episode *episode, const fs::path &pathtocut)
+std::expected<std::unique_ptr<Cut>, Error>
+build_from(Episode *episode, const fs::path &pathtocut)
 {
     auto result =
         episode->series()->parse_cut_name(pathtocut.filename().string());
@@ -67,7 +67,7 @@ build_from(episode *episode, const fs::path &pathtocut)
     if (!result)
         return std::unexpected(code::parse_failed);
 
-    auto newcut = std::make_unique<cut>(episode, pathtocut, result->scene,
+    auto newcut = std::make_unique<Cut>(episode, pathtocut, result->scene,
                                         result->number, result->stage);
 
     for (auto &cut : episode->active()) {
@@ -78,9 +78,9 @@ build_from(episode *episode, const fs::path &pathtocut)
     return newcut;
 }
 
-std::vector<cut *> find_cut(int number, const std::vector<cut *> &cuts)
+std::vector<Cut *> find_cut(int number, const std::vector<Cut *> &cuts)
 {
-    std::vector<cut *> matches{};
+    std::vector<Cut *> matches{};
     for (auto &cut : cuts) {
         if (cut->number() == number)
             matches.push_back(cut);
@@ -88,10 +88,10 @@ std::vector<cut *> find_cut(int number, const std::vector<cut *> &cuts)
     return matches;
 }
 
-std::vector<cut *> find_status(status status,
-                               const std::vector<cut *> &cuts)
+std::vector<Cut *> find_status(status status,
+                               const std::vector<Cut *> &cuts)
 {
-    std::vector<cut *> matches{};
+    std::vector<Cut *> matches{};
     for (auto &cut : cuts) {
         if (cut->status() == status)
             matches.push_back(cut);
@@ -99,10 +99,10 @@ std::vector<cut *> find_status(status status,
     return matches;
 }
 
-std::vector<cut *> find_stage(const std::string &stage,
-                              const std::vector<cut *> &cuts)
+std::vector<Cut *> find_stage(const std::string &stage,
+                              const std::vector<Cut *> &cuts)
 {
-    std::vector<cut *> matches{};
+    std::vector<Cut *> matches{};
     for (auto &cut : cuts) {
         if (cut->stage() == stage)
             matches.push_back(cut);
@@ -110,7 +110,7 @@ std::vector<cut *> find_stage(const std::string &stage,
     return matches;
 }
 
-std::optional<info> parse_name(const std::string &foldername,
+std::optional<Info> parse_name(const std::string &foldername,
                                    const std::regex &regex,
                                    const std::vector<std::string> &field_order)
 {
@@ -119,7 +119,7 @@ std::optional<info> parse_name(const std::string &foldername,
         return std::nullopt;
     }
 
-    info info;
+    Info info;
 
     for (size_t i = 0; i < field_order.size(); i++) {
         const std::string &field = field_order[i];

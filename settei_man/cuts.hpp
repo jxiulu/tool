@@ -16,7 +16,7 @@ namespace fs = std::filesystem;
 namespace setman::cuts
 {
 
-struct info {
+struct Info {
     std::string series_code;
     int episode_num;
     std::optional<int> scene;
@@ -47,7 +47,7 @@ enum class status {
     null,
 };
 
-struct progress_entry {
+struct ProgressEntry {
     const status status;
     const std::chrono::system_clock::time_point time_updated;
 };
@@ -57,12 +57,12 @@ struct progress_entry {
 namespace setman
 {
 
-class episode;
+class Episode;
 
-class cut : public folder
+class Cut : public Folder
 {
   public:
-    cut(const episode *parent_episode, const fs::path &path,
+    Cut(const Episode *parent_episode, const fs::path &path,
         const std::optional<int> &scene_num, const int number,
         const std::string &stage);
 
@@ -71,32 +71,32 @@ class cut : public folder
     constexpr cuts::stage stage_code() const { return stage_code_; }
     constexpr const std::string &stage() const { return stage_; }
     cuts::status status() const;
-    constexpr const cuts::progress_entry &last_update() const
+    constexpr const cuts::ProgressEntry &last_update() const
     {
         return history_.back();
     }
-    constexpr const std::vector<cuts::progress_entry> &history() const
+    constexpr const std::vector<cuts::ProgressEntry> &history() const
     {
         return history_;
     }
 
     void mark(cuts::status new_status);
 
-    bool matches(const cut &) const;
+    bool matches(const Cut &) const;
 
-    bool conflicts(const cut &) const;
+    bool conflicts(const Cut &) const;
 
     // static methods
 
-    static bool matches(const cut &somecut, const cut &anothercut);
-    static bool conflicts(const cut &somecut, const cut &anothercut);
+    static bool matches(const Cut &somecut, const Cut &anothercut);
+    static bool conflicts(const Cut &somecut, const Cut &anothercut);
 
   private:
     cuts::stage stage_code_;
     std::string stage_;
     int num_;
     std::optional<int> scene_num_;
-    std::vector<cuts::progress_entry> history_;
+    std::vector<cuts::ProgressEntry> history_;
 };
 
 } // namespace setman
@@ -115,33 +115,33 @@ inline stage parse_stage(const std::string &stage_str)
     return stage::lo;
 }
 
-std::optional<info>
+std::optional<Info>
 parse_name(const std::string &foldername, const std::regex &regex,
            const std::vector<std::string> &field_order);
 
-std::expected<std::unique_ptr<cut>, error>
-build_from(episode *episode, const fs::path &pathtocut);
+std::expected<std::unique_ptr<Cut>, Error>
+build_from(Episode *episode, const fs::path &pathtocut);
 
-inline void sort_by_ascending(std::vector<cut *> &cuts)
+inline void sort_by_ascending(std::vector<Cut *> &cuts)
 {
-    std::sort(cuts.begin(), cuts.end(), [](const cut *a, const cut *b) {
+    std::sort(cuts.begin(), cuts.end(), [](const Cut *a, const Cut *b) {
         return a->number() < b->number();
     });
 }
 
-inline void sort_by_last_updated(std::vector<cut *> &cuts)
+inline void sort_by_last_updated(std::vector<Cut *> &cuts)
 {
-    std::sort(cuts.begin(), cuts.end(), [](const cut *a, const cut *b) {
+    std::sort(cuts.begin(), cuts.end(), [](const Cut *a, const Cut *b) {
         return a->last_update().time_updated < b->last_update().time_updated;
     });
 }
 
-std::vector<cut *> find_cut(int number, const std::vector<cut *> &cuts);
+std::vector<Cut *> find_cut(int number, const std::vector<Cut *> &cuts);
 
-std::vector<cut *> find_status(status status,
-                               const std::vector<cut *> &cuts);
+std::vector<Cut *> find_status(status status,
+                               const std::vector<Cut *> &cuts);
 
-std::vector<cut *> find_stage(const std::string &stage,
-                              const std::vector<cut *> &cuts);
+std::vector<Cut *> find_stage(const std::string &stage,
+                              const std::vector<Cut *> &cuts);
 
 } // namespace setman::cuts

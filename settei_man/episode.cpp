@@ -10,12 +10,12 @@
 namespace setman
 {
 
-episode::episode(const class series *series, const fs::path &parent_dir)
+Episode::Episode(const class Series *series, const fs::path &parent_dir)
     : series_(series), root_(parent_dir)
 {
 }
 
-void episode::scan_path()
+void Episode::scan_path()
 {
     for (auto &entry : fs::directory_iterator(root_)) {
         if (!entry.is_directory())
@@ -25,7 +25,7 @@ void episode::scan_path()
         // todo: skip non-cut folders
 
         if (auto cut_info = series_->parse_cut_name(fname)) {
-            auto cut = std::make_unique<class cut>(
+            auto cut = std::make_unique<class Cut>(
                 this, entry.path(), cut_info->scene, cut_info->number,
                 cut_info->stage);
             active_cuts_.push_back(std::move(cut));
@@ -40,7 +40,7 @@ void episode::scan_path()
             std::string fname = entry.path().filename().string();
 
             if (auto cut_info = series_->parse_cut_name(fname)) {
-                auto cut = std::make_unique<class cut>(
+                auto cut = std::make_unique<class Cut>(
                     this, entry.path(), cut_info->scene, cut_info->number,
                     cut_info->stage);
                 cut->mark(cuts::status::up);
@@ -50,9 +50,9 @@ void episode::scan_path()
     }
 }
 
-std::vector<cut *> episode::find_cut(const int number) const
+std::vector<Cut *> Episode::find_cut(const int number) const
 {
-    std::vector<cut *> matches{};
+    std::vector<Cut *> matches{};
     for (auto &cut : active_cuts_) {
         if (cut->number() == number)
             matches.push_back(cut.get());
@@ -60,7 +60,7 @@ std::vector<cut *> episode::find_cut(const int number) const
     return matches;
 }
 
-cut *episode::find_cut(const boost::uuids::uuid &uuid) const
+Cut *Episode::find_cut(const boost::uuids::uuid &uuid) const
 {
     for (auto &cut : active_cuts_) {
         if (cut->uuid() == uuid) {
@@ -71,10 +71,10 @@ cut *episode::find_cut(const boost::uuids::uuid &uuid) const
     return nullptr;
 }
 
-std::vector<cut *>
-episode::find_conflicts(const cut &cut) const
+std::vector<Cut *>
+Episode::find_conflicts(const Cut &cut) const
 {
-    std::vector<class cut *> duplicates;
+    std::vector<class Cut *> duplicates;
 
     for (auto &entry : active_cuts_) {
         if (entry.get() == &cut)
@@ -97,7 +97,7 @@ episode::find_conflicts(const cut &cut) const
     return duplicates;
 }
 
-material *episode::find_material(const boost::uuids::uuid &mat_uuid)
+Material *Episode::find_material(const boost::uuids::uuid &mat_uuid)
 {
     for (auto &mat : materials_) {
         if (mat->uuid() == mat_uuid) {
@@ -108,21 +108,21 @@ material *episode::find_material(const boost::uuids::uuid &mat_uuid)
     return nullptr;
 }
 
-const material *
-episode::find_material(const boost::uuids::uuid &mat_uuid) const
+const Material *
+Episode::find_material(const boost::uuids::uuid &mat_uuid) const
 {
-    return const_cast<const material *>(
-        const_cast<episode *>(this)->find_material(mat_uuid));
+    return const_cast<const Material *>(
+        const_cast<Episode *>(this)->find_material(mat_uuid));
 }
 
-void episode::add_cut(std::unique_ptr<cut> new_cut)
+void Episode::add_cut(std::unique_ptr<Cut> new_cut)
 {
     active_cuts_.push_back(std::move(new_cut));
 }
 
-void episode::reserve_active_cuts(size_t n) { active_cuts_.reserve(n); }
+void Episode::reserve_active_cuts(size_t n) { active_cuts_.reserve(n); }
 
-error episode::up_cut(cut &cut)
+Error Episode::up_cut(Cut &cut)
 {
     if (cut.status() != cuts::status::done)
         throw std::logic_error("Precondition violation: check if cut is marked "
@@ -140,14 +140,14 @@ error episode::up_cut(cut &cut)
     return code::success;
 }
 
-void episode::add_material(std::unique_ptr<material> new_mat)
+void Episode::add_material(std::unique_ptr<Material> new_mat)
 {
     materials_.push_back(std::move(new_mat));
 }
 
-void episode::reserve_materials(size_t n) { materials_.reserve(n); }
+void Episode::reserve_materials(size_t n) { materials_.reserve(n); }
 
-error episode::fill_project()
+Error Episode::fill_project()
 {
     if (!fs::create_directory(root() / "cels")) {
         return code::cels_folder_exists;

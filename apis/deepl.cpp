@@ -6,16 +6,16 @@
 namespace apis::deepl
 {
 
-std::unique_ptr<client> new_client(const std::string &key)
+std::unique_ptr<Client> new_client(const std::string &key)
 {
     CURL *curl = curl_easy_init();
     if (!curl)
         return nullptr;
 
-    return std::make_unique<client>(key, curl);
+    return std::make_unique<Client>(key, curl);
 }
 
-response client::translate(const request &request)
+Response Client::translate(const Request &request)
 {
     std::string response_body;
     std::string request_body = request.payload().dump();
@@ -25,7 +25,7 @@ response client::translate(const request &request)
 
     CURLcode ec = curl_easy_perform(curl_);
     if (ec != CURLE_OK) {
-        response res("", 0);
+        Response res("", 0);
         res.invalidate(std::string("[CURL ERROR] ") + curl_easy_strerror(ec));
         return res;
     }
@@ -33,10 +33,10 @@ response client::translate(const request &request)
     long http_code = 0;
     curl_easy_getinfo(curl_, CURLINFO_RESPONSE_CODE, &http_code);
 
-    return response(response_body, http_code);
+    return Response(response_body, http_code);
 }
 
-bool response::process()
+bool Response::process()
 {
     json *translations = find("translations");
 
@@ -98,7 +98,7 @@ bool response::process()
     return true;
 }
 
-std::optional<int> response::billed_characters() const
+std::optional<int> Response::billed_characters() const
 {
     if (!json_.contains("billed_characters"))
         return std::nullopt;
@@ -111,7 +111,7 @@ std::optional<int> response::billed_characters() const
     return billed.get<int>();
 }
 
-std::optional<std::string> response::model_type_used() const
+std::optional<std::string> Response::model_type_used() const
 {
     if (!json_.contains("model_type_used"))
         return std::nullopt;

@@ -6,17 +6,17 @@
 namespace apis::openrouter
 {
 
-std::unique_ptr<client> new_client(const std::string &key)
+std::unique_ptr<Client> new_client(const std::string &key)
 {
     CURL *curl = curl_easy_init();
     if (!curl)
         return nullptr;
 
-    return std::make_unique<client>(key, curl);
+    return std::make_unique<Client>(key, curl);
 }
 
-client::client(const std::string &api_key, CURL *curl)
-    : base_client(api_key, curl)
+Client::Client(const std::string &api_key, CURL *curl)
+    : GenericClient(api_key, curl)
 {
     headers_ = curl_slist_append(headers_, "Content-Type: application/json");
     headers_ = curl_slist_append(
@@ -26,15 +26,15 @@ client::client(const std::string &api_key, CURL *curl)
     curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, apis::write_callback);
 }
 
-json request::payload() const
+json Request::payload() const
 {
-    json j;
+    json payload;
 
     // Model selection
     if (models_.has_value() && !models_->empty()) {
-        j["models"] = *models_;
+        payload["models"] = *models_;
     } else if (!model_.empty()) {
-        j["model"] = model_;
+        payload["model"] = model_;
     }
 
     // Messages
@@ -58,38 +58,38 @@ json request::payload() const
         msg_obj["content"] = msg.content;
         messages_array.push_back(msg_obj);
     }
-    j["messages"] = messages_array;
+    payload["messages"] = messages_array;
 
     // Optional parameters
     if (temperature_.has_value())
-        j["temperature"] = *temperature_;
+        payload["temperature"] = *temperature_;
     if (max_tokens_.has_value())
-        j["max_tokens"] = *max_tokens_;
+        payload["max_tokens"] = *max_tokens_;
     if (top_p_.has_value())
-        j["top_p"] = *top_p_;
+        payload["top_p"] = *top_p_;
     if (top_k_.has_value())
-        j["top_k"] = *top_k_;
+        payload["top_k"] = *top_k_;
     if (frequency_penalty_.has_value())
-        j["frequency_penalty"] = *frequency_penalty_;
+        payload["frequency_penalty"] = *frequency_penalty_;
     if (presence_penalty_.has_value())
-        j["presence_penalty"] = *presence_penalty_;
+        payload["presence_penalty"] = *presence_penalty_;
 
     if (!stop_sequences_.empty())
-        j["stop"] = stop_sequences_;
+        payload["stop"] = stop_sequences_;
 
     if (stream_)
-        j["stream"] = true;
+        payload["stream"] = true;
 
     // OpenRouter-specific options
     if (route_.has_value())
-        j["route"] = *route_;
+        payload["route"] = *route_;
     if (provider_order_.has_value())
-        j["provider"] = {{"order", *provider_order_}};
+        payload["provider"] = {{"order", *provider_order_}};
 
-    return j;
+    return payload;
 }
 
-response client::chat(const request &request)
+Response Client::chat(const Request &request)
 {
     std::string response_body;
     std::string request_body = request.payload().dump();
@@ -101,7 +101,7 @@ response client::chat(const request &request)
 
     CURLcode ec = curl_easy_perform(curl_);
     if (ec != CURLE_OK) {
-        response res("", 0);
+        Response res("", 0);
         res.invalidate(std::string("[CURL ERROR] ") + curl_easy_strerror(ec));
         return res;
     }
@@ -109,10 +109,10 @@ response client::chat(const request &request)
     long http_code = 0;
     curl_easy_getinfo(curl_, CURLINFO_RESPONSE_CODE, &http_code);
 
-    return response(response_body, http_code);
+    return Response(response_body, http_code);
 }
 
-bool response::process()
+bool Response::process()
 {
     // Extract model used
     if (json_.contains("model")) {

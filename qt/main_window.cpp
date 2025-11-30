@@ -221,7 +221,7 @@ void main_window::on_ocr() {
         // etc.
     }
 
-    apis::google::request req;
+    apis::google::Request req;
     req.set_model("gemini-3.0-pro");
     req.add_inline_image(result.value(), mime_type);
     req.add_text("Please extract all visible text in this image. Provide this "
