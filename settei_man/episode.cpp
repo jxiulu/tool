@@ -7,12 +7,13 @@
 #include <filesystem>
 #include <stdexcept>
 
-namespace setman {
+namespace setman 
+{
 
 episode::episode(const class series *series, const fs::path &parent_dir)
     : series_(series), root_(parent_dir) {}
 
-void episode::scan_cuts() {
+void episode::scan_path() {
     for (auto &entry : fs::directory_iterator(root_)) {
         if (!entry.is_directory())
             continue;
@@ -90,7 +91,8 @@ episode::find_conflicts(const materials::cut &cut) const {
     return duplicates;
 }
 
-materials::material *episode::find_mat(const boost::uuids::uuid &mat_uuid) {
+materials::material *
+episode::find_material(const boost::uuids::uuid &mat_uuid) {
     for (auto &mat : materials_) {
         if (mat->uuid() == mat_uuid) {
             return mat.get();
@@ -101,9 +103,9 @@ materials::material *episode::find_mat(const boost::uuids::uuid &mat_uuid) {
 }
 
 const materials::material *
-episode::find_mat(const boost::uuids::uuid &mat_uuid) const {
+episode::find_material(const boost::uuids::uuid &mat_uuid) const {
     return const_cast<const materials::material *>(
-        const_cast<episode *>(this)->find_mat(mat_uuid));
+        const_cast<episode *>(this)->find_material(mat_uuid));
 }
 
 void episode::add_cut(std::unique_ptr<materials::cut> new_cut) {
@@ -112,42 +114,38 @@ void episode::add_cut(std::unique_ptr<materials::cut> new_cut) {
 
 void episode::reserve_active_cuts(size_t n) { active_cuts_.reserve(n); }
 
-std::error_code episode::up_cut(materials::cut &cut) {
+error episode::up_cut(materials::cut &cut) {
     if (cut.status() != materials::cut_status::done)
         throw std::logic_error("Precondition violation: check if cut is marked "
                                "done before upping");
 
     if (!fs::is_directory(up_path())) {
-        return std::make_error_code(std::errc::no_such_file_or_directory);
+        return code::up_folder_doesnt_exist;
     }
 
     auto ec = cut.move_to(up_path());
     if (ec)
-        return ec;
+        return {code::filesystem_error, ec.message()};
 
     cut.mark(materials::cut_status::up);
-    return std::error_code(); // success
+    return code::success;
 }
 
-void episode::add_mat(std::unique_ptr<materials::material> new_mat) {
+void episode::add_material(std::unique_ptr<materials::material> new_mat) {
     materials_.push_back(std::move(new_mat));
 }
 
-void episode::reserve_mats(size_t n) { materials_.reserve(n); }
+void episode::reserve_materials(size_t n) { materials_.reserve(n); }
 
-episode::init_project_status episode::fill_project() {
-    try {
-        if (!fs::create_directory(root() / "cels")) {
-            return init_project_status::cels_already_exists;
-        }
-        if (!fs::create_directory(root() / "up")) {
-            return init_project_status::up_already_exists;
-        }
-    } catch (const std::filesystem::filesystem_error &) {
-        throw;
+error episode::fill_project() {
+    if (!fs::create_directory(root() / "cels")) {
+        return code::cels_folder_exists;
+    }
+    if (!fs::create_directory(root() / "up")) {
+        return code::up_folder_exists;
     }
 
-    return init_project_status::success;
+    return code::success;
 }
 
-} // namespace settman
+} // namespace setman

@@ -53,16 +53,13 @@ class episode {
 
     const std::string &notes() const { return notes_; }
 
-    const std::vector<std::unique_ptr<materials::material>> &
-    view_materials() const {
+    const std::vector<std::unique_ptr<materials::material>> &materials() const {
         return materials_;
     }
-    const std::vector<std::unique_ptr<materials::cut>> &
-    view_active_cuts() const {
+    const std::vector<std::unique_ptr<materials::cut>> &active() const {
         return active_cuts_;
     }
-    const std::vector<std::unique_ptr<materials::cut>> &
-    view_archived_cuts() const {
+    const std::vector<std::unique_ptr<materials::cut>> &archived() const {
         return archived_cuts_;
     }
 
@@ -76,7 +73,7 @@ class episode {
     // cut operations
     //
 
-    void scan_cuts();
+    void scan_path();
     std::vector<materials::cut *> find_cut(const int cut_num) const;
     materials::cut *find_cut(const boost::uuids::uuid &) const;
     std::vector<materials::cut *>
@@ -86,9 +83,9 @@ class episode {
     // material operations
     //
 
-    materials::material *find_mat(const boost::uuids::uuid &mat_uuid);
+    materials::material *find_material(const boost::uuids::uuid &mat_uuid);
     const materials::material *
-    find_mat(const boost::uuids::uuid &mat_uuid) const;
+    find_material(const boost::uuids::uuid &mat_uuid) const;
 
     //
     // mutators
@@ -96,18 +93,13 @@ class episode {
 
     void add_cut(std::unique_ptr<materials::cut> new_cut);
     void reserve_active_cuts(size_t n);
-    void add_mat(std::unique_ptr<materials::material> new_mat);
-    void reserve_mats(size_t n);
-    std::error_code up_cut(materials::cut &cut);
+    void add_material(std::unique_ptr<materials::material> new_mat);
+    void reserve_materials(size_t n);
+    error up_cut(materials::cut &cut);
 
-    enum init_project_status {
-        success = 0,
-        cels_already_exists,
-        up_already_exists,
-    };
-    init_project_status fill_project();
+    error fill_project();
 };
 
 std::unique_ptr<episode> create_project_from(const fs::path &path);
 
-} // namespace settman
+} // namespace setman

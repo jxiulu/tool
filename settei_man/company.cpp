@@ -105,4 +105,4 @@ void company::add_series(const std::string &series_code,
         this, series_code, naming_convention, season));
 }
 
-} // namespace settman
+} // namespace setman

@@ -13,34 +13,42 @@
 
 namespace fs = std::filesystem;
 
-namespace setman {
+namespace setman 
+{
 
 class episode;
 
 }
 
-namespace setman::materials {
+namespace setman::materials
+{
 
-class cut : public folder {
-  private:
+class cut : public folder
+{
+
+private:
     cut_stage stage_code_;
     std::string stage_;
     int num_;
     std::optional<int> scene_num_;
     std::vector<progress_entry> history_;
 
-  public:
+public:
     cut(const setman::episode *parent_episode, const fs::path &path,
-        const std::optional<int> &scene_num, const int number,
-        const std::string &stage);
+      const std::optional<int> &scene_num, const int number,
+      const std::string &stage);
 
     constexpr const std::optional<int> &scene() const { return scene_num_; }
     constexpr int number() const { return num_; }
     constexpr cut_stage stage_code() const { return stage_code_; }
     constexpr const std::string &stage() const { return stage_; }
     cut_status status() const;
-    constexpr const progress_entry &last_update() const { return history_.back(); }
-    constexpr const std::vector<progress_entry> &history() const { return history_; }
+    constexpr const progress_entry &last_update() const {
+        return history_.back();
+    }
+    constexpr const std::vector<progress_entry> &history() const {
+        return history_;
+    }
 
     void mark(cut_status new_status);
     bool matches(const cut &other) const;

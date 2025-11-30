@@ -96,7 +96,7 @@ void main_window::init_config() {
             QMessageBox::warning(
                 this, "Config Error",
                 QString("Failed to load config: %1")
-                    .arg(QString::fromStdString(cfgresult.error().what())));
+                    .arg(QString::fromStdString(cfgresult.error().message())));
         }
 
         auto &cfg = cfgresult.value();
@@ -204,7 +204,7 @@ void main_window::on_ocr() {
     auto result = setman::materials::img_tob64(imgpath);
 
     if (!result.has_value()) {
-        QString errmsg = QString::fromStdString(result.error().what());
+        QString errmsg = QString::fromStdString(result.error().message());
         ocr_content->setText("Error: " + errmsg);
         ocr_button->setEnabled(true);
         statusBar()->showMessage("Error converting image", 3000);
