@@ -30,9 +30,9 @@ class Episode
     fs::path cels_folder_;
     std::optional<fs::path> pureref_file_;
 
-    std::vector<std::unique_ptr<Material>> materials_;
-    std::vector<std::unique_ptr<Cut>> active_cuts_;
-    std::vector<std::unique_ptr<Cut>> archived_cuts_;
+    std::vector<std::unique_ptr<materials::GenericMaterial>> materials_;
+    std::vector<std::unique_ptr<materials::Cut>> active_cuts_;
+    std::vector<std::unique_ptr<materials::Cut>> archived_cuts_;
 
     std::string notes_;
 
@@ -57,15 +57,15 @@ class Episode
 
     const std::string &notes() const { return notes_; }
 
-    const std::vector<std::unique_ptr<Material>> &materials() const
+    const std::vector<std::unique_ptr<materials::GenericMaterial>> &materials() const
     {
         return materials_;
     }
-    const std::vector<std::unique_ptr<Cut>> &active() const
+    const std::vector<std::unique_ptr<materials::Cut>> &active() const
     {
         return active_cuts_;
     }
-    const std::vector<std::unique_ptr<Cut>> &archived() const
+    const std::vector<std::unique_ptr<materials::Cut>> &archived() const
     {
         return archived_cuts_;
     }
@@ -81,28 +81,28 @@ class Episode
     //
 
     void scan_path();
-    std::vector<Cut *> find_cut(const int cut_num) const;
-    Cut *find_cut(const boost::uuids::uuid &) const;
-    std::vector<Cut *>
-    find_conflicts(const Cut &cut) const;
+    std::vector<materials::Cut *> find_cut(const int cut_num) const;
+    materials::Cut *find_cut(const boost::uuids::uuid &) const;
+    std::vector<materials::Cut *>
+    find_conflicts(const materials::Cut &cut) const;
 
     //
     // material operations
     //
 
-    Material *find_material(const boost::uuids::uuid &mat_uuid);
-    const Material *
+    materials::GenericMaterial *find_material(const boost::uuids::uuid &mat_uuid);
+    const materials::GenericMaterial *
     find_material(const boost::uuids::uuid &mat_uuid) const;
 
     //
     // mutators
     //
 
-    void add_cut(std::unique_ptr<Cut> new_cut);
+    void add_cut(std::unique_ptr<materials:: Cut> new_cut);
     void reserve_active_cuts(size_t n);
-    void add_material(std::unique_ptr<Material> new_mat);
+    void add_material(std::unique_ptr<materials::GenericMaterial> new_mat);
     void reserve_materials(size_t n);
-    Error up_cut(Cut &cut);
+    Error up_cut(materials::Cut &cut);
 
     Error fill_project();
 };

@@ -44,7 +44,7 @@ enum class severity {
     critical,
 };
 
-constexpr std::string_view standard_message(enum code code)
+constexpr std::string_view code_to_message(enum code code)
 {
     switch (code) {
     case code::success:
@@ -122,14 +122,14 @@ class Error
 
     constexpr operator std::string() const
     {
-        return msg_.value_or(std::string(standard_message(errc_)));
+        return msg_.value_or(std::string(code_to_message(errc_)));
     }
     constexpr operator bool() const { return errc_ == code::success; }
     constexpr operator code() const { return errc_; }
 
     constexpr const std::string message() const
     {
-        return msg_.value_or(std::string(standard_message(errc_)));
+        return msg_.value_or(std::string(code_to_message(errc_)));
     }
     constexpr code code() const { return errc_; }
     constexpr severity severity() const { return sev_; }

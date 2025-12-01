@@ -3,19 +3,19 @@
 #include "deepl.hpp"
 #include <curl/curl.h>
 
-namespace apis::deepl
+namespace setman::ai
 {
 
-std::unique_ptr<Client> new_client(const std::string &key)
+std::unique_ptr<DeepLClient> new_deepl_client(const std::string &key)
 {
     CURL *curl = curl_easy_init();
     if (!curl)
         return nullptr;
 
-    return std::make_unique<Client>(key, curl);
+    return std::make_unique<DeepLClient>(key, curl);
 }
 
-Response Client::translate(const Request &request)
+DeepLResponse DeepLClient::translate(const DeepLRequest &request)
 {
     std::string response_body;
     std::string request_body = request.payload().dump();
@@ -25,7 +25,7 @@ Response Client::translate(const Request &request)
 
     CURLcode ec = curl_easy_perform(curl_);
     if (ec != CURLE_OK) {
-        Response res("", 0);
+        DeepLResponse res("", 0);
         res.invalidate(std::string("[CURL ERROR] ") + curl_easy_strerror(ec));
         return res;
     }
@@ -33,10 +33,10 @@ Response Client::translate(const Request &request)
     long http_code = 0;
     curl_easy_getinfo(curl_, CURLINFO_RESPONSE_CODE, &http_code);
 
-    return Response(response_body, http_code);
+    return DeepLResponse(response_body, http_code);
 }
 
-bool Response::process()
+bool DeepLResponse::process()
 {
     json *translations = find("translations");
 
@@ -98,7 +98,7 @@ bool Response::process()
     return true;
 }
 
-std::optional<int> Response::billed_characters() const
+std::optional<int> DeepLResponse::billed_characters() const
 {
     if (!json_.contains("billed_characters"))
         return std::nullopt;
@@ -111,7 +111,7 @@ std::optional<int> Response::billed_characters() const
     return billed.get<int>();
 }
 
-std::optional<std::string> Response::model_type_used() const
+std::optional<std::string> DeepLResponse::model_type_used() const
 {
     if (!json_.contains("model_type_used"))
         return std::nullopt;
@@ -124,4 +124,4 @@ std::optional<std::string> Response::model_type_used() const
     return model.get<std::string>();
 }
 
-} // namespace apis::deepl
+} // namespace setman::ai

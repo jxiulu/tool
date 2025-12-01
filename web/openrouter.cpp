@@ -3,19 +3,19 @@
 #include "openrouter.hpp"
 #include <curl/curl.h>
 
-namespace apis::openrouter
+namespace setman::ai
 {
 
-std::unique_ptr<Client> new_client(const std::string &key)
+std::unique_ptr<OpenRouterClient> new_openrouter_client(const std::string &key)
 {
     CURL *curl = curl_easy_init();
     if (!curl)
         return nullptr;
 
-    return std::make_unique<Client>(key, curl);
+    return std::make_unique<OpenRouterClient>(key, curl);
 }
 
-Client::Client(const std::string &api_key, CURL *curl)
+OpenRouterClient::OpenRouterClient(const std::string &api_key, CURL *curl)
     : GenericClient(api_key, curl)
 {
     headers_ = curl_slist_append(headers_, "Content-Type: application/json");
@@ -23,10 +23,10 @@ Client::Client(const std::string &api_key, CURL *curl)
         headers_, std::string("Authorization: Bearer " + api_key).c_str());
 
     curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers_);
-    curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, apis::write_callback);
+    curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, setman::write_callback);
 }
 
-json Request::payload() const
+json OpenRouterRequest::payload() const
 {
     json payload;
 
@@ -42,16 +42,16 @@ json Request::payload() const
     for (const auto &msg : messages_) {
         json msg_obj;
         switch (msg.role) {
-        case apis::ai::role::system:
+        case role::system:
             msg_obj["role"] = "system";
             break;
-        case apis::ai::role::user:
+        case role::user:
             msg_obj["role"] = "user";
             break;
-        case apis::ai::role::assistant:
+        case role::assistant:
             msg_obj["role"] = "assistant";
             break;
-        case apis::ai::role::tool:
+        case role::tool:
             msg_obj["role"] = "tool";
             break;
         }
@@ -89,7 +89,7 @@ json Request::payload() const
     return payload;
 }
 
-Response Client::chat(const Request &request)
+OpenRouterResponse OpenRouterClient::chat(const OpenRouterRequest &request)
 {
     std::string response_body;
     std::string request_body = request.payload().dump();
@@ -101,7 +101,7 @@ Response Client::chat(const Request &request)
 
     CURLcode ec = curl_easy_perform(curl_);
     if (ec != CURLE_OK) {
-        Response res("", 0);
+        OpenRouterResponse res("", 0);
         res.invalidate(std::string("[CURL ERROR] ") + curl_easy_strerror(ec));
         return res;
     }
@@ -109,10 +109,10 @@ Response Client::chat(const Request &request)
     long http_code = 0;
     curl_easy_getinfo(curl_, CURLINFO_RESPONSE_CODE, &http_code);
 
-    return Response(response_body, http_code);
+    return OpenRouterResponse(response_body, http_code);
 }
 
-bool Response::process()
+bool OpenRouterResponse::process()
 {
     // Extract model used
     if (json_.contains("model")) {
@@ -201,4 +201,4 @@ bool Response::process()
     return true;
 }
 
-} // namespace apis::openrouter
+} // namespace setman::ai

@@ -11,13 +11,13 @@
 
 using nlohmann::json;
 
-namespace apis::openrouter
+namespace setman::ai
 {
 
-class Request : public apis::ai::GenericRequest
+class OpenRouterRequest : public GenericRequest
 {
   public:
-    Request() { endpoint_ = "https://openrouter.ai/api/v1/chat/completions"; }
+    OpenRouterRequest() { endpoint_ = "https://openrouter.ai/api/v1/chat/completions"; }
 
     json payload() const override;
 
@@ -26,14 +26,14 @@ class Request : public apis::ai::GenericRequest
     {
         return models_;
     }
-    Request &set_models(const std::vector<std::string> &models)
+    OpenRouterRequest &set_models(const std::vector<std::string> &models)
     {
         models_ = models;
         return *this;
     }
 
     const std::optional<std::string> &route() const { return route_; }
-    Request &set_route(const std::string &route)
+    OpenRouterRequest &set_route(const std::string &route)
     {
         route_ = route;
         return *this;
@@ -43,7 +43,7 @@ class Request : public apis::ai::GenericRequest
     {
         return provider_order_;
     }
-    Request &set_provider_order(const std::vector<std::string> &providers)
+    OpenRouterRequest &set_provider_order(const std::vector<std::string> &providers)
     {
         provider_order_ = providers;
         return *this;
@@ -55,10 +55,10 @@ class Request : public apis::ai::GenericRequest
     std::optional<std::vector<std::string>> provider_order_;
 };
 
-class Response : public apis::ai::GenericResponse
+class OpenRouterResponse : public GenericResponse
 {
   public:
-    Response(std::string raw, long http_code)
+    OpenRouterResponse(std::string raw, long http_code)
         : GenericResponse(std::move(raw), http_code)
     {
     }
@@ -84,14 +84,14 @@ class Response : public apis::ai::GenericResponse
     std::optional<std::string> finish_reason_;
 };
 
-class Client : public apis::ai::GenericClient
+class OpenRouterClient : public GenericClient
 {
   public:
-    Client(const std::string &api_key, CURL *curl);
+    OpenRouterClient(const std::string &api_key, CURL *curl);
 
-    Response chat(const Request &request);
+    OpenRouterResponse chat(const OpenRouterRequest &request);
 };
 
-std::unique_ptr<Client> new_client(const std::string &key);
+std::unique_ptr<OpenRouterClient> new_openrouter_client(const std::string &key);
 
-} // namespace apis::openrouter
+} // namespace setman::ai

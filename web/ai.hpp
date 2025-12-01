@@ -10,7 +10,7 @@
 
 using nlohmann::json;
 
-namespace apis
+namespace setman
 {
 
 static size_t write_callback(void *contents, size_t size, size_t nmemb,
@@ -21,9 +21,7 @@ static size_t write_callback(void *contents, size_t size, size_t nmemb,
     return total_size;
 }
 
-} // namespace apis
-
-namespace apis::ai
+namespace ai
 {
 
 class GenericResponse
@@ -320,4 +318,6 @@ class GenericRequest
     std::optional<std::string> user_id_;
 };
 
-} // namespace apis::ai
+} // namespace ai
+
+} // namespace setman

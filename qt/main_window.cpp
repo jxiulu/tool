@@ -11,7 +11,7 @@
 
 namespace fs = std::filesystem;
 
-main_window::main_window(QWidget *parent) : QMainWindow(parent) {
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     init_ui();
     init_menu_bar();
     init_config();
@@ -20,9 +20,9 @@ main_window::main_window(QWidget *parent) : QMainWindow(parent) {
     resize(1200, 800);
 }
 
-main_window::~main_window() {}
+MainWindow::~MainWindow() {}
 
-void main_window::init_ui() {
+void MainWindow::init_ui() {
     central_widget = new QWidget(this);
     setCentralWidget(central_widget);
 
@@ -38,7 +38,7 @@ void main_window::init_ui() {
     cut_list = new QListWidget(this);
     cut_list->setMinimumWidth(300);
     connect(cut_list, &QListWidget::itemClicked, this,
-            &main_window::on_cut_select);
+            &MainWindow::on_cut_select);
     content_layout->addWidget(cut_list);
 
     // right panel (cut details)
@@ -53,7 +53,7 @@ void main_window::init_ui() {
     statusBar()->showMessage("hello");
 }
 
-void main_window::init_menu_bar() {
+void MainWindow::init_menu_bar() {
     auto *menu_bar = new QMenuBar(this);
     setMenuBar(menu_bar);
 
@@ -62,10 +62,10 @@ void main_window::init_menu_bar() {
 
     QAction *file_open = file_menu->addAction("&Open Project...");
     connect(file_open, &QAction::triggered, this,
-            &main_window::on_open_project);
+            &MainWindow::on_open_project);
 
     QAction *file_new = file_menu->addAction("&New Project...");
-    connect(file_new, &QAction::triggered, this, &main_window::on_new_project);
+    connect(file_new, &QAction::triggered, this, &MainWindow::on_new_project);
 
     file_menu->addSeparator();
 
@@ -85,7 +85,7 @@ void main_window::init_menu_bar() {
     help_menu->addAction("About");
 }
 
-void main_window::init_config() {
+void MainWindow::init_config() {
     auto cfgpath = setman::find_config();
     std::string apikey;
 
@@ -122,14 +122,14 @@ void main_window::init_config() {
     }
 
     if (!apikey.empty()) {
-        ocr_client_ = apis::google::new_client(apikey);
+        ocr_client_ = setman::ai::new_google_client(apikey);
     } else {
         QMessageBox::warning(this, "API Key Missing",
                              "No key found in env or in config file");
     }
 }
 
-void main_window::on_open_project() {
+void MainWindow::on_open_project() {
     QString dir = QFileDialog::getExistingDirectory(
         this, "Open Project Directory", QString(),
         QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
@@ -148,18 +148,18 @@ void main_window::on_open_project() {
     cut_list->addItem("sloop");
 }
 
-void main_window::on_new_project() {
+void MainWindow::on_new_project() {
     QMessageBox::information(this, "New Project", "67");
 }
 
-void main_window::on_cut_select(QListWidgetItem *item) {
+void MainWindow::on_cut_select(QListWidgetItem *item) {
     if (!item)
         return;
     statusBar()->showMessage("Selected: " + item->text(), 2000);
     // todo
 }
 
-void main_window::load_keyframes(const QString &directory) {
+void MainWindow::load_keyframes(const QString &directory) {
     cut_list->clear();
 
     fs::path dir(directory.toStdString());
@@ -188,7 +188,7 @@ void main_window::load_keyframes(const QString &directory) {
         QString("Found %1 images in path.").arg(cut_list->count()), 3000);
 }
 
-void main_window::on_ocr() {
+void MainWindow::on_ocr() {
     if (current_img_path_.isEmpty() || !ocr_client_) {
         QMessageBox::warning(
             this, "Error",
@@ -221,7 +221,7 @@ void main_window::on_ocr() {
         // etc.
     }
 
-    apis::google::Request req;
+    setman::ai::GoogleRequest req;
     req.set_model("gemini-3.0-pro");
     req.add_inline_image(result.value(), mime_type);
     req.add_text("Please extract all visible text in this image. Provide this "

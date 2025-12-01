@@ -18,37 +18,40 @@ namespace fs = std::filesystem;
 namespace setman
 {
 class Episode;
+}
+
+namespace setman::materials
+{
 
 //
 // Material classes
 //
 
-class Material;
-class File;
-class Folder;
+class Matfile;
+class Matfolder;
 
-class Material
+enum class material_type {
+    cut_folder,
+    cut_cels_folder,
+    cut_file,
+    keyframe,
+    csp,
+    pur,
+    notes,
+    folder,
+    file,
+    other,
+    null,
+};
+
+class GenericMaterial
 {
   public:
-    enum class type {
-        cut_folder,
-        cut_cels_folder,
-        cut_file,
-        keyframe,
-        csp,
-        pur,
-        notes,
-        folder,
-        file,
-        other,
-        null,
-    };
-
-    virtual ~Material() = default;
+    virtual ~GenericMaterial() = default;
     virtual constexpr bool is_folder() const = 0;
-    constexpr type type() const { return type_; }
+    constexpr material_type type() const { return type_; }
 
-    constexpr const Episode *parent_episode() const { return parent_episode_; }
+    constexpr const setman::Episode *parent_episode() const { return parent_episode_; }
 
     constexpr const fs::path &path() const { return path_; }
     constexpr const std::string &notes() const { return notes_; }
@@ -66,49 +69,51 @@ class Material
   protected:
     std::string notes_;
     std::string alias_;
-    const Episode *parent_episode_;
-    enum type type_;
+    const setman::Episode *parent_episode_;
+    enum material_type type_;
     fs::path path_;
 
-    Material(const Episode *parent_episode, const fs::path &path, enum type type);
-    Material(const Episode *parent, const fs::path &path, enum type type,
-             boost::uuids::uuid uuid);
+    GenericMaterial(const setman::Episode *parent_episode, const fs::path &path,
+                    enum material_type type);
+    GenericMaterial(const setman::Episode *parent, const fs::path &path,
+                    enum material_type type, boost::uuids::uuid uuid);
 };
 
-class File : public Material
+class Matfile : public GenericMaterial
 {
   public:
     constexpr bool is_folder() const override { return false; }
 
-    File(const Episode *parent_episode, const fs::path &path,
-         enum Material::type type);
+    Matfile(const setman::Episode *parent_episode, const fs::path &path,
+            enum material_type type);
 };
 
-class Folder : public Material
+class Matfolder : public GenericMaterial
 {
   protected:
-    std::vector<std::unique_ptr<Material>> children_;
+    std::vector<std::unique_ptr<GenericMaterial>> children_;
 
   public:
     constexpr bool is_folder() const override { return true; }
 
-    constexpr const std::vector<std::unique_ptr<Material>> &children() const
+    constexpr const std::vector<std::unique_ptr<GenericMaterial>> &
+    children() const
     {
         return children_;
     }
 
-    void add_child(std::unique_ptr<Material> child);
-    Material *find_child(const boost::uuids::uuid &uuid);
+    void add_child(std::unique_ptr<GenericMaterial> child);
+    GenericMaterial *find_child(const boost::uuids::uuid &uuid);
 
-    Folder(const Episode *parent_episode, const fs::path &path,
-           enum Material::type type);
+    Matfolder(const setman::Episode *parent_episode, const fs::path &path,
+              enum material_type type);
 };
 
-class Image : public File
+class Image : public Matfile
 {
   public:
-    Image(const Episode *parent, const fs::path &path)
-        : File(parent, path, type::file)
+    Image(const setman::Episode *parent, const fs::path &path)
+        : Matfile(parent, path, material_type::file)
     {
     }
 
@@ -129,34 +134,42 @@ class Image : public File
     mutable int cached_height;
 };
 
-class Keyframe : public File
+enum class keyframe_type { lo, ls, lss, le, lk, ka, kas, kass, kae, other };
+
+class Keyframe : public Matfile
 {
   public:
-    enum class type { lo, ls, lss, le, lk, ka, kas, kass, kae, other };
-
-    Keyframe(const Episode *parent, const fs::path &path, const char cel,
-             const type type)
-        : File(parent, path, Material::type::keyframe), cel_(cel), kftype_(type)
+    Keyframe(const setman::Episode *parent, const fs::path &path,
+             const std::string &cel, const keyframe_type type)
+        : Matfile(parent, path, material_type::keyframe), cel_(cel),
+          keyframe_type_(type)
     {
     }
 
-    constexpr char cel() const { return cel_; }
-    std::string name() const { return path_.filename().stem().string(); }
+    constexpr const std::string &cel() const { return cel_; }
+    constexpr std::string filename() const
+    {
+        return path_.filename().stem().string();
+    }
+
+    constexpr std::string identifier() const
+    {
+        std::string name = filename();
+        if (name.compare(0, cel_.length(), cel_) == 0) {
+            name.erase(0, cel_.length());
+        }
+        return name;
+    }
 
   private:
-    type kftype_;
-    char cel_;
-    std::string name_;
+    keyframe_type keyframe_type_;
+    std::string cel_;
+    std::string filename_;
 };
 
-} // namespace setman
-
 //
-// functions
+// utility
 //
-
-namespace setman::materials
-{
 
 inline boost::uuids::uuid generate_uuid()
 {

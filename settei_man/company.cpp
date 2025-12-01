@@ -13,7 +13,7 @@ namespace setman
 
 Series::Series(const Company *parent_company, const std::string &series_code,
                const std::string &naming_convention, const int season)
-    : parent_company_(parent_company), code_(series_code),
+    : parent_(parent_company), code_(series_code),
       naming_convention_(naming_convention), season_(season)
 {
     build_regex();
@@ -65,7 +65,7 @@ void Series::build_regex()
     naming_regex_ = std::regex(pattern, std::regex::icase);
 }
 
-std::optional<cuts::Info>
+std::optional<materials::Info>
 Series::parse_cut_name(const std::string &folder_name) const
 {
     std::smatch matches;
@@ -73,7 +73,7 @@ Series::parse_cut_name(const std::string &folder_name) const
         return std::nullopt;
     }
 
-    cuts::Info info;
+    materials::Info info;
     info.series_code = code_;
 
     for (size_t i = 0; i < field_order_.size(); i++) {
@@ -119,7 +119,7 @@ void Company::set_path(const fs::path &path) { root_ = path; }
 void Company::add_series(const std::string &series_code,
                          const std::string &naming_convention, const int season)
 {
-    series_.push_back(std::make_unique<class Series>(
+    series_.push_back(std::make_unique<Series>(
         this, series_code, naming_convention, season));
 }
 

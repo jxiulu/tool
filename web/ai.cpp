@@ -2,6 +2,6 @@
 
 #include "ai.hpp"
 
-namespace apis::ai
+namespace setman::ai
 {
-} // namespace apis::ai
+} // namespace setman::ai

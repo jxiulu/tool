@@ -13,7 +13,7 @@
 
 namespace fs = std::filesystem;
 
-namespace setman::cuts
+namespace setman::materials
 {
 
 struct Info {
@@ -52,35 +52,28 @@ struct ProgressEntry {
     const std::chrono::system_clock::time_point time_updated;
 };
 
-} // namespace setman::cuts
-
-namespace setman
-{
-
-class Episode;
-
-class Cut : public Folder
+class Cut : public Matfolder
 {
   public:
-    Cut(const Episode *parent_episode, const fs::path &path,
+    Cut(const setman::Episode *parent_episode, const fs::path &path,
         const std::optional<int> &scene_num, const int number,
         const std::string &stage);
 
     constexpr const std::optional<int> &scene() const { return scene_num_; }
     constexpr int number() const { return num_; }
-    constexpr cuts::stage stage_code() const { return stage_code_; }
+    constexpr stage stage_code() const { return stage_code_; }
     constexpr const std::string &stage() const { return stage_; }
-    cuts::status status() const;
-    constexpr const cuts::ProgressEntry &last_update() const
+    status status() const;
+    constexpr const ProgressEntry &last_update() const
     {
         return history_.back();
     }
-    constexpr const std::vector<cuts::ProgressEntry> &history() const
+    constexpr const std::vector<ProgressEntry> &history() const
     {
         return history_;
     }
 
-    void mark(cuts::status new_status);
+    void mark(enum status new_status);
 
     bool matches(const Cut &) const;
 
@@ -92,35 +85,26 @@ class Cut : public Folder
     static bool conflicts(const Cut &somecut, const Cut &anothercut);
 
   private:
-    cuts::stage stage_code_;
+    enum stage stage_code_;
     std::string stage_;
     int num_;
     std::optional<int> scene_num_;
-    std::vector<cuts::ProgressEntry> history_;
+    std::vector<ProgressEntry> history_;
 };
 
-} // namespace setman
-
-//
-// cut functions
-//
-
-namespace setman::cuts
-{
-
-inline stage parse_stage(const std::string &stage_str)
+inline enum stage parse_stage(const std::string &stage_str)
 {
     // todo: stage parsing
     // placeholder:
     return stage::lo;
 }
 
-std::optional<Info>
-parse_name(const std::string &foldername, const std::regex &regex,
-           const std::vector<std::string> &field_order);
+std::optional<Info> parse_name(const std::string &foldername,
+                               const std::regex &regex,
+                               const std::vector<std::string> &field_order);
 
 std::expected<std::unique_ptr<Cut>, Error>
-build_from(Episode *episode, const fs::path &pathtocut);
+build_from(setman::Episode *episode, const fs::path &pathtocut);
 
 inline void sort_by_ascending(std::vector<Cut *> &cuts)
 {
@@ -138,10 +122,9 @@ inline void sort_by_last_updated(std::vector<Cut *> &cuts)
 
 std::vector<Cut *> find_cut(int number, const std::vector<Cut *> &cuts);
 
-std::vector<Cut *> find_status(status status,
-                               const std::vector<Cut *> &cuts);
+std::vector<Cut *> find_status(status status, const std::vector<Cut *> &cuts);
 
 std::vector<Cut *> find_stage(const std::string &stage,
                               const std::vector<Cut *> &cuts);
 
-} // namespace setman::cuts
+} // namespace setman::materials

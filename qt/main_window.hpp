@@ -14,16 +14,16 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
-namespace apis::google {
-class Client;
+namespace setman::ai {
+class GoogleClient;
 }
 
-class main_window : public QMainWindow {
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
   public:
-    explicit main_window(QWidget *parent = nullptr);
-    ~main_window();
+    explicit MainWindow(QWidget *parent = nullptr);
+    ~MainWindow();
 
   private slots:
     void on_open_project();
@@ -46,6 +46,6 @@ class main_window : public QMainWindow {
     QTextEdit *ocr_content;
     QLabel *image_preview;
 
-    std::unique_ptr<apis::google::Client> ocr_client_;
+    std::unique_ptr<setman::ai::GoogleClient> ocr_client_;
     QString current_img_path_;
 };

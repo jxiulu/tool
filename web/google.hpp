@@ -11,23 +11,29 @@
 
 using nlohmann::json;
 
-namespace apis::google
+namespace setman::ai
 {
 
 // Content part - can be text or image
-struct Content {
-    enum class type { text, inline_image, file_uri };
 
-    type part_type;
+enum class content_type { text, inline_image, file_uri };
+
+struct Content {
+    content_type part_type;
     std::string text_content; // for text
     std::string mime_type;    // for images
     std::string data;         // base64 data or file_uri
 };
 
-class Request : public apis::ai::GenericRequest
+struct SafetySetting {
+    std::string category;
+    std::string threshold;
+};
+
+class GoogleRequest : public GenericRequest
 {
   public:
-    Request()
+    GoogleRequest()
     {
         endpoint_ = "https://generativelanguage.googleapis.com/v1beta/models/";
         model_ = "gemini-2.0-flash-exp";
@@ -36,31 +42,31 @@ class Request : public apis::ai::GenericRequest
     json payload() const override;
 
     // Add content parts (text, images)
-    Request &add_text(const std::string &text)
+    GoogleRequest &add_text(const std::string &text)
     {
         Content part;
-        part.part_type = Content::type::text;
+        part.part_type = content_type::text;
         part.text_content = text;
         parts_.push_back(part);
         return *this;
     }
 
-    Request &add_inline_image(const std::string &base64_data,
+    GoogleRequest &add_inline_image(const std::string &base64_data,
                               const std::string &mime_type = "image/jpeg")
     {
         Content part;
-        part.part_type = Content::type::inline_image;
+        part.part_type = content_type::inline_image;
         part.data = base64_data;
         part.mime_type = mime_type;
         parts_.push_back(part);
         return *this;
     }
 
-    Request &add_file_uri(const std::string &file_uri,
+    GoogleRequest &add_file_uri(const std::string &file_uri,
                           const std::string &mime_type = "image/jpeg")
     {
         Content part;
-        part.part_type = Content::type::file_uri;
+        part.part_type = content_type::file_uri;
         part.data = file_uri;
         part.mime_type = mime_type;
         parts_.push_back(part);
@@ -68,12 +74,7 @@ class Request : public apis::ai::GenericRequest
     }
 
     // Safety settings
-    struct safety_setting {
-        std::string category;
-        std::string threshold;
-    };
-
-    Request &add_safety_setting(const std::string &category,
+    GoogleRequest &add_safety_setting(const std::string &category,
                                 const std::string &threshold)
     {
         safety_settings_.push_back({category, threshold});
@@ -81,7 +82,7 @@ class Request : public apis::ai::GenericRequest
     }
 
     // Generation config shortcuts
-    Request &set_candidate_count(int count)
+    GoogleRequest &set_candidate_count(int count)
     {
         candidate_count_ = count;
         return *this;
@@ -89,14 +90,19 @@ class Request : public apis::ai::GenericRequest
 
   private:
     std::vector<Content> parts_;
-    std::vector<safety_setting> safety_settings_;
+    std::vector<SafetySetting> safety_settings_;
     std::optional<int> candidate_count_;
 };
 
-class Response : public apis::ai::GenericResponse
+struct SafetyRating {
+    std::string category;
+    std::string probability;
+};
+
+class GoogleResponse : public GenericResponse
 {
   public:
-    Response(std::string raw, long http_code)
+    GoogleResponse(std::string raw, long http_code)
         : GenericResponse(std::move(raw), http_code)
     {
     }
@@ -113,11 +119,7 @@ class Response : public apis::ai::GenericResponse
     std::optional<std::string> finish_reason() const { return finish_reason_; }
 
     // Safety ratings
-    struct safety_rating {
-        std::string category;
-        std::string probability;
-    };
-    const std::vector<safety_rating> &safety_ratings() const
+    const std::vector<SafetyRating> &safety_ratings() const
     {
         return safety_ratings_;
     }
@@ -133,20 +135,20 @@ class Response : public apis::ai::GenericResponse
   private:
     std::optional<std::string> prompt_feedback_;
     std::optional<std::string> finish_reason_;
-    std::vector<safety_rating> safety_ratings_;
+    std::vector<SafetyRating> safety_ratings_;
     std::optional<int> prompt_tokens_;
     std::optional<int> candidates_tokens_;
     std::optional<int> total_tokens_;
 };
 
-class Client : public apis::ai::GenericClient
+class GoogleClient : public GenericClient
 {
   public:
-    Client(const std::string &api_key, CURL *curl);
+    GoogleClient(const std::string &api_key, CURL *curl);
 
-    Response send(const Request &request);
+    GoogleResponse send(const GoogleRequest &request);
 };
 
-std::unique_ptr<Client> new_client(const std::string &key);
+std::unique_ptr<GoogleClient> new_google_client(const std::string &key);
 
-} // namespace apis::google
+} // namespace setman::ai

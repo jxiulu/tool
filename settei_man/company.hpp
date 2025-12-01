@@ -22,7 +22,7 @@ namespace setman
 class Series
 {
   private:
-    const class Company *parent_company_;
+    const class Company *parent_;
     std::string naming_convention_;
     std::string code_;
     int season_;
@@ -35,15 +35,15 @@ class Series
     void build_regex();
 
   public:
-    Series(const Company *parent_company, const std::string &series_code,
+    Series(const Company *parent, const std::string &series_code,
            const std::string &naming_convention, const int season);
 
-    const Company *parent_company() const { return parent_company_; }
+    const Company *parent_company() const { return parent_; }
     const std::string &naming_convention() const { return naming_convention_; }
     const std::string &code() const { return code_; }
     const std::vector<std::unique_ptr<Episode>> &episodes() const;
 
-    std::optional<cuts::Info>
+    std::optional<materials::Info>
     parse_cut_name(const std::string &folder_name) const;
 
     const Episode *find_episode(const int number);
@@ -70,7 +70,7 @@ class Company
     void add_series(const std::string &series_code,
                     const std::string &naming_convention, const int season);
 
-    const class Series *find_series(const std::string &code);
+    const Series *find_series(const std::string &code);
 };
 
 } // namespace setman

@@ -17,11 +17,11 @@ find_package(nlohmann_json REQUIRED)
 find_package(CURL REQUIRED)
 find_package(Qt6 REQUIRED COMPONENTS Widgets Core Gui)
 
-add_library(APIs)
-target_sources(APIs PRIVATE apis/ai.cpp apis/deepl.cpp apis/openrouter.cpp
-                            apis/google.cpp)
-target_include_directories(APIs PUBLIC apis/ settei_man/)
-target_link_libraries(APIs PUBLIC nlohmann_json::nlohmann_json CURL::libcurl)
+add_library(Web)
+target_sources(Web PRIVATE web/ai.cpp web/deepl.cpp web/openrouter.cpp
+                            web/google.cpp)
+target_include_directories(Web PUBLIC web/ settei_man/)
+target_link_libraries(Web PUBLIC nlohmann_json::nlohmann_json CURL::libcurl)
 
 add_library(SetteiMan)
 target_sources(
@@ -29,10 +29,10 @@ target_sources(
   PRIVATE settei_man/company.cpp settei_man/episode.cpp
           settei_man/materials.cpp settei_man/cuts.cpp settei_man/config.cpp)
 target_include_directories(SetteiMan PRIVATE settei_man ${Boost_INCLUDE_DIRS})
-target_link_libraries(SetteiMan ${Boost_LIBRARIES} spdlog::spdlog APIs)
+target_link_libraries(SetteiMan ${Boost_LIBRARIES} spdlog::spdlog Web)
 
 add_executable(Application)
 target_sources(Application PRIVATE qt/main.cpp qt/main_window.cpp)
-target_include_directories(Application PRIVATE settei_man ai qt)
-target_link_libraries(Application SetteiMan APIs Qt6::Widgets Qt6::Core
+target_include_directories(Application PRIVATE settei_man web qt)
+target_link_libraries(Application SetteiMan Web Qt6::Widgets Qt6::Core
                       Qt6::Gui)

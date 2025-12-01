@@ -7,26 +7,26 @@
 #include "company.hpp"
 #include "episode.hpp"
 
-namespace setman
+namespace setman::materials
 {
 
 //
 // class
 //
 
-Cut::Cut(const Episode *parent_episode, const fs::path &path,
+Cut::Cut(const setman::Episode *parent_episode, const fs::path &path,
          const std::optional<int> &scene_num, const int number,
          const std::string &stage)
     : stage_(stage), scene_num_(scene_num), num_(number),
-      Folder(parent_episode, path, Material::type::cut_folder)
+      Matfolder(parent_episode, path, material_type::cut_folder)
 {
     history_.push_back(
-        {cuts::status::not_started, std::chrono::system_clock::now()});
+        {status::not_started, std::chrono::system_clock::now()});
 }
 
-cuts::status Cut::status() const { return history_.back().status; }
+status Cut::status() const { return history_.back().status; }
 
-void Cut::mark(const cuts::status new_status)
+void Cut::mark(const enum status new_status)
 {
     history_.push_back({new_status, std::chrono::system_clock::now()});
 }
@@ -49,17 +49,12 @@ bool Cut::conflicts(const Cut &one, const Cut &two)
     return one.conflicts(two);
 }
 
-} // namespace setman
-
-namespace setman::cuts
-{
-
 //
 // functions
 //
 
-std::expected<std::unique_ptr<Cut>, Error>
-build_from(Episode *episode, const fs::path &pathtocut)
+std::expected<std::unique_ptr<Cut>, Error> build_from(setman::Episode *episode,
+                                                      const fs::path &pathtocut)
 {
     auto result =
         episode->series()->parse_cut_name(pathtocut.filename().string());
@@ -88,8 +83,7 @@ std::vector<Cut *> find_cut(int number, const std::vector<Cut *> &cuts)
     return matches;
 }
 
-std::vector<Cut *> find_status(status status,
-                               const std::vector<Cut *> &cuts)
+std::vector<Cut *> find_status(status status, const std::vector<Cut *> &cuts)
 {
     std::vector<Cut *> matches{};
     for (auto &cut : cuts) {
@@ -111,8 +105,8 @@ std::vector<Cut *> find_stage(const std::string &stage,
 }
 
 std::optional<Info> parse_name(const std::string &foldername,
-                                   const std::regex &regex,
-                                   const std::vector<std::string> &field_order)
+                               const std::regex &regex,
+                               const std::vector<std::string> &field_order)
 {
     std::smatch matches;
     if (!std::regex_match(foldername, matches, regex)) {
@@ -139,4 +133,4 @@ std::optional<Info> parse_name(const std::string &foldername,
     return info;
 }
 
-} // namespace setman::cuts
+} // namespace setman::materials

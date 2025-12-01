@@ -3,28 +3,28 @@
 #include "google.hpp"
 #include <curl/curl.h>
 
-namespace apis::google
+namespace setman::ai
 {
 
-std::unique_ptr<Client> new_client(const std::string &key)
+std::unique_ptr<GoogleClient> new_google_client(const std::string &key)
 {
     CURL *curl = curl_easy_init();
     if (!curl)
         return nullptr;
 
-    return std::make_unique<Client>(key, curl);
+    return std::make_unique<GoogleClient>(key, curl);
 }
 
-Client::Client(const std::string &api_key, CURL *curl)
+GoogleClient::GoogleClient(const std::string &api_key, CURL *curl)
     : GenericClient(api_key, curl)
 {
     headers_ = curl_slist_append(headers_, "Content-Type: application/json");
 
     curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers_);
-    curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, apis::write_callback);
+    curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, setman::write_callback);
 }
 
-json Request::payload() const
+json GoogleRequest::payload() const
 {
     json payload;
 
@@ -34,16 +34,16 @@ json Request::payload() const
         json part_obj;
 
         switch (part.part_type) {
-        case Content::type::text:
+        case content_type::text:
             part_obj["text"] = part.text_content;
             break;
 
-        case Content::type::inline_image:
+        case content_type::inline_image:
             part_obj["inline_data"] = {{"mime_type", part.mime_type},
                                        {"data", part.data}};
             break;
 
-        case Content::type::file_uri:
+        case content_type::file_uri:
             part_obj["file_data"] = {{"mime_type", part.mime_type},
                                      {"file_uri", part.data}};
             break;
@@ -87,7 +87,7 @@ json Request::payload() const
     return payload;
 }
 
-Response Client::send(const Request &req)
+GoogleResponse GoogleClient::send(const GoogleRequest &req)
 {
     std::string response_body;
     std::string request_body = req.payload().dump();
@@ -103,7 +103,7 @@ Response Client::send(const Request &req)
 
     CURLcode ec = curl_easy_perform(curl_);
     if (ec != CURLE_OK) {
-        Response res("", 0);
+        GoogleResponse res("", 0);
         res.invalidate(std::string("[CURL ERROR] ") + curl_easy_strerror(ec));
         return res;
     }
@@ -111,10 +111,10 @@ Response Client::send(const Request &req)
     long http_code = 0;
     curl_easy_getinfo(curl_, CURLINFO_RESPONSE_CODE, &http_code);
 
-    return Response(response_body, http_code);
+    return GoogleResponse(response_body, http_code);
 }
 
-bool Response::process()
+bool GoogleResponse::process()
 {
     // Check for prompt feedback (blocks)
     if (json_.contains("promptFeedback")) {
@@ -230,4 +230,4 @@ bool Response::process()
     return true;
 }
 
-} // namespace apis::google
+} // namespace setman::ai

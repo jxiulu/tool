@@ -11,27 +11,28 @@
 #include <map>
 #include <system_error>
 
-namespace setman
+namespace setman::materials
 {
 
 //
 // material class
 //
 
-Material::Material(const Episode *parent_episode, const fs::path &path,
-                   enum type type)
+GenericMaterial::GenericMaterial(const setman::Episode *parent_episode,
+                                 const fs::path &path, enum material_type type)
     : parent_episode_(parent_episode), path_(path),
       uuid_(materials::generate_uuid()), type_(type)
 {
 }
 
-Material::Material(const Episode *parent_episode, const fs::path &path,
-                   enum type type, boost::uuids::uuid uuid)
+GenericMaterial::GenericMaterial(const setman::Episode *parent_episode,
+                                 const fs::path &path, enum material_type type,
+                                 boost::uuids::uuid uuid)
     : parent_episode_(parent_episode), path_(path), uuid_(uuid), type_(type)
 {
 }
 
-std::error_code Material::move_to(const fs::path &parentfolder)
+std::error_code GenericMaterial::move_to(const fs::path &parentfolder)
 {
     // caller needs to verify the validity of the target path
     std::error_code ec;
@@ -49,9 +50,9 @@ std::error_code Material::move_to(const fs::path &parentfolder)
 // file class
 //
 
-File::File(const Episode *parent_episode, const fs::path &path,
-           enum Material::type type)
-    : Material(parent_episode, path, type)
+Matfile::Matfile(const setman::Episode *parent_episode, const fs::path &path,
+                 material_type type)
+    : GenericMaterial(parent_episode, path, type)
 {
 }
 
@@ -59,18 +60,18 @@ File::File(const Episode *parent_episode, const fs::path &path,
 // folder class
 //
 
-Folder::Folder(const Episode *parent_episode, const fs::path &path,
-               enum Material::type type)
-    : Material(parent_episode, path, type)
+Matfolder::Matfolder(const setman::Episode *parent_episode, const fs::path &path,
+                     material_type type)
+    : GenericMaterial(parent_episode, path, type)
 {
 }
 
-void Folder::add_child(std::unique_ptr<Material> child)
+void Matfolder::add_child(std::unique_ptr<GenericMaterial> child)
 {
     children_.push_back(std::move(child));
 }
 
-Material *Folder::find_child(const boost::uuids::uuid &uuid)
+GenericMaterial *Matfolder::find_child(const boost::uuids::uuid &uuid)
 {
     for (auto &child : children_) {
         if (child->uuid() == uuid) {
@@ -103,11 +104,6 @@ std::expected<size_t, Error> Image::fsize() const
 //
 // keyframe class
 //
-
-} // namespace setman
-
-namespace setman::materials
-{
 
 //
 // Utility functions
