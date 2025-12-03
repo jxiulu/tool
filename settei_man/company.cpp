@@ -1,88 +1,11 @@
+// Company
 #include "company.hpp"
 
-#include <map>
-
-#include "cuts.hpp"
 #include "episode.hpp"
+#include "Series.hpp"
 
 namespace setman
 {
-
-//
-// series
-//
-
-Series::Series(const Company *parent_company, const std::string &series_code,
-               const std::string &naming_convention, const int season)
-    : parent_(parent_company), id_(series_code),
-      naming_convention_(naming_convention), season_(season)
-{
-    build_regex();
-}
-
-const std::vector<std::unique_ptr<Episode>> &Series::episodes() const
-{
-    return episodes_;
-}
-
-void Series::build_regex()
-{
-    std::string pattern = naming_convention_;
-
-    constexpr char alphanumeric[] = "([A-Za-z0-9]+)";
-    constexpr char alphanumeric_with_underscores[] = "([A-Za-z0-9_]+)";
-    constexpr char numeric[] = "(\\d+)";
-
-    std::map<std::string, std::string> mapping = {
-        {"{series}", alphanumeric}, {"{episode}", numeric},
-        {"{scene}", numeric},       {"{cut}", numeric},
-        {"{stage}", alphanumeric},  {"{take}", alphanumeric}};
-
-    field_order_.clear();
-
-    size_t p = 0;
-    while (p < pattern.length()) {
-        bool found_placeholder = false;
-
-        for (const auto &[placeholder, regex_pattern] : mapping) {
-            if (pattern.substr(p, placeholder.length()) == placeholder) {
-                std::string field =
-                    placeholder.substr(1, placeholder.length() - 2);
-                field_order_.push_back(field);
-
-                pattern.replace(p, placeholder.length(), regex_pattern);
-                p += regex_pattern.length();
-                found_placeholder = true;
-                break;
-            }
-        }
-
-        if (!found_placeholder)
-            p++;
-    }
-
-    naming_regex_ = std::regex(pattern, std::regex::icase);
-}
-
-std::optional<materials::cut_id>
-Series::parse_cut_name(const std::string &name) const
-{
-    return materials::parse_cut_name(name, naming_regex_, field_order_);
-}
-
-const Episode *Series::find_episode(const int number)
-{
-    for (auto &episode : episodes_) {
-        if (episode->number() == number) {
-            return episode.get();
-        }
-    }
-    return nullptr;
-}
-
-//
-// company
-//
 
 Company::Company(const std::string &name) : name_(name) {}
 
@@ -103,7 +26,7 @@ void Company::add_series(const std::string &series_code,
 const class Series *Company::find_series(const std::string &code)
 {
     for (auto &entry : series_) {
-        if (entry->code() == code)
+        if (entry->id() == code)
             return entry.get();
     }
     return nullptr;

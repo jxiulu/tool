@@ -28,7 +28,8 @@ add_library(SetteiMan)
 target_sources(
   SetteiMan
   PRIVATE settei_man/company.cpp settei_man/episode.cpp
-          settei_man/materials.cpp settei_man/cuts.cpp settei_man/config.cpp)
+          settei_man/materials.cpp settei_man/cuts.cpp settei_man/config.cpp
+          settei_man/Images.cpp)
 target_include_directories(SetteiMan PRIVATE settei_man ${Boost_INCLUDE_DIRS})
 target_link_libraries(SetteiMan ${Boost_LIBRARIES} spdlog::spdlog AI)
 

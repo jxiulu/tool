@@ -1,12 +1,9 @@
-// organizational classes
-
+// Company
 #pragma once
 
 #include "episode.hpp"
 #include <filesystem>
 #include <memory>
-#include <optional>
-#include <regex>
 #include <string>
 #include <vector>
 
@@ -14,44 +11,6 @@ namespace fs = std::filesystem;
 
 namespace setman
 {
-
-//
-// series
-//
-
-class Series
-{
-  private:
-    const class Company *parent_;
-    std::string naming_convention_;
-    std::string id_;
-    int season_;
-
-    std::regex naming_regex_;
-    std::vector<std::string> field_order_;
-
-    std::vector<std::unique_ptr<Episode>> episodes_;
-
-    void build_regex();
-
-  public:
-    Series(const Company *parent, const std::string &series_code,
-           const std::string &naming_convention, const int season);
-
-    const Company *parent_company() const { return parent_; }
-    const std::string &naming_convention() const { return naming_convention_; }
-    const std::string &code() const { return id_; }
-    const std::vector<std::unique_ptr<Episode>> &episodes() const;
-
-    std::optional<materials::cut_id>
-    parse_cut_name(const std::string &folder_name) const;
-
-    const Episode *find_episode(const int number);
-};
-
-//
-// company
-//
 
 class Company
 {

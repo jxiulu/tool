@@ -4,8 +4,8 @@
 
 #include <chrono>
 
-#include "company.hpp"
 #include "episode.hpp"
+#include "Series.hpp"
 
 namespace setman::materials
 {
@@ -29,7 +29,7 @@ bool Cut::identifier_matches_name() const
     if (!parsed.has_value())
         return false;
 
-    return parsed.value().series_id == episode_->series()->code() &&
+    return parsed.value().series_id == episode_->series()->id() &&
            parsed.value().episode_num == episode_->number() &&
            parsed.value().scene == scene_ && parsed.value().number == number_ &&
            parsed.value().take == take_;
@@ -56,7 +56,7 @@ Error Cut::assume_name_from_identifier() {
 
 cut_id Cut::identifier() const
 {
-    return {episode()->series()->code(), episode()->number(), scene_, number_,
+    return {episode()->series()->id(), episode()->number(), scene_, number_,
             suffix_};
 }
 

@@ -1,11 +1,11 @@
 // episode
 
 #include "episode.hpp"
-#include "company.hpp"
 #include "cuts.hpp"
 #include "materials.hpp"
 #include <filesystem>
 #include <stdexcept>
+#include "Series.hpp"
 
 namespace setman
 {

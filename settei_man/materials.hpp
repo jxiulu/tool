@@ -9,7 +9,7 @@
 #include <memory>
 #include <regex>
 #include <string>
-#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace fs = std::filesystem;
@@ -17,16 +17,10 @@ namespace fs = std::filesystem;
 namespace setman
 {
 
-//
-// fwd
-//
-
 class Episode;
 class Error;
 
-} // namespace setman
-
-namespace setman::materials
+namespace materials
 {
 
 class File;
@@ -95,13 +89,13 @@ file_to_bytes(const fs::path &path);
 
 std::expected<std::string, Error> file_to_b64(const fs::path &path);
 
-std::expected<std::pair<int, int>, Error>
-image_dimensions_of(const fs::path &path); // <width, height>
-
 Error check_if_valid(const fs::path &path,
                      bool write_permission_required = false);
 
 int last_integer_sequence_of(const std::string &sequence);
+
+std::expected<std::pair<int, int>, Error>
+image_dimensions_of(const fs::path &path); // <width, height>
 
 //
 // materials
@@ -122,6 +116,7 @@ class GenericMaterial
     constexpr const std::string &notes() const { return notes_; }
     constexpr const std::string &alias() const { return alias_; }
     constexpr const boost::uuids::uuid &uuid() const { return uuid_; }
+    constexpr const std::unordered_set<std::string>& tags() const { return tags_; }
 
     std::expected<size_t, Error> disk_size() const;
     std::error_code move_to(const fs::path &parent_location);
@@ -148,6 +143,8 @@ class GenericMaterial
 
     void refresh_cache() const;
     void invalidate_cache() const { cache_valid_ = false; }
+
+    std::unordered_set<std::string> tags_;
 
   private:
     const boost::uuids::uuid uuid_;
@@ -197,51 +194,5 @@ class Folder : public GenericMaterial
     std::vector<std::unique_ptr<GenericMaterial>> children_;
 };
 
-//
-// images
-//
-
-class Image : public File
-{
-  public:
-    Image(const setman::Episode *episode, const fs::path &path, material type);
-
-    std::expected<int, Error> width() const;
-    std::expected<int, Error> height() const;
-
-  private:
-    mutable bool dimensions_cached_ = false;
-    mutable int cached_width_ = -1;
-    mutable int cached_height_ = -1;
-
-    void cache_dimensions() const;
-};
-
-class Keyframe : public Image
-{
-  public:
-    Keyframe(const setman::Episode *episode, const fs::path &path,
-             const char cel, const stage stage);
-
-    constexpr char cel() const { return cel_; }
-    constexpr stage stage() const { return type_; }
-
-    std::string identifier() const;
-
-  private:
-    enum stage type_;
-    char cel_;
-};
-
-class Reference : public Image
-{
-  public:
-    Reference(const fs::path &path, const setman::Episode *episode,
-              anime_object subject);
-
-  private:
-    anime_object subject;
-    std::unordered_map<anime_object, std::string> keys_;
-};
-
-} // namespace setman::materials
+} // namespace materials
+} // namespace setman
