@@ -2,8 +2,12 @@
 
 #pragma once
 
-#include "cuts.hpp"
-#include "materials.hpp"
+// setman
+#include "company.hpp"
+#include "materials/cut.hpp"
+#include "materials/element.hpp"
+
+// std
 #include <filesystem>
 #include <optional>
 #include <regex>
@@ -16,7 +20,6 @@ namespace setman
 {
 
 class Company;
-class Element;
 
 class Series
 {
@@ -36,6 +39,7 @@ class Series
     };
 
     constexpr const std::unordered_map<
+
         std::string, std::unordered_set<materials::GenericMaterial *>> &
     known_tags() const
     {
@@ -43,7 +47,8 @@ class Series
     }
     void refresh_tags();
 
-    const std::unordered_set<std::unique_ptr<Element>>& elements() {
+    const std::unordered_set<std::unique_ptr<materials::Element>> &elements()
+    {
         return elements_;
     }
 
@@ -68,7 +73,7 @@ class Series
     std::unordered_map<std::string,
                        std::unordered_set<materials::GenericMaterial *>>
         tag_lookup_;
-    std::unordered_set<std::unique_ptr<Element>> elements_;
+    std::unordered_set<std::unique_ptr<materials::Element>> elements_;
 
     void build_regex();
 };

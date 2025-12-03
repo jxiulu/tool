@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "materials.hpp"
-#include "types.hpp"
+#include "material.hpp"
+#include "error.hpp"
 #include <expected>
 #include <filesystem>
 #include <optional>

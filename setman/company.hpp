@@ -1,16 +1,21 @@
 // Company
 #pragma once
 
-#include "episode.hpp"
+// std
 #include <filesystem>
 #include <memory>
 #include <string>
 #include <vector>
 
+// setman
+#include "series.hpp"
+
 namespace fs = std::filesystem;
 
 namespace setman
 {
+
+class Series;
 
 class Company
 {

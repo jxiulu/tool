@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "materials.hpp"
+#include "material.hpp"
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <string>
@@ -75,4 +75,5 @@ class Element
 };
 
 } // namespace materials
+//
 } // namespace setman

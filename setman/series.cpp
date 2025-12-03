@@ -1,15 +1,16 @@
 // Series
-#include "Series.hpp"
-
+#include "series.hpp"
+#include "company.hpp"
 #include "episode.hpp"
+
 #include <map>
 
 namespace setman
 {
 
-Series::Series(const Company *parent_company, const std::string &series_code,
+Series::Series(const Company *company, const std::string &series_code,
                const std::string &naming_convention, const int season)
-    : company_(parent_company), id_(series_code),
+    : company_(company), id_(series_code),
       naming_convention_(naming_convention), season_(season)
 {
     build_regex();
@@ -54,7 +55,7 @@ void Series::build_regex()
     naming_regex_ = std::regex(pattern, std::regex::icase);
 }
 
-std::optional<materials::cud_id>
+std::optional<materials::cut_id>
 Series::parse_cut_name(const std::string &name) const
 {
     return materials::parse_cut_name(name, naming_regex_, field_order_);

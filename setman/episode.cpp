@@ -1,23 +1,18 @@
 // episode
 
 #include "episode.hpp"
-#include "cuts.hpp"
-#include "materials.hpp"
-#include <filesystem>
-#include <stdexcept>
-#include "Series.hpp"
 
 namespace setman
 {
 
 Episode::Episode(const class Series *series, const fs::path &parent_dir)
-    : series_(series), root_(parent_dir)
+    : series_(series), location_(parent_dir)
 {
 }
 
 void Episode::scan_path()
 {
-    for (auto &entry : fs::directory_iterator(root_)) {
+    for (auto &entry : fs::directory_iterator(location_)) {
         if (!entry.is_directory())
             continue;
 
@@ -97,7 +92,8 @@ Episode::find_conflicts(const materials::Cut &cut) const
     return duplicates;
 }
 
-materials::GenericMaterial *Episode::find_material(const boost::uuids::uuid &mat_uuid)
+materials::GenericMaterial *
+Episode::find_material(const boost::uuids::uuid &mat_uuid)
 {
     for (auto &mat : materials_) {
         if (mat->uuid() == mat_uuid) {
@@ -128,11 +124,11 @@ Error Episode::up_cut(materials::Cut &cut)
         throw std::logic_error("Precondition violation: check if cut is marked "
                                "done before upping");
 
-    if (!fs::is_directory(up_path())) {
+    if (!fs::is_directory(up_folder())) {
         return code::up_folder_doesnt_exist;
     }
 
-    auto ec = cut.move_to(up_path());
+    auto ec = cut.move_to(up_folder());
     if (ec)
         return {code::generic_filesystem_error, ec.message()};
 
@@ -147,16 +143,14 @@ void Episode::add_material(std::unique_ptr<materials::GenericMaterial> new_mat)
 
 void Episode::reserve_materials(size_t n) { materials_.reserve(n); }
 
-Error Episode::fill_project()
+void Episode::refresh_tags()
 {
-    if (!fs::create_directory(root() / "cels")) {
-        return code::cels_folder_exists;
+    tag_lookup_.clear();
+    for (const auto &material : materials()) {
+        for (const std::string &tag : material->tags()) {
+            tag_lookup_[tag].insert(material.get());
+        }
     }
-    if (!fs::create_directory(root() / "up")) {
-        return code::up_folder_exists;
-    }
-
-    return code::success;
 }
 
 } // namespace setman

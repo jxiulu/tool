@@ -1,8 +1,10 @@
-#include "Element.hpp"
+#include "element.hpp"
 
-namespace setman {
+namespace setman
+{
 
-namespace materials {
+namespace materials
+{
 
 void Element::alias_to_name(int alias_index)
 {
@@ -29,5 +31,5 @@ bool Element::has_tag(const std::string &tag)
     return false;
 }
 
-}
-}
+} // namespace materials
+} // namespace setman

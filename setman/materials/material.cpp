@@ -1,7 +1,7 @@
 // materials
 
-#include "materials.hpp"
-#include "types.hpp"
+#include "material.hpp"
+#include "error.hpp"
 #include <array>
 #include <cstddef>
 #include <cstring>

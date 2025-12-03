@@ -1,7 +1,7 @@
 #pragma once
 
-#include "materials.hpp"
-#include "Element.hpp"
+#include "element.hpp"
+#include "material.hpp"
 #include <unordered_map>
 #include <unordered_set>
 
@@ -17,7 +17,8 @@ class Image : public File
   public:
     Image(const setman::Episode *episode, const fs::path &path, material type);
 
-    constexpr const std::unordered_set<Element*> references() const {
+    constexpr const std::unordered_set<Element *> references() const
+    {
         return references_;
     }
 
@@ -30,8 +31,8 @@ class Image : public File
     mutable int cached_height_ = -1;
 
     void cache_dimensions() const;
-    
-    std::unordered_set<Element*> references_;
+
+    std::unordered_set<Element *> references_;
 };
 
 class Keyframe : public Image
@@ -60,8 +61,6 @@ class Reference : public Image
     anime_object subject;
     std::unordered_map<anime_object, std::string> keys_;
 };
-
-
 
 } // namespace materials
 

@@ -1,6 +1,7 @@
 // google gemini api implementation
 
 #include "google.hpp"
+#include "ai_endpoints/ai.hpp"
 #include <curl/curl.h>
 
 namespace setman::ai
@@ -16,7 +17,7 @@ std::unique_ptr<GoogleClient> new_google_client(const std::string &key)
 }
 
 GoogleClient::GoogleClient(const std::string &api_key, CURL *curl)
-    : GenericClient(api_key, curl)
+    : GenericClient(api_key, curl, available_clients::gemini)
 {
     headers_ = curl_slist_append(headers_, "Content-Type: application/json");
 
@@ -112,6 +113,14 @@ GoogleResponse GoogleClient::send(const GoogleRequest &req)
     curl_easy_getinfo(curl_, CURLINFO_RESPONSE_CODE, &http_code);
 
     return GoogleResponse(response_body, http_code);
+}
+
+GenericResponse GoogleClient::send(GenericRequest request)
+{
+    // For now, return an invalid response since we need a GoogleRequest
+    GenericResponse res("GenericRequest not supported by GoogleClient", 400);
+    res.invalidate("GoogleClient requires GoogleRequest, not GenericRequest");
+    return res;
 }
 
 bool GoogleResponse::process()

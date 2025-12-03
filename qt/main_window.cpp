@@ -3,7 +3,7 @@
 #include "config.hpp"
 #include "google.hpp"
 #include "main_window.hpp"
-#include "materials.hpp"
+#include "materials/materials.hpp"
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QStatusBar>

@@ -147,6 +147,8 @@ class GoogleClient : public GenericClient
     GoogleClient(const std::string &api_key, CURL *curl);
 
     GoogleResponse send(const GoogleRequest &request);
+
+    GenericResponse send(GenericRequest request) override;
 };
 
 std::unique_ptr<GoogleClient> new_google_client(const std::string &key);

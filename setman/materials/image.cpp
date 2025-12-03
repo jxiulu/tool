@@ -1,6 +1,6 @@
-#include "Image.hpp"
-#include "materials.hpp"
-#include "types.hpp"
+#include "image.hpp"
+#include "material.hpp"
+#include "error.hpp"
 
 namespace setman
 {

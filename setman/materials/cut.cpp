@@ -1,11 +1,11 @@
 // cut class and utilities implementation
 
-#include "cuts.hpp"
+#include "cut.hpp"
 
 #include <chrono>
 
 #include "episode.hpp"
-#include "Series.hpp"
+#include "series.hpp"
 
 namespace setman::materials
 {

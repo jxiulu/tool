@@ -2,7 +2,7 @@
 #include "company.hpp"
 
 #include "episode.hpp"
-#include "Series.hpp"
+#include "series.hpp"
 
 namespace setman
 {

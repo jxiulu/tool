@@ -1,4 +1,4 @@
-// types
+// Error
 
 #pragma once
 
