@@ -23,6 +23,7 @@ GenericMaterial::GenericMaterial(const setman::Episode *parent_episode,
     : episode_(parent_episode), file_(file),
       uuid_(materials::generate_uuid()), type_(type)
 {
+    invalidate_cache();
 }
 
 GenericMaterial::GenericMaterial(const setman::Episode *parent_episode,
@@ -30,6 +31,7 @@ GenericMaterial::GenericMaterial(const setman::Episode *parent_episode,
                                  boost::uuids::uuid uuid)
     : episode_(parent_episode), file_(file), uuid_(uuid), type_(type)
 {
+    invalidate_cache();
 }
 
 void GenericMaterial::refresh_cache() const

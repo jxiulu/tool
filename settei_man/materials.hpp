@@ -12,17 +12,25 @@
 #include <unordered_map>
 #include <vector>
 
-#include "types.hpp"
-
 namespace fs = std::filesystem;
 
 namespace setman
 {
+
+//
+// fwd
+//
+
 class Episode;
-}
+class Error;
+
+} // namespace setman
 
 namespace setman::materials
 {
+
+class File;
+class Folder;
 
 //
 // types
@@ -42,8 +50,8 @@ enum class material {
     cut_cels_folder,
     cut_file,
     keyframe,
-    csp,
-    pur,
+    clipstudio,
+    pureref,
     notes,
     folder,
     file,
@@ -52,12 +60,14 @@ enum class material {
     null,
 };
 
-//
-// fwd
-//
-
-class File;
-class Folder;
+enum class anime_object {
+    character,
+    background,
+    prop,
+    reference,
+    other,
+    null,
+};
 
 //
 // functions
@@ -91,9 +101,7 @@ image_dimensions_of(const fs::path &path); // <width, height>
 Error check_if_valid(const fs::path &path,
                      bool write_permission_required = false);
 
-
 int last_integer_sequence_of(const std::string &sequence);
-
 
 //
 // materials
@@ -144,10 +152,10 @@ class GenericMaterial
   private:
     const boost::uuids::uuid uuid_;
 
-    mutable bool cache_valid_ = false;
-    mutable bool file_exists_ = false;
-    mutable bool is_readable_ = false;
-    mutable bool is_writable_ = false;
+    mutable bool cache_valid_;
+    mutable bool file_exists_;
+    mutable bool is_readable_;
+    mutable bool is_writable_;
 };
 
 class File : public GenericMaterial
@@ -196,8 +204,7 @@ class Folder : public GenericMaterial
 class Image : public File
 {
   public:
-    Image(const setman::Episode *episode, const fs::path &path,
-          material type);
+    Image(const setman::Episode *episode, const fs::path &path, material type);
 
     std::expected<int, Error> width() const;
     std::expected<int, Error> height() const;
@@ -226,22 +233,14 @@ class Keyframe : public Image
     char cel_;
 };
 
-enum class anime_object {
-    character,
-    background,
-    prop,
-    reference,
-    other,
-};
-
 class Reference : public Image
 {
   public:
     Reference(const fs::path &path, const setman::Episode *episode,
-              anime_object referencing);
+              anime_object subject);
 
   private:
-    anime_object referencing;
+    anime_object subject;
     std::unordered_map<anime_object, std::string> keys_;
 };
 

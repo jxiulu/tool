@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include "cuts.hpp"
-#include "materials.hpp"
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -18,7 +16,22 @@ namespace fs = std::filesystem;
 namespace setman
 {
 
+//
+// fwd
+//
+
+namespace materials
+{
+class Cut;
+class GenericMaterial;
+} // namespace materials
+
 class Series;
+class Error;
+
+//
+// class
+//
 
 class Episode
 {
@@ -40,7 +53,7 @@ class Episode
     Episode(const Series *series, const fs::path &parent_dir);
 
     //
-    // read-only simple getters
+    // read-only
     //
 
     int number() const { return episode_num_; }
@@ -57,7 +70,8 @@ class Episode
 
     const std::string &notes() const { return notes_; }
 
-    const std::vector<std::unique_ptr<materials::GenericMaterial>> &materials() const
+    const std::vector<std::unique_ptr<materials::GenericMaterial>> &
+    materials() const
     {
         return materials_;
     }
@@ -77,7 +91,7 @@ class Episode
     void set_episode_num(const int num) { episode_num_ = num; }
 
     //
-    // cut operations
+    // cuts
     //
 
     void scan_path();
@@ -87,10 +101,11 @@ class Episode
     find_conflicts(const materials::Cut &cut) const;
 
     //
-    // material operations
+    // materials
     //
 
-    materials::GenericMaterial *find_material(const boost::uuids::uuid &mat_uuid);
+    materials::GenericMaterial *
+    find_material(const boost::uuids::uuid &mat_uuid);
     const materials::GenericMaterial *
     find_material(const boost::uuids::uuid &mat_uuid) const;
 
@@ -98,7 +113,7 @@ class Episode
     // mutators
     //
 
-    void add_cut(std::unique_ptr<materials:: Cut> new_cut);
+    void add_cut(std::unique_ptr<materials::Cut> new_cut);
     void reserve_active_cuts(size_t n);
     void add_material(std::unique_ptr<materials::GenericMaterial> new_mat);
     void reserve_materials(size_t n);
