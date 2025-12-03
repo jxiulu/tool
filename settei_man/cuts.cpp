@@ -15,16 +15,50 @@ namespace setman::materials
 //
 
 Cut::Cut(const setman::Episode *parent_episode, const fs::path &path,
-         const std::optional<int> &scene_num, const int number,
-         const std::string &stage)
-    : stage_(stage), scene_num_(scene_num), num_(number),
-      Matfolder(parent_episode, path, material_type::cut_folder)
+         const std::optional<int> &scene, const int number,
+         const std::string &suffix)
+    : suffix_(suffix), scene_(scene), number_(number), take_(0),
+      Folder(parent_episode, path, material::cut_folder)
 {
-    history_.push_back(
-        {status::not_started, std::chrono::system_clock::now()});
+    history_.push_back({status::not_started, std::chrono::system_clock::now()});
 }
 
-status Cut::status() const { return history_.back().status; }
+bool Cut::identifier_matches_name() const
+{
+    auto parsed = episode_->series()->parse_cut_name(name());
+    if (!parsed.has_value())
+        return false;
+
+    return parsed.value().series_id == episode_->series()->code() &&
+           parsed.value().episode_num == episode_->number() &&
+           parsed.value().scene == scene_ && parsed.value().number == number_ &&
+           parsed.value().take == take_;
+}
+
+Error Cut::assume_identity_from_name()
+{
+    auto parsed = episode_->series()->parse_cut_name(name());
+    if (!parsed.has_value()) {
+        return code::parse_failed;
+    }
+
+    parsed.value().scene = scene_;
+    parsed.value().number = number_;
+    parsed.value().take = take_;
+
+    return {code::success, "Cannot assume episode and series. Please manually "
+                           "move this cut if these changes are desired."};
+}
+
+Error Cut::assume_name_from_identifier() {
+    // todo
+}
+
+cut_id Cut::identifier() const
+{
+    return {episode()->series()->code(), episode()->number(), scene_, number_,
+            suffix_};
+}
 
 void Cut::mark(const enum status new_status)
 {
@@ -33,20 +67,8 @@ void Cut::mark(const enum status new_status)
 
 bool Cut::matches(const Cut &other) const
 {
-    return parent_episode() == other.parent_episode() &&
-           scene() == other.scene() && number() == other.number();
-}
-
-bool Cut::matches(const Cut &one, const Cut &two) { return one.conflicts(two); }
-
-bool Cut::conflicts(const Cut &other) const
-{
-    return matches(other) && stage() == other.stage();
-}
-
-bool Cut::conflicts(const Cut &one, const Cut &two)
-{
-    return one.conflicts(two);
+    return episode() == other.episode() && scene() == other.scene() &&
+           number() == other.number();
 }
 
 //
@@ -73,53 +95,23 @@ std::expected<std::unique_ptr<Cut>, Error> build_from(setman::Episode *episode,
     return newcut;
 }
 
-std::vector<Cut *> find_cut(int number, const std::vector<Cut *> &cuts)
-{
-    std::vector<Cut *> matches{};
-    for (auto &cut : cuts) {
-        if (cut->number() == number)
-            matches.push_back(cut);
-    }
-    return matches;
-}
-
-std::vector<Cut *> find_status(status status, const std::vector<Cut *> &cuts)
-{
-    std::vector<Cut *> matches{};
-    for (auto &cut : cuts) {
-        if (cut->status() == status)
-            matches.push_back(cut);
-    }
-    return matches;
-}
-
-std::vector<Cut *> find_stage(const std::string &stage,
-                              const std::vector<Cut *> &cuts)
-{
-    std::vector<Cut *> matches{};
-    for (auto &cut : cuts) {
-        if (cut->stage() == stage)
-            matches.push_back(cut);
-    }
-    return matches;
-}
-
-std::optional<Info> parse_name(const std::string &foldername,
-                               const std::regex &regex,
-                               const std::vector<std::string> &field_order)
+std::optional<cut_id>
+parse_cut_name(const std::string &name, const std::regex &regex,
+               const std::vector<std::string> field_order)
 {
     std::smatch matches;
-    if (!std::regex_match(foldername, matches, regex)) {
+    if (!std::regex_match(name, matches, regex)) {
         return std::nullopt;
     }
 
-    Info info;
+    materials::cut_id info;
 
     for (size_t i = 0; i < field_order.size(); i++) {
         const std::string &field = field_order[i];
         std::string value = matches[i + 1].str(); // matches[0] is full match
+
         if (field == "series")
-            info.series_code = value;
+            info.series_id = value;
         else if (field == "episode")
             info.episode_num = std::stoi(value);
         else if (field == "scene")
@@ -128,6 +120,12 @@ std::optional<Info> parse_name(const std::string &foldername,
             info.number = std::stoi(value);
         else if (field == "stage")
             info.stage = value;
+        else if (field == "take") {
+            if (value == "r")
+                info.take = 2;
+            else
+                info.take = setman::materials::last_integer_sequence_of(value);
+        }
     }
 
     return info;

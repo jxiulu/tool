@@ -172,7 +172,7 @@ void MainWindow::load_keyframes(const QString &directory) {
             continue;
         }
 
-        auto isimg = setman::materials::isimg(entry.path());
+        auto isimg = setman::materials::is_image(entry.path());
         if (isimg.has_value() && isimg.value()) {
             QString filepath = QString::fromStdString(entry.path().string());
             QString filename =
@@ -201,7 +201,7 @@ void MainWindow::on_ocr() {
     statusBar()->showMessage("Sending to Gemini");
 
     fs::path imgpath(current_img_path_.toStdString());
-    auto result = setman::materials::img_tob64(imgpath);
+    auto result = setman::materials::file_to_b64(imgpath);
 
     if (!result.has_value()) {
         QString errmsg = QString::fromStdString(result.error().message());
@@ -211,7 +211,7 @@ void MainWindow::on_ocr() {
         return;
     }
 
-    auto ext = setman::materials::file_ext(imgpath);
+    auto ext = setman::materials::file_extension_of(imgpath);
     std::string mime_type = "image/jpeg"; // default
     if (ext.has_value()) {
         if (*ext == "png")

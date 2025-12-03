@@ -24,7 +24,7 @@ class Series
   private:
     const class Company *parent_;
     std::string naming_convention_;
-    std::string code_;
+    std::string id_;
     int season_;
 
     std::regex naming_regex_;
@@ -40,10 +40,10 @@ class Series
 
     const Company *parent_company() const { return parent_; }
     const std::string &naming_convention() const { return naming_convention_; }
-    const std::string &code() const { return code_; }
+    const std::string &code() const { return id_; }
     const std::vector<std::unique_ptr<Episode>> &episodes() const;
 
-    std::optional<materials::Info>
+    std::optional<materials::cut_id>
     parse_cut_name(const std::string &folder_name) const;
 
     const Episode *find_episode(const int number);

@@ -134,7 +134,7 @@ Error Episode::up_cut(materials::Cut &cut)
 
     auto ec = cut.move_to(up_path());
     if (ec)
-        return {code::filesystem_error, ec.message()};
+        return {code::generic_filesystem_error, ec.message()};
 
     cut.mark(materials::status::up);
     return code::success;

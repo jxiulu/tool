@@ -1,4 +1,4 @@
-// material classes implementation
+// materials
 
 #include "materials.hpp"
 
@@ -15,63 +15,130 @@ namespace setman::materials
 {
 
 //
-// material class
+//  GenericMaterial
 //
 
 GenericMaterial::GenericMaterial(const setman::Episode *parent_episode,
-                                 const fs::path &path, enum material_type type)
-    : parent_episode_(parent_episode), path_(path),
+                                 const fs::path &file, enum material type)
+    : episode_(parent_episode), file_(file),
       uuid_(materials::generate_uuid()), type_(type)
 {
 }
 
 GenericMaterial::GenericMaterial(const setman::Episode *parent_episode,
-                                 const fs::path &path, enum material_type type,
+                                 const fs::path &file, enum material type,
                                  boost::uuids::uuid uuid)
-    : parent_episode_(parent_episode), path_(path), uuid_(uuid), type_(type)
+    : episode_(parent_episode), file_(file), uuid_(uuid), type_(type)
 {
 }
 
+void GenericMaterial::refresh_cache() const
+{
+    std::error_code ec;
+
+    if (!fs::exists(file_, ec)) {
+        file_exists_ = false;
+        is_readable_ = false;
+        is_writable_ = false;
+    } else {
+        file_exists_ = true;
+
+        std::ifstream read_test(file_);
+        is_readable_ = read_test.is_open();
+        read_test.close();
+
+        std::ofstream write_test(file_, std::ios::app);
+        is_writable_ = write_test.is_open();
+        write_test.close();
+    }
+
+    cache_valid_ = true;
+}
+
+bool GenericMaterial::file_exists() const
+{
+    if (!cache_valid_) {
+        refresh_cache();
+    }
+    return file_exists_;
+}
+
+bool GenericMaterial::file_readable() const
+{
+    if (!cache_valid_) {
+        refresh_cache();
+    }
+    return is_readable_;
+}
+
+bool GenericMaterial::file_writable() const
+{
+    if (!cache_valid_) {
+        refresh_cache();
+    }
+    return is_writable_;
+}
 std::error_code GenericMaterial::move_to(const fs::path &parentfolder)
 {
     // caller needs to verify the validity of the target path
     std::error_code ec;
-    fs::path dest = parentfolder / path().filename();
-    fs::rename(path_, parentfolder, ec);
+    fs::path dest = parentfolder / file().filename();
+    fs::rename(file_, dest, ec);
     if (ec)
         return ec;
 
-    path_ = parentfolder / path().filename();
+    file_ = dest;
+    invalidate_cache(); // always invalidate after operation
 
     return std::error_code(); // success
 }
 
+std::expected<size_t, Error> GenericMaterial::disk_size() const
+{
+    return materials::file_size_of(file_);
+}
+
 //
-// file class
+// File
 //
 
-Matfile::Matfile(const setman::Episode *parent_episode, const fs::path &path,
-                 material_type type)
+File::File(const setman::Episode *parent_episode, const fs::path &path,
+           material type)
     : GenericMaterial(parent_episode, path, type)
 {
 }
 
+std::expected<std::vector<unsigned char>, Error> File::to_bytes() const
+{
+    return materials::file_to_bytes(file_);
+}
+
+std::expected<std::string, Error> File::to_b64() const
+{
+    return materials::file_to_b64(file_);
+}
+
+std::optional<std::string> File::extension() const
+{
+    return materials::file_extension_of(file_);
+}
+
 //
-// folder class
+// Folder
 //
 
-Matfolder::Matfolder(const setman::Episode *parent_episode, const fs::path &path,
-                     material_type type)
+Folder::Folder(const setman::Episode *parent_episode, const fs::path &path,
+               material type)
     : GenericMaterial(parent_episode, path, type)
 {
 }
 
-void Matfolder::add_child(std::unique_ptr<GenericMaterial> child)
+void Folder::add_child(std::unique_ptr<GenericMaterial> child)
 {
     children_.push_back(std::move(child));
 }
 
-GenericMaterial *Matfolder::find_child(const boost::uuids::uuid &uuid)
+GenericMaterial *Folder::find_child(const boost::uuids::uuid &uuid)
 {
     for (auto &child : children_) {
         if (child->uuid() == uuid) {
@@ -82,31 +149,75 @@ GenericMaterial *Matfolder::find_child(const boost::uuids::uuid &uuid)
 }
 
 //
-// image
-//
+// Image
 //
 
-std::expected<std::string, Error> Image::tob64() const
+Image::Image(const setman::Episode *parent, const fs::path &path,
+             material type)
+    : File(parent, path, type)
 {
-    return materials::img_tob64(path_);
 }
 
-std::optional<std::string> Image::ext() const
+void Image::cache_dimensions() const
 {
-    return materials::file_ext(path_);
+    auto dims = image_dimensions_of(file_);
+    if (dims.has_value()) {
+        cached_width_ = dims.value().first;
+        cached_height_ = dims.value().second;
+        dimensions_cached_ = true;
+    } else {
+        cached_width_ = -1;
+        cached_height_ = -1;
+        dimensions_cached_ = false;
+    }
 }
 
-std::expected<size_t, Error> Image::fsize() const
+std::expected<int, Error> Image::width() const
 {
-    return materials::file_size(path_);
+    if (!dimensions_cached_) {
+        cache_dimensions();
+    }
+
+    if (dimensions_cached_ && cached_width_ >= 0) {
+        return cached_width_;
+    }
+
+    return Error(code::file_not_valid, "Could not determine image width");
+}
+
+std::expected<int, Error> Image::height() const
+{
+    if (!dimensions_cached_) {
+        cache_dimensions();
+    }
+
+    if (dimensions_cached_ && cached_height_ >= 0) {
+        return cached_height_;
+    }
+
+    return Error(code::file_not_valid, "Could not determine image height");
 }
 
 //
-// keyframe class
+// Keyframe
 //
 
+Keyframe::Keyframe(const setman::Episode *parent, const fs::path &path,
+                   const char cel, const enum stage type)
+    : Image(parent, path, material::keyframe), cel_(cel), type_(type)
+{
+}
+
+std::string Keyframe::identifier() const
+{
+    std::string identifier = file_name();
+    if (identifier.front() == cel_)
+        identifier.erase(0, 1);
+    return identifier;
+}
+
 //
-// Utility functions
+// function
 //
 
 std::pair<std::regex, std::vector<std::string>>
@@ -152,7 +263,7 @@ build_regex(const std::string &naming_convention)
         std::regex(pattern, std::regex::icase), field_order);
 }
 
-std::expected<bool, Error> isimg(const fs::path &path)
+std::expected<bool, Error> is_image(const fs::path &path)
 {
     // Check if file exists and is a regular file
     if (!fs::exists(path)) {
@@ -229,7 +340,7 @@ std::expected<bool, Error> isimg(const fs::path &path)
     return false;
 }
 
-std::optional<std::string> file_ext(const fs::path &path)
+std::optional<std::string> file_extension_of(const fs::path &path)
 {
     std::string ext = path.extension().string();
     if (ext.empty())
@@ -244,7 +355,7 @@ std::optional<std::string> file_ext(const fs::path &path)
     return ext;
 }
 
-std::expected<size_t, Error> file_size(const fs::path &path)
+std::expected<size_t, Error> file_size_of(const fs::path &path)
 {
     if (!fs::exists(path))
         return std::unexpected(code::file_doesnt_exist);
@@ -258,7 +369,7 @@ std::expected<size_t, Error> file_size(const fs::path &path)
     return size;
 }
 
-std::string tob64(const unsigned char *bytes, size_t len)
+std::string bytes_to_b64(const unsigned char *bytes, size_t len)
 {
     static constexpr char alphabet[] =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -301,16 +412,16 @@ std::string tob64(const unsigned char *bytes, size_t len)
     return output;
 }
 
-std::string tob64(const std::vector<unsigned char> &bytes)
+std::string bytes_to_b64(const std::vector<unsigned char> &bytes)
 {
     if (bytes.empty()) {
         return {};
     }
-    return tob64(bytes.data(), bytes.size());
+    return bytes_to_b64(bytes.data(), bytes.size());
 }
 
 std::expected<std::vector<unsigned char>, Error>
-file_tobytes(const fs::path &path)
+file_to_bytes(const fs::path &path)
 {
     std::vector<unsigned char> buffer;
     std::ifstream ifs(path, std::ios::binary);
@@ -334,26 +445,27 @@ file_tobytes(const fs::path &path)
     return buffer;
 }
 
-std::expected<std::string, Error> img_tob64(const fs::path &path)
+std::expected<std::string, Error> file_to_b64(const fs::path &path)
 {
-    auto check = isimg(path);
+    auto check = is_image(path);
     if (!check.has_value())
         return std::unexpected(check.error());
     if (check.value() == false)
         return std::unexpected(
             Error(code::file_not_valid, "File not an image."));
 
-    auto bytes = file_tobytes(path);
+    auto bytes = file_to_bytes(path);
     if (!bytes.has_value())
         return std::unexpected(bytes.error());
 
-    return tob64(bytes.value_or(std::vector<unsigned char>({})));
+    return bytes_to_b64(bytes.value_or(std::vector<unsigned char>({})));
 }
 
-std::expected<std::pair<int, int>, Error> img_dimensions(const fs::path &path)
+std::expected<std::pair<int, int>, Error>
+image_dimensions_of(const fs::path &path)
 { // <width, height>
     // Check if it's an image first
-    auto check = isimg(path);
+    auto check = is_image(path);
     if (!check.has_value())
         return std::unexpected(check.error());
     if (check.value() == false)
@@ -412,6 +524,52 @@ std::expected<std::pair<int, int>, Error> img_dimensions(const fs::path &path)
             Error(code::file_not_valid, "Unknown or unsupported image format"));
 
     return std::make_pair(w, h);
+}
+
+Error check_if_valid(const fs::path &path, bool wp)
+{
+    std::error_code ec;
+
+    if (!fs::exists(path, ec)) {
+        return Error(code::file_doesnt_exist, ec.message());
+    }
+
+    std::ifstream read_test(path);
+    if (!read_test.is_open()) {
+        return Error(code::file_read_failed,
+                     "Permission denied reading " + path.string());
+    }
+    read_test.close();
+
+    if (!wp)
+        return Error(code::success, path.string() + " is valid");
+
+    std::ofstream write_test(path);
+    if (!write_test.is_open()) {
+        return Error(code::file_write_failed,
+                     "Permission denied writing to " + path.string());
+    }
+    write_test.close();
+
+    return Error(code::success, path.string() + " is valid");
+}
+
+int last_integer_sequence_of(const std::string &sequence)
+{
+    std::string found_buffer;
+    bool digit_found;
+
+    for (int i = sequence.length() - 1; i >= 0; i--) {
+        if (std::isdigit(sequence[i])) {
+            found_buffer.push_back(sequence[i]);
+            digit_found = true;
+        } else if (!digit_found) {
+            break;
+        }
+    }
+
+    std::reverse(found_buffer.begin(), found_buffer.end());
+    return std::stoi(found_buffer);
 }
 
 } // namespace setman::materials

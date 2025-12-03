@@ -1,4 +1,4 @@
-// material classes
+// materials
 
 #pragma once
 
@@ -9,6 +9,7 @@
 #include <memory>
 #include <regex>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "types.hpp"
@@ -24,13 +25,19 @@ namespace setman::materials
 {
 
 //
-// Material classes
+// types
 //
 
-class Matfile;
-class Matfolder;
+enum class stage {
+    lo,
+    ka,
+    ls,
+    gs,
+    other,
+    null,
+};
 
-enum class material_type {
+enum class material {
     cut_folder,
     cut_cels_folder,
     cut_file,
@@ -40,135 +47,20 @@ enum class material_type {
     notes,
     folder,
     file,
+    reference,
     other,
     null,
 };
 
-class GenericMaterial
-{
-  public:
-    virtual ~GenericMaterial() = default;
-    virtual constexpr bool is_folder() const = 0;
-    constexpr material_type type() const { return type_; }
+//
+// fwd
+//
 
-    constexpr const setman::Episode *parent_episode() const { return parent_episode_; }
-
-    constexpr const fs::path &path() const { return path_; }
-    constexpr const std::string &notes() const { return notes_; }
-    constexpr const std::string &alias() const { return alias_; }
-    constexpr const boost::uuids::uuid &uuid() const { return uuid_; }
-
-    std::error_code move_to(const fs::path &location);
-
-    void set_notes(const std::string &notes) { notes_ = notes; }
-    void set_alias(const std::string &alias) { alias_ = alias; }
-
-  private:
-    const boost::uuids::uuid uuid_;
-
-  protected:
-    std::string notes_;
-    std::string alias_;
-    const setman::Episode *parent_episode_;
-    enum material_type type_;
-    fs::path path_;
-
-    GenericMaterial(const setman::Episode *parent_episode, const fs::path &path,
-                    enum material_type type);
-    GenericMaterial(const setman::Episode *parent, const fs::path &path,
-                    enum material_type type, boost::uuids::uuid uuid);
-};
-
-class Matfile : public GenericMaterial
-{
-  public:
-    constexpr bool is_folder() const override { return false; }
-
-    Matfile(const setman::Episode *parent_episode, const fs::path &path,
-            enum material_type type);
-};
-
-class Matfolder : public GenericMaterial
-{
-  protected:
-    std::vector<std::unique_ptr<GenericMaterial>> children_;
-
-  public:
-    constexpr bool is_folder() const override { return true; }
-
-    constexpr const std::vector<std::unique_ptr<GenericMaterial>> &
-    children() const
-    {
-        return children_;
-    }
-
-    void add_child(std::unique_ptr<GenericMaterial> child);
-    GenericMaterial *find_child(const boost::uuids::uuid &uuid);
-
-    Matfolder(const setman::Episode *parent_episode, const fs::path &path,
-              enum material_type type);
-};
-
-class Image : public Matfile
-{
-  public:
-    Image(const setman::Episode *parent, const fs::path &path)
-        : Matfile(parent, path, material_type::file)
-    {
-    }
-
-    std::expected<std::string, Error> tob64() const;
-
-    std::optional<std::string> ext() const;
-    std::expected<size_t, Error> fsize() const;
-
-    std::expected<fs::path, Error> gen_thumbnail(const fs::path &where,
-                                                 int maxsz = 256) const;
-
-    std::expected<int, Error> width() const;
-    std::expected<int, Error> height() const;
-
-  protected:
-  private:
-    mutable int cached_width;
-    mutable int cached_height;
-};
-
-enum class keyframe_type { lo, ls, lss, le, lk, ka, kas, kass, kae, other };
-
-class Keyframe : public Matfile
-{
-  public:
-    Keyframe(const setman::Episode *parent, const fs::path &path,
-             const std::string &cel, const keyframe_type type)
-        : Matfile(parent, path, material_type::keyframe), cel_(cel),
-          keyframe_type_(type)
-    {
-    }
-
-    constexpr const std::string &cel() const { return cel_; }
-    constexpr std::string filename() const
-    {
-        return path_.filename().stem().string();
-    }
-
-    constexpr std::string identifier() const
-    {
-        std::string name = filename();
-        if (name.compare(0, cel_.length(), cel_) == 0) {
-            name.erase(0, cel_.length());
-        }
-        return name;
-    }
-
-  private:
-    keyframe_type keyframe_type_;
-    std::string cel_;
-    std::string filename_;
-};
+class File;
+class Folder;
 
 //
-// utility
+// functions
 //
 
 inline boost::uuids::uuid generate_uuid()
@@ -180,20 +72,177 @@ inline boost::uuids::uuid generate_uuid()
 std::pair<std::regex, std::vector<std::string>>
 build_regex(const std::string &naming_convention);
 
-std::expected<bool, Error> isimg(const fs::path &file);
+std::expected<bool, Error> is_image(const fs::path &file);
 
-std::string tob64(const unsigned char *buf, size_t len);
-std::string tob64(const std::vector<unsigned char> &data);
+std::string bytes_to_b64(const unsigned char *buf, size_t len);
+std::string bytes_to_b64(const std::vector<unsigned char> &data);
 
-std::optional<std::string> file_ext(const fs::path &path);
-std::expected<size_t, Error> file_size(const fs::path &path);
+std::optional<std::string> file_extension_of(const fs::path &path);
+std::expected<size_t, Error> file_size_of(const fs::path &path);
 
 std::expected<std::vector<unsigned char>, Error>
-file_tobytes(const fs::path &path);
+file_to_bytes(const fs::path &path);
 
-std::expected<std::string, Error> img_tob64(const fs::path &path);
+std::expected<std::string, Error> file_to_b64(const fs::path &path);
 
 std::expected<std::pair<int, int>, Error>
-img_dimensions(const fs::path &path); // <width, height>
+image_dimensions_of(const fs::path &path); // <width, height>
+
+Error check_if_valid(const fs::path &path,
+                     bool write_permission_required = false);
+
+
+int last_integer_sequence_of(const std::string &sequence);
+
+
+//
+// materials
+//
+
+// ( file is generic
+// file directory is a folder )
+
+class GenericMaterial
+{
+  public:
+    virtual ~GenericMaterial() = default;
+    virtual constexpr bool is_directory() const = 0;
+
+    constexpr material type() const { return type_; }
+    constexpr const setman::Episode *episode() const { return episode_; }
+    constexpr const fs::path &file() const { return file_; }
+    constexpr const std::string &notes() const { return notes_; }
+    constexpr const std::string &alias() const { return alias_; }
+    constexpr const boost::uuids::uuid &uuid() const { return uuid_; }
+
+    std::expected<size_t, Error> disk_size() const;
+    std::error_code move_to(const fs::path &parent_location);
+    constexpr std::string name() const { return file_.filename().string(); }
+
+    bool file_exists() const;
+    bool file_readable() const;
+    bool file_writable() const;
+
+    void new_notes(const std::string &notes) { notes_ = notes; }
+    void new_alias(const std::string &alias) { alias_ = alias; }
+
+  protected:
+    std::string notes_;
+    std::string alias_;
+    const setman::Episode *episode_;
+    enum material type_;
+    fs::path file_;
+
+    GenericMaterial(const setman::Episode *episode, const fs::path &path,
+                    enum material type);
+    GenericMaterial(const setman::Episode *episode, const fs::path &path,
+                    enum material type, boost::uuids::uuid uuid);
+
+    void refresh_cache() const;
+    void invalidate_cache() const { cache_valid_ = false; }
+
+  private:
+    const boost::uuids::uuid uuid_;
+
+    mutable bool cache_valid_ = false;
+    mutable bool file_exists_ = false;
+    mutable bool is_readable_ = false;
+    mutable bool is_writable_ = false;
+};
+
+class File : public GenericMaterial
+{
+  public:
+    constexpr bool is_directory() const override { return false; }
+
+    std::expected<std::vector<unsigned char>, Error> to_bytes() const;
+    std::expected<std::string, Error> to_b64() const;
+    std::optional<std::string> extension() const;
+
+    File(const setman::Episode *episode, const fs::path &path,
+         enum material type);
+
+    constexpr std::string file_name() const
+    {
+        return file_.filename().string();
+    }
+};
+
+class Folder : public GenericMaterial
+{
+  public:
+    constexpr bool is_directory() const override { return true; }
+
+    constexpr const std::vector<std::unique_ptr<GenericMaterial>> &
+    children() const
+    {
+        return children_;
+    }
+
+    void add_child(std::unique_ptr<GenericMaterial> child);
+    GenericMaterial *find_child(const boost::uuids::uuid &uuid);
+
+    Folder(const setman::Episode *episode, const fs::path &path,
+           enum material type);
+
+  protected:
+    std::vector<std::unique_ptr<GenericMaterial>> children_;
+};
+
+//
+// images
+//
+
+class Image : public File
+{
+  public:
+    Image(const setman::Episode *episode, const fs::path &path,
+          material type);
+
+    std::expected<int, Error> width() const;
+    std::expected<int, Error> height() const;
+
+  private:
+    mutable bool dimensions_cached_ = false;
+    mutable int cached_width_ = -1;
+    mutable int cached_height_ = -1;
+
+    void cache_dimensions() const;
+};
+
+class Keyframe : public Image
+{
+  public:
+    Keyframe(const setman::Episode *episode, const fs::path &path,
+             const char cel, const stage stage);
+
+    constexpr char cel() const { return cel_; }
+    constexpr stage stage() const { return type_; }
+
+    std::string identifier() const;
+
+  private:
+    enum stage type_;
+    char cel_;
+};
+
+enum class anime_object {
+    character,
+    background,
+    prop,
+    reference,
+    other,
+};
+
+class Reference : public Image
+{
+  public:
+    Reference(const fs::path &path, const setman::Episode *episode,
+              anime_object referencing);
+
+  private:
+    anime_object referencing;
+    std::unordered_map<anime_object, std::string> keys_;
+};
 
 } // namespace setman::materials

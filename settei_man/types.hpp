@@ -24,10 +24,11 @@ enum class code {
     file_not_valid,
     file_open_failed,
     file_read_failed,
+    file_write_failed,
     file_size_count_failed,
     file_already_exists,
 
-    filesystem_error,
+    generic_filesystem_error,
 
     folder_doesnt_exist,
     folder_open_failed,
@@ -44,7 +45,7 @@ enum class severity {
     critical,
 };
 
-constexpr std::string_view code_to_message(enum code code)
+constexpr std::string_view to_message(enum code code)
 {
     switch (code) {
     case code::success:
@@ -78,7 +79,7 @@ constexpr std::string_view code_to_message(enum code code)
     case code::file_already_exists:
         return "File already exists";
 
-    case code::filesystem_error:
+    case code::generic_filesystem_error:
         return "Filesystem operation failed";
 
     case code::folder_doesnt_exist:
@@ -122,14 +123,14 @@ class Error
 
     constexpr operator std::string() const
     {
-        return msg_.value_or(std::string(code_to_message(errc_)));
+        return msg_.value_or(std::string(to_message(errc_)));
     }
     constexpr operator bool() const { return errc_ == code::success; }
     constexpr operator code() const { return errc_; }
 
     constexpr const std::string message() const
     {
-        return msg_.value_or(std::string(code_to_message(errc_)));
+        return msg_.value_or(std::string(to_message(errc_)));
     }
     constexpr code code() const { return errc_; }
     constexpr severity severity() const { return sev_; }

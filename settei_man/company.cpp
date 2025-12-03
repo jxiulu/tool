@@ -2,6 +2,7 @@
 
 #include <map>
 
+#include "cuts.hpp"
 #include "episode.hpp"
 
 namespace setman
@@ -13,7 +14,7 @@ namespace setman
 
 Series::Series(const Company *parent_company, const std::string &series_code,
                const std::string &naming_convention, const int season)
-    : parent_(parent_company), code_(series_code),
+    : parent_(parent_company), id_(series_code),
       naming_convention_(naming_convention), season_(season)
 {
     build_regex();
@@ -33,11 +34,9 @@ void Series::build_regex()
     constexpr char numeric[] = "(\\d+)";
 
     std::map<std::string, std::string> mapping = {
-        {"{series}", alphanumeric},
-        {"{episode}", numeric},
-        {"{scene}", numeric},
-        {"{cut}", numeric},
-        {"{stage}", alphanumeric_with_underscores}};
+        {"{series}", alphanumeric}, {"{episode}", numeric},
+        {"{scene}", numeric},       {"{cut}", numeric},
+        {"{stage}", alphanumeric},  {"{take}", alphanumeric}};
 
     field_order_.clear();
 
@@ -65,32 +64,10 @@ void Series::build_regex()
     naming_regex_ = std::regex(pattern, std::regex::icase);
 }
 
-std::optional<materials::Info>
-Series::parse_cut_name(const std::string &folder_name) const
+std::optional<materials::cut_id>
+Series::parse_cut_name(const std::string &name) const
 {
-    std::smatch matches;
-    if (!std::regex_match(folder_name, matches, naming_regex_)) {
-        return std::nullopt;
-    }
-
-    materials::Info info;
-    info.series_code = code_;
-
-    for (size_t i = 0; i < field_order_.size(); i++) {
-        const std::string &field = field_order_[i];
-        std::string value = matches[i + 1].str(); // matches[0] is full match
-
-        if (field == "episode")
-            info.episode_num = std::stoi(value);
-        else if (field == "scene")
-            info.scene = std::stoi(value);
-        else if (field == "cut")
-            info.number = std::stoi(value);
-        else if (field == "stage")
-            info.stage = value;
-    }
-
-    return info;
+    return materials::parse_cut_name(name, naming_regex_, field_order_);
 }
 
 const Episode *Series::find_episode(const int number)
@@ -119,8 +96,8 @@ void Company::set_path(const fs::path &path) { root_ = path; }
 void Company::add_series(const std::string &series_code,
                          const std::string &naming_convention, const int season)
 {
-    series_.push_back(std::make_unique<Series>(
-        this, series_code, naming_convention, season));
+    series_.push_back(
+        std::make_unique<Series>(this, series_code, naming_convention, season));
 }
 
 const class Series *Company::find_series(const std::string &code)
