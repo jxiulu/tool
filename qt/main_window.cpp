@@ -1,9 +1,9 @@
 // main window imp
 
 #include "config.hpp"
-#include "google.hpp"
+#include "ai_endpoints/google.hpp"
 #include "main_window.hpp"
-#include "materials/materials.hpp"
+#include "materials/material.hpp"
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QStatusBar>
@@ -221,23 +221,22 @@ void MainWindow::on_ocr() {
         // etc.
     }
 
-    setman::ai::GoogleRequest req;
-    req.set_model("gemini-3.0-pro");
+    setman::ai::google_request req;
+    req.set_model("gemini-2.0-flash-exp");
     req.add_inline_image(result.value(), mime_type);
     req.add_text("Please extract all visible text in this image. Provide this "
                  "text in a structured format");
 
     auto response = ocr_client_->send(req);
 
-    if (!response.valid()) {
+    if (!response.valid) {
         ocr_content->setText("Error: " +
-                             QString::fromStdString(response.error()));
+                             QString::fromStdString(response.error));
         statusBar()->showMessage("Gemini request failed", 3000);
     } else {
-        const auto &content = response.content();
+        const auto &content = response.content;
         if (!content.empty()) {
-            QString text = QString::fromStdString(
-                std::string(content[0].data(), content[0].size()));
+            QString text = QString::fromStdString(content[0]);
             ocr_content->setText(text);
 
             statusBar()->showMessage("Response received!", 3000);

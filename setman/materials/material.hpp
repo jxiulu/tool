@@ -11,6 +11,7 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
+#include "uuid.hpp"
 
 namespace fs = std::filesystem;
 
@@ -69,8 +70,7 @@ enum class anime_object {
 
 inline boost::uuids::uuid generate_uuid()
 {
-    static boost::uuids::random_generator gen;
-    return gen();
+    return setman::generate_uuid();
 }
 
 std::pair<std::regex, std::vector<std::string>>

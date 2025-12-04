@@ -1,7 +1,5 @@
-// google gemini api implementation
-
 #include "google.hpp"
-#include "ai_endpoints/ai.hpp"
+#include "curl_helpers.hpp"
 #include <curl/curl.h>
 
 namespace setman::ai
@@ -17,21 +15,99 @@ std::unique_ptr<GoogleClient> new_google_client(const std::string &key)
 }
 
 GoogleClient::GoogleClient(const std::string &api_key, CURL *curl)
-    : GenericClient(api_key, curl, available_clients::gemini)
+    : api_key_(api_key), curl_(curl), headers_(nullptr)
 {
-    headers_ = curl_slist_append(headers_, "Content-Type: application/json");
-
-    curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers_);
-    curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, setman::write_callback);
+    headers_ = curl_helpers::add_json_header(headers_);
 }
 
-json GoogleRequest::payload() const
+GoogleClient::~GoogleClient()
+{
+    if (headers_)
+        curl_slist_free_all(headers_);
+}
+
+google_request &google_request::add_text(const std::string &text)
+{
+    content part;
+    part.part_type = content_type::text;
+    part.text_content = text;
+    parts.push_back(part);
+    return *this;
+}
+
+google_request &
+google_request::add_inline_image(const std::string &base64_data,
+                                 const std::string &mime_type)
+{
+    content part;
+    part.part_type = content_type::inline_image;
+    part.data = base64_data;
+    part.mime_type = mime_type;
+    parts.push_back(part);
+    return *this;
+}
+
+google_request &google_request::add_file_uri(const std::string &file_uri,
+                                             const std::string &mime_type)
+{
+    content part;
+    part.part_type = content_type::file_uri;
+    part.data = file_uri;
+    part.mime_type = mime_type;
+    parts.push_back(part);
+    return *this;
+}
+
+google_request &
+google_request::add_safety_setting(const std::string &category,
+                                   const std::string &threshold)
+{
+    safety_settings.push_back({category, threshold});
+    return *this;
+}
+
+google_request &google_request::set_model(const std::string &model_name)
+{
+    model = model_name;
+    return *this;
+}
+
+google_request &google_request::set_temperature(double temp)
+{
+    temperature = temp;
+    return *this;
+}
+
+google_request &google_request::set_max_tokens(int tokens)
+{
+    max_tokens = tokens;
+    return *this;
+}
+
+google_request &google_request::set_top_p(double p)
+{
+    top_p = p;
+    return *this;
+}
+
+google_request &google_request::set_top_k(int k)
+{
+    top_k = k;
+    return *this;
+}
+
+google_request &google_request::set_candidate_count(int count)
+{
+    candidate_count = count;
+    return *this;
+}
+
+json google_request::to_json() const
 {
     json payload;
 
-    // Build parts array
     json parts_array = json::array();
-    for (const auto &part : parts_) {
+    for (const auto &part : parts) {
         json part_obj;
 
         switch (part.part_type) {
@@ -53,32 +129,29 @@ json GoogleRequest::payload() const
         parts_array.push_back(part_obj);
     }
 
-    // Build contents
     payload["contents"] = json::array();
     payload["contents"].push_back({{"parts", parts_array}});
 
-    // Generation config
     json gen_config;
-    if (temperature_.has_value())
-        gen_config["temperature"] = *temperature_;
-    if (max_tokens_.has_value())
-        gen_config["maxOutputTokens"] = *max_tokens_;
-    if (top_p_.has_value())
-        gen_config["topP"] = *top_p_;
-    if (top_k_.has_value())
-        gen_config["topK"] = *top_k_;
-    if (candidate_count_.has_value())
-        gen_config["candidateCount"] = *candidate_count_;
-    if (!stop_sequences_.empty())
-        gen_config["stopSequences"] = stop_sequences_;
+    if (temperature.has_value())
+        gen_config["temperature"] = *temperature;
+    if (max_tokens.has_value())
+        gen_config["maxOutputTokens"] = *max_tokens;
+    if (top_p.has_value())
+        gen_config["topP"] = *top_p;
+    if (top_k.has_value())
+        gen_config["topK"] = *top_k;
+    if (candidate_count.has_value())
+        gen_config["candidateCount"] = *candidate_count;
+    if (!stop_sequences.empty())
+        gen_config["stopSequences"] = stop_sequences;
 
     if (!gen_config.empty())
         payload["generationConfig"] = gen_config;
 
-    // Safety settings
-    if (!safety_settings_.empty()) {
+    if (!safety_settings.empty()) {
         json safety_array = json::array();
-        for (const auto &setting : safety_settings_) {
+        for (const auto &setting : safety_settings) {
             safety_array.push_back({{"category", setting.category},
                                     {"threshold", setting.threshold}});
         }
@@ -88,89 +161,78 @@ json GoogleRequest::payload() const
     return payload;
 }
 
-GoogleResponse GoogleClient::send(const GoogleRequest &req)
+google_response GoogleClient::send(const google_request &req)
 {
-    std::string response_body;
-    std::string request_body = req.payload().dump();
-
-    // Build full URL with model and API key
     std::string url =
-        req.endpoint() + req.model() + ":generateContent?key=" + api_key_;
+        req.endpoint + req.model + ":generateContent?key=" + api_key_;
 
-    curl_easy_setopt(curl_, CURLOPT_URL, url.c_str());
-    curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, request_body.c_str());
-    curl_easy_setopt(curl_, CURLOPT_POSTFIELDSIZE, request_body.size());
-    curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &response_body);
+    auto http_resp =
+        curl_helpers::post_json(curl_, url, req.to_json(), headers_);
 
-    CURLcode ec = curl_easy_perform(curl_);
-    if (ec != CURLE_OK) {
-        GoogleResponse res("", 0);
-        res.invalidate(std::string("[CURL ERROR] ") + curl_easy_strerror(ec));
-        return res;
+    if (!http_resp.error.empty()) {
+        return {.content = {},
+                .valid = false,
+                .error = "[CURL ERROR] " + http_resp.error,
+                .raw_json = ""};
     }
 
-    long http_code = 0;
-    curl_easy_getinfo(curl_, CURLINFO_RESPONSE_CODE, &http_code);
-
-    return GoogleResponse(response_body, http_code);
+    return google_response::parse(http_resp.body, http_resp.http_code);
 }
 
-GenericResponse GoogleClient::send(GenericRequest request)
+google_response google_response::parse(const std::string &raw, long http_code)
 {
-    // For now, return an invalid response since we need a GoogleRequest
-    GenericResponse res("GenericRequest not supported by GoogleClient", 400);
-    res.invalidate("GoogleClient requires GoogleRequest, not GenericRequest");
-    return res;
-}
+    google_response result;
+    result.raw_json = raw;
+    result.valid = false;
 
-bool GoogleResponse::process()
-{
-    // Check for prompt feedback (blocks)
-    if (json_.contains("promptFeedback")) {
-        const auto &feedback = json_["promptFeedback"];
+    if (http_code != 200) {
+        result.error = "[HTTP CODE " + std::to_string(http_code) + "]";
+        return result;
+    }
+
+    json parsed;
+    try {
+        parsed = json::parse(raw);
+    } catch (json::exception &e) {
+        result.error = std::string("[JSON ERROR] ") + e.what();
+        return result;
+    }
+
+    if (parsed.contains("promptFeedback")) {
+        const auto &feedback = parsed["promptFeedback"];
         if (feedback.contains("blockReason")) {
-            prompt_feedback_ = feedback["blockReason"].get<std::string>();
-            invalidate("[GOOGLE] Prompt blocked: " + *prompt_feedback_);
-            return false;
+            result.prompt_feedback = feedback["blockReason"].get<std::string>();
+            result.error =
+                "[GOOGLE] Prompt blocked: " + *result.prompt_feedback;
+            return result;
         }
     }
 
-    // Extract candidates array
-    json *candidates = find("candidates");
-    if (!candidates) {
-        invalidate("[GOOGLE] Missing 'candidates' field in response");
-        return false;
+    if (!parsed.contains("candidates")) {
+        result.error = "[GOOGLE] Missing 'candidates' field in response";
+        return result;
     }
 
-    if (!candidates->is_array()) {
-        invalidate("[GOOGLE] 'candidates' field is not an array");
-        return false;
+    const auto &candidates = parsed["candidates"];
+    if (!candidates.is_array() || candidates.empty()) {
+        result.error = "[GOOGLE] 'candidates' field is empty or not an array";
+        return result;
     }
 
-    if (candidates->empty()) {
-        invalidate("[GOOGLE] 'candidates' array is empty");
-        return false;
-    }
+    for (size_t i = 0; i < candidates.size(); i++) {
+        const auto &candidate = candidates[i];
 
-    content_.reserve(candidates->size());
-
-    // Process each candidate
-    for (size_t i = 0; i < candidates->size(); i++) {
-        const auto &candidate = (*candidates)[i];
-
-        // Extract finish reason from first candidate
         if (i == 0 && candidate.contains("finishReason")) {
-            finish_reason_ = candidate["finishReason"].get<std::string>();
+            result.finish_reason = candidate["finishReason"].get<std::string>();
         }
 
-        // Extract safety ratings from first candidate
         if (i == 0 && candidate.contains("safetyRatings")) {
             const auto &ratings = candidate["safetyRatings"];
             if (ratings.is_array()) {
                 for (const auto &rating : ratings) {
                     if (rating.contains("category") &&
                         rating.contains("probability")) {
-                        safety_ratings_.push_back(
+                        result.safety_ratings.push_back(
                             {rating["category"].get<std::string>(),
                              rating["probability"].get<std::string>()});
                     }
@@ -178,28 +240,18 @@ bool GoogleResponse::process()
             }
         }
 
-        // Extract content
-        if (!candidate.contains("content")) {
-            invalidate("[GOOGLE] Candidate at index " + std::to_string(i) +
-                       " missing 'content' field");
-            return false;
+        if (!candidate.contains("content") ||
+            !candidate["content"].contains("parts")) {
+            result.error = "[GOOGLE] Candidate missing content or parts";
+            return result;
         }
 
-        const auto &content = candidate["content"];
-        if (!content.contains("parts")) {
-            invalidate("[GOOGLE] Content at index " + std::to_string(i) +
-                       " missing 'parts' field");
-            return false;
-        }
-
-        const auto &parts = content["parts"];
+        const auto &parts = candidate["content"]["parts"];
         if (!parts.is_array()) {
-            invalidate("[GOOGLE] Parts at index " + std::to_string(i) +
-                       " is not an array");
-            return false;
+            result.error = "[GOOGLE] Parts is not an array";
+            return result;
         }
 
-        // Concatenate all text parts
         std::string full_text;
         for (const auto &part : parts) {
             if (part.contains("text")) {
@@ -208,35 +260,31 @@ bool GoogleResponse::process()
         }
 
         if (!full_text.empty()) {
-            // Store as string_view referencing the JSON string
-            const auto &text_str =
-                json_["candidates"][i]["content"]["parts"][0]["text"]
-                    .get_ref<const std::string &>();
-            content_.emplace_back(text_str);
+            result.content.push_back(full_text);
         }
     }
 
-    // Extract usage metadata
-    if (json_.contains("usageMetadata")) {
-        const auto &usage = json_["usageMetadata"];
+    if (parsed.contains("usageMetadata")) {
+        const auto &usage = parsed["usageMetadata"];
 
         if (usage.contains("promptTokenCount") &&
             usage["promptTokenCount"].is_number_integer()) {
-            prompt_tokens_ = usage["promptTokenCount"].get<int>();
+            result.prompt_tokens = usage["promptTokenCount"].get<int>();
         }
 
         if (usage.contains("candidatesTokenCount") &&
             usage["candidatesTokenCount"].is_number_integer()) {
-            candidates_tokens_ = usage["candidatesTokenCount"].get<int>();
+            result.candidates_tokens = usage["candidatesTokenCount"].get<int>();
         }
 
         if (usage.contains("totalTokenCount") &&
             usage["totalTokenCount"].is_number_integer()) {
-            total_tokens_ = usage["totalTokenCount"].get<int>();
+            result.total_tokens = usage["totalTokenCount"].get<int>();
         }
     }
 
-    return true;
+    result.valid = true;
+    return result;
 }
 
 } // namespace setman::ai

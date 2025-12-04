@@ -1,35 +1,53 @@
-// Conversation
+// Conversations
+
 #pragma once
 
-#include "services/ai.hpp"
-#include "unordered_set"
+#include <chrono>
+#include <string>
+#include <vector>
+
+// setman
+#include "language.hpp"
 
 namespace setman
 {
 
-namespace conversation
+class Company;
+
+namespace conversations
 {
 
 struct message {
-    std::string name;
-    std::string message;
+    std::string username;
+    std::string original;
+    language original_language;
+
+    std::string translation;
+    language translated_language;
+    std::chrono::system_clock::time_point timestamp;
+
+    message(const std::string &username, const std::string &content,
+            language original)
+        : username(username), original(content), original_language(original),
+          timestamp(std::chrono::system_clock::now())
+    {
+    }
 };
 
 class Conversation
 {
   public:
-  private:
-};
+    Conversation(Company *company) : company_(company) {}
+    ~Conversation() = default;
 
-class ConversationModule
-{
-  public:
-    using Conversations = std::unordered_set<std::unique_ptr<Conversation>>;
+    constexpr const std::vector<message> &messages() const { return messages_; }
 
   private:
-    Conversations conversations_;
+    Company *company_;
+
+    std::vector<message> messages_;
 };
 
-} // namespace conversation
+} // namespace conversations
 
 } // namespace setman

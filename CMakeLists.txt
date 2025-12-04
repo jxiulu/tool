@@ -21,7 +21,7 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets Core Gui)
 add_library(SetmanAIEndpoints)
 target_sources(
   SetmanAIEndpoints
-  PRIVATE setman/ai_endpoints/ai.cpp setman/ai_endpoints/deepl.cpp
+  PRIVATE setman/ai_endpoints/curl_helpers.cpp setman/ai_endpoints/deepl.cpp
           setman/ai_endpoints/openrouter.cpp setman/ai_endpoints/google.cpp)
 target_include_directories(SetmanAIEndpoints PUBLIC setman/ai-endpoints/
                                                     setman/)
@@ -34,7 +34,7 @@ target_sources(
   PRIVATE setman/materials/material.cpp setman/materials/cut.cpp
           setman/materials/image.cpp setman/materials/element.cpp)
 target_include_directories(SetmanMaterials PUBLIC setman/materials setman/)
-target_link_libraries(SetmanMaterials ${Boost_LIBRARIES} spdlog::spdlog
+target_link_libraries(SetmanMaterials spdlog::spdlog
                       SetmanCore)
 
 add_library(SetmanCore)
@@ -42,22 +42,23 @@ target_sources(
   SetmanCore PRIVATE setman/episode.cpp setman/series.cpp setman/error.cpp
                      setman/company.cpp setman/config.cpp)
 target_include_directories(SetmanCore PUBLIC setman ${Boost_INCLUDE_DIRS})
-target_link_libraries(SetmanCore SetmanMaterials SetmanAIEndpoints)
+target_link_libraries(SetmanCore SetmanMaterials SetmanAIEndpoints ${Boost_LIBRARIES})
+
+add_library(SetmanConversationsModule)
+target_sources(SetmanConversationsModule PRIVATE
+setman/conversations/conversations.cpp)
+target_include_directories(SetmanConversationsModule PUBLIC setman/)
 
 add_library(SetmanTranslationService)
-target_sources(SetmanTranslationService
-               PRIVATE setman/translation_service/translation_service.cpp)
+target_sources(
+  SetmanTranslationService
+  PRIVATE setman/translation_service/translation_service.cpp
+          setman/translation_service/response_converters.cpp)
 target_include_directories(
   SetmanTranslationService PUBLIC setman/ setman/ai_endpoints
                                   setman/translation_service)
-target_link_libraries(SetmanTranslationService SetmanAIEndpoints CURL::libcurl)
-
-add_library(SetmanConversations)
-target_sources(SetmanConversations
-               PRIVATE setman/conversations/conversation.cpp)
-target_include_directories(SetmanConversations PUBLIC setman/
-                                                      setman/ai_endpoints/)
-target_link_libraries(SetmanConversations SetmanAIEndpoints)
+target_link_libraries(SetmanTranslationService SetmanAIEndpoints
+SetmanConversationsModule CURL::libcurl)
 
 add_executable(Application)
 target_sources(Application PRIVATE qt/main.cpp qt/main_window.cpp)
@@ -68,7 +69,6 @@ target_link_libraries(
   SetmanMaterials
   SetmanTranslationService
   SetmanAIEndpoints
-  SetmanConversations
   Qt6::Widgets
   Qt6::Core
   Qt6::Gui)

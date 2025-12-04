@@ -1,75 +1,96 @@
 // TranslationService
 #pragma once
 
-//curl
+// curl
 #include <curl/curl.h>
 
-//std
-#include <memory>
-#include <unordered_set>
-
 // setman
-#include "ai_endpoints/ai.hpp"
-#include "ai_endpoints/google.hpp"
+#include "ai_endpoints/deepl.hpp"
+#include "ai_endpoints/openrouter.hpp"
+#include "conversations/conversation.hpp"
+#include "language.hpp"
 
 namespace setman
 {
 
+namespace conversations
+{
+
+class Conversation;
+
+}
+
 namespace translation_service
 {
 
-enum class language {
-    en,
-    jp,
-};
-
-enum available_clients {
-    gemini,
+enum client {
     deepl,
     openrouter,
 };
 
-
 class TranslationService
 {
   public:
-    template<typename T>
-    using Resources = std::unordered_set<std::unique_ptr<T>>;
+    using Conversation = setman::conversations::Conversation;
 
-    TranslationService(CURL *curl, available_clients client_choice,
-                       const std::string &client_key, language target_language)
+    TranslationService(CURL *curl, enum language target_language,
+                       setman::ai::OpenRouterClient *openrouter,
+                       setman::ai::DeepLClient *deepl)
         : curl_(curl), target_language_(target_language)
     {
-        switch (client_choice) {
-        case (gemini):
-            clients_.insert(
-                std::make_unique<setman::ai::GoogleClient>(client_key, curl_));
-            break;
-        case (deepl):
-            break;
-        case (openrouter):
-            break;
-        }
+        if (!openrouter)
+            client_choice_ = client::deepl;
+        else if (!deepl)
+            client_choice_ = client::openrouter;
+
+        // placeholder. prefer deepl for now.
     }
 
-    static std::unique_ptr<TranslationService>
-    create(language target_language, available_clients client_choice,
-             const std::string &client_key)
+    ~TranslationService() = default;
+
+    void choose_client(client choice) { client_choice_ = choice; }
+    setman::ai::OpenRouterClient *openrouter_client() const
     {
-        CURL *curl = curl_easy_init();
-        if (!curl)
-            return nullptr;
+        return openrouter_;
+    }
+    setman::ai::DeepLClient *deepl_client() const { return deepl_; }
 
-        return std::make_unique<TranslationService>(
-            curl, client_choice, client_key, target_language);
+    constexpr language target_language() const { return target_language_; }
+    TranslationService &set_target_language(language target)
+    {
+        target_language_ = target;
+        return *this;
     }
 
-    // todo, general translation w/ context support
+    constexpr std::optional<language> source_language() const
+    {
+        return source_language_;
+    }
+    TranslationService &set_source_language(language source)
+    {
+        source_language_ = source;
+        return *this;
+    }
+    TranslationService &auto_detect_source_language()
+    {
+        source_language_ = std::nullopt;
+        return *this;
+    }
+
+    std::string translate(const std::string &message);
+
+    void translate(setman::conversations::Conversation &conversation); // todo
 
   private:
     CURL *curl_;
+
     enum language target_language_;
-    Resources<setman::ai::GenericClient> clients_;
+    std::optional<language> source_language_;
+
+    client client_choice_;
+
+    setman::ai::OpenRouterClient *openrouter_;
+    setman::ai::DeepLClient *deepl_;
 };
 
 } // namespace translation_service

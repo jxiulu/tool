@@ -1,6 +1,5 @@
-// openrouter client implementation
-
 #include "openrouter.hpp"
+#include "curl_helpers.hpp"
 #include <curl/curl.h>
 
 namespace setman::ai
@@ -16,30 +15,105 @@ std::unique_ptr<OpenRouterClient> new_openrouter_client(const std::string &key)
 }
 
 OpenRouterClient::OpenRouterClient(const std::string &api_key, CURL *curl)
-    : GenericClient(api_key, curl)
+    : api_key_(api_key), curl_(curl), headers_(nullptr)
 {
-    headers_ = curl_slist_append(headers_, "Content-Type: application/json");
-    headers_ = curl_slist_append(
-        headers_, std::string("Authorization: Bearer " + api_key).c_str());
-
-    curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers_);
-    curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, setman::write_callback);
+    headers_ = curl_helpers::add_json_header(headers_);
+    headers_ = curl_helpers::add_bearer_auth(headers_, api_key_);
 }
 
-json OpenRouterRequest::payload() const
+OpenRouterClient::~OpenRouterClient()
+{
+    if (headers_)
+        curl_slist_free_all(headers_);
+}
+
+openrouter_request &openrouter_request::add_message(role r,
+                                                    const std::string &content)
+{
+    messages.push_back({r, content});
+    return *this;
+}
+
+openrouter_request &openrouter_request::set_model(const std::string &model_name)
+{
+    model = model_name;
+    return *this;
+}
+
+openrouter_request &
+openrouter_request::set_models(const std::vector<std::string> &model_list)
+{
+    models = model_list;
+    return *this;
+}
+
+openrouter_request &openrouter_request::set_temperature(double temp)
+{
+    temperature = temp;
+    return *this;
+}
+
+openrouter_request &openrouter_request::set_max_tokens(int tokens)
+{
+    max_tokens = tokens;
+    return *this;
+}
+
+openrouter_request &openrouter_request::set_top_p(double p)
+{
+    top_p = p;
+    return *this;
+}
+
+openrouter_request &openrouter_request::set_top_k(int k)
+{
+    top_k = k;
+    return *this;
+}
+
+openrouter_request &openrouter_request::set_frequency_penalty(double penalty)
+{
+    frequency_penalty = penalty;
+    return *this;
+}
+
+openrouter_request &openrouter_request::set_presence_penalty(double penalty)
+{
+    presence_penalty = penalty;
+    return *this;
+}
+
+openrouter_request &openrouter_request::set_stream(bool enable)
+{
+    stream = enable;
+    return *this;
+}
+
+openrouter_request &openrouter_request::set_route(const std::string &route_str)
+{
+    route = route_str;
+    return *this;
+}
+
+openrouter_request &openrouter_request::set_provider_order(
+    const std::vector<std::string> &providers)
+{
+    provider_order = providers;
+    return *this;
+}
+
+json openrouter_request::to_json() const
 {
     json payload;
 
-    // Model selection
-    if (models_.has_value() && !models_->empty()) {
-        payload["models"] = *models_;
-    } else if (!model_.empty()) {
-        payload["model"] = model_;
+    if (models.has_value() && !models->empty()) {
+        payload["models"] = *models;
+    } else if (!model.empty()) {
+        payload["model"] = model;
     }
 
-    // Messages
     json messages_array = json::array();
-    for (const auto &msg : messages_) {
+    for (const auto &msg : messages) {
         json msg_obj;
         switch (msg.role) {
         case role::system:
@@ -60,145 +134,128 @@ json OpenRouterRequest::payload() const
     }
     payload["messages"] = messages_array;
 
-    // Optional parameters
-    if (temperature_.has_value())
-        payload["temperature"] = *temperature_;
-    if (max_tokens_.has_value())
-        payload["max_tokens"] = *max_tokens_;
-    if (top_p_.has_value())
-        payload["top_p"] = *top_p_;
-    if (top_k_.has_value())
-        payload["top_k"] = *top_k_;
-    if (frequency_penalty_.has_value())
-        payload["frequency_penalty"] = *frequency_penalty_;
-    if (presence_penalty_.has_value())
-        payload["presence_penalty"] = *presence_penalty_;
+    if (temperature.has_value())
+        payload["temperature"] = *temperature;
+    if (max_tokens.has_value())
+        payload["max_tokens"] = *max_tokens;
+    if (top_p.has_value())
+        payload["top_p"] = *top_p;
+    if (top_k.has_value())
+        payload["top_k"] = *top_k;
+    if (frequency_penalty.has_value())
+        payload["frequency_penalty"] = *frequency_penalty;
+    if (presence_penalty.has_value())
+        payload["presence_penalty"] = *presence_penalty;
 
-    if (!stop_sequences_.empty())
-        payload["stop"] = stop_sequences_;
+    if (!stop_sequences.empty())
+        payload["stop"] = stop_sequences;
 
-    if (stream_)
+    if (stream)
         payload["stream"] = true;
 
-    // OpenRouter-specific options
-    if (route_.has_value())
-        payload["route"] = *route_;
-    if (provider_order_.has_value())
-        payload["provider"] = {{"order", *provider_order_}};
+    if (route.has_value())
+        payload["route"] = *route;
+    if (provider_order.has_value())
+        payload["provider"] = {{"order", *provider_order}};
 
     return payload;
 }
 
-OpenRouterResponse OpenRouterClient::chat(const OpenRouterRequest &request)
+openrouter_response OpenRouterClient::chat(const openrouter_request &req)
 {
-    std::string response_body;
-    std::string request_body = request.payload().dump();
+    auto http_resp =
+        curl_helpers::post_json(curl_, req.endpoint, req.to_json(), headers_);
 
-    curl_easy_setopt(curl_, CURLOPT_URL, request.endpoint().c_str());
-    curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, request_body.c_str());
-    curl_easy_setopt(curl_, CURLOPT_POSTFIELDSIZE, request_body.size());
-    curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &response_body);
-
-    CURLcode ec = curl_easy_perform(curl_);
-    if (ec != CURLE_OK) {
-        OpenRouterResponse res("", 0);
-        res.invalidate(std::string("[CURL ERROR] ") + curl_easy_strerror(ec));
-        return res;
+    if (!http_resp.error.empty()) {
+        return {.content = {},
+                .valid = false,
+                .error = "[CURL ERROR] " + http_resp.error,
+                .raw_json = ""};
     }
 
-    long http_code = 0;
-    curl_easy_getinfo(curl_, CURLINFO_RESPONSE_CODE, &http_code);
-
-    return OpenRouterResponse(response_body, http_code);
+    return openrouter_response::parse(http_resp.body, http_resp.http_code);
 }
 
-bool OpenRouterResponse::process()
+openrouter_response openrouter_response::parse(const std::string &raw,
+                                               long http_code)
 {
-    // Extract model used
-    if (json_.contains("model")) {
-        const auto &model = json_["model"];
-        if (model.is_string()) {
-            model_used_ = model.get<std::string>();
-        }
+    openrouter_response result;
+    result.raw_json = raw;
+    result.valid = false;
+
+    if (http_code != 200) {
+        result.error = "[HTTP CODE " + std::to_string(http_code) + "]";
+        return result;
     }
 
-    // Extract choices array
-    json *choices = find("choices");
-    if (!choices) {
-        invalidate("[OPENROUTER] Missing 'choices' field in response");
-        return false;
+    json parsed;
+    try {
+        parsed = json::parse(raw);
+    } catch (json::exception &e) {
+        result.error = std::string("[JSON ERROR] ") + e.what();
+        return result;
     }
 
-    if (!choices->is_array()) {
-        invalidate("[OPENROUTER] 'choices' field is not an array");
-        return false;
+    if (parsed.contains("model") && parsed["model"].is_string()) {
+        result.model_used = parsed["model"].get<std::string>();
     }
 
-    if (choices->empty()) {
-        invalidate("[OPENROUTER] 'choices' array is empty");
-        return false;
+    if (!parsed.contains("choices")) {
+        result.error = "[OPENROUTER] Missing 'choices' field in response";
+        return result;
     }
 
-    content_.reserve(choices->size());
+    const auto &choices = parsed["choices"];
+    if (!choices.is_array() || choices.empty()) {
+        result.error = "[OPENROUTER] 'choices' field is empty or not an array";
+        return result;
+    }
 
-    // Process each choice
-    for (size_t i = 0; i < choices->size(); i++) {
-        const auto &choice = (*choices)[i];
+    for (size_t i = 0; i < choices.size(); i++) {
+        const auto &choice = choices[i];
 
         if (!choice.contains("message")) {
-            invalidate("[OPENROUTER] Choice at index " + std::to_string(i) +
-                       " missing 'message' field");
-            return false;
+            result.error = "[OPENROUTER] Choice at index " +
+                           std::to_string(i) + " missing 'message' field";
+            return result;
         }
 
-        const auto &message = choice["message"];
-        if (!message.contains("content")) {
-            invalidate("[OPENROUTER] Message at index " + std::to_string(i) +
-                       " missing 'content' field");
-            return false;
+        const auto &msg = choice["message"];
+        if (!msg.contains("content") || !msg["content"].is_string()) {
+            result.error = "[OPENROUTER] Message at index " +
+                           std::to_string(i) + " missing or invalid 'content'";
+            return result;
         }
 
-        if (!message["content"].is_string()) {
-            invalidate("[OPENROUTER] Message 'content' at index " +
-                       std::to_string(i) + " is not a string");
-            return false;
-        }
+        result.content.push_back(msg["content"].get<std::string>());
 
-        // Extract content
-        const auto &content_str =
-            message["content"].get_ref<const std::string &>();
-        content_.emplace_back(content_str);
-
-        // Extract finish_reason from first choice
-        if (i == 0 && choice.contains("finish_reason")) {
-            const auto &reason = choice["finish_reason"];
-            if (reason.is_string()) {
-                finish_reason_ = reason.get<std::string>();
-            }
+        if (i == 0 && choice.contains("finish_reason") &&
+            choice["finish_reason"].is_string()) {
+            result.finish_reason = choice["finish_reason"].get<std::string>();
         }
     }
 
-    // Extract usage information
-    if (json_.contains("usage")) {
-        const auto &usage = json_["usage"];
+    if (parsed.contains("usage")) {
+        const auto &usage = parsed["usage"];
 
         if (usage.contains("prompt_tokens") &&
             usage["prompt_tokens"].is_number_integer()) {
-            prompt_tokens_ = usage["prompt_tokens"].get<int>();
+            result.prompt_tokens = usage["prompt_tokens"].get<int>();
         }
 
         if (usage.contains("completion_tokens") &&
             usage["completion_tokens"].is_number_integer()) {
-            completion_tokens_ = usage["completion_tokens"].get<int>();
+            result.completion_tokens = usage["completion_tokens"].get<int>();
         }
 
         if (usage.contains("total_tokens") &&
             usage["total_tokens"].is_number_integer()) {
-            total_tokens_ = usage["total_tokens"].get<int>();
+            result.total_tokens = usage["total_tokens"].get<int>();
         }
     }
 
-    return true;
+    result.valid = true;
+    return result;
 }
 
 } // namespace setman::ai

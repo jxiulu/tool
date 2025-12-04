@@ -1,7 +1,7 @@
 #pragma once
 
-#include "element.hpp"
 #include "material.hpp"
+#include <chrono>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -11,6 +11,10 @@ class Error;
 
 namespace materials
 {
+
+class Element;
+
+template <typename T> using Mentions = std::unordered_set<T *>;
 
 class Image : public File
 {
@@ -54,12 +58,28 @@ class Keyframe : public Image
 class Reference : public Image
 {
   public:
-    Reference(const fs::path &path, const setman::Episode *episode,
-              anime_object subject);
+    Reference(const setman::Episode *episode, const fs::path &file,
+              const Mentions<Element> &subjects)
+        : Image(episode, file, material::reference), subjects_(subjects)
+    {
+    }
+
+    constexpr const Mentions<Element> &subjects() const { return subjects_; }
+
+    constexpr const std::optional<std::chrono::year_month_day> &date() const
+    {
+        return date_;
+    }
+    void set_date(const std::chrono::year_month_day date) { date_ = date; }
+
+    constexpr const std::optional<std::string> &id() const { return id_; }
+    void set_id(const std::string &id) { id_ = id; }
 
   private:
-    anime_object subject;
-    std::unordered_map<anime_object, std::string> keys_;
+    std::optional<std::chrono::year_month_day> date_;
+    std::optional<std::string> id_;
+
+    Mentions<Element> subjects_;
 };
 
 } // namespace materials

@@ -7,9 +7,6 @@
 #include <string>
 #include <vector>
 
-// setman
-#include "series.hpp"
-
 namespace fs = std::filesystem;
 
 namespace setman
