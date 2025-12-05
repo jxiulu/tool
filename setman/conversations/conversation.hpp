@@ -28,7 +28,7 @@ using ConstVecSubrange =
 
 class Conversation
 {
-  private:
+  public:
     class Message
     {
       public:
@@ -123,7 +123,7 @@ class Conversation
     Message &last() { return history_.back(); }
 
     size_t length() const;
-    const Message *find_message(const boost::uuids::uuid &uuid);
+    Message *find_message(const boost::uuids::uuid &uuid);
     const boost::uuids::uuid &new_message(const std::string &username,
                                           const std::string &content);
 
