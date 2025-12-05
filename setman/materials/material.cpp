@@ -201,16 +201,16 @@ std::expected<bool, Error> is_image(const fs::path &path)
 {
     // Check if file exists and is a regular file
     if (!fs::exists(path)) {
-        return std::unexpected(Error(code::file_doesnt_exist));
+        return std::unexpected(Error(Code::file_doesnt_exist));
     }
     if (!fs::is_regular_file(path)) {
-        return std::unexpected(Error(code::file_not_valid));
+        return std::unexpected(Error(Code::file_not_valid));
     }
 
     // Open file and read first 16 bytes for magic number detection
     std::ifstream file(path, std::ios::binary);
     if (!file) {
-        return std::unexpected(Error(code::file_read_failed));
+        return std::unexpected(Error(Code::file_read_failed));
     }
 
     std::array<unsigned char, 16> header{};
@@ -292,13 +292,13 @@ std::optional<std::string> file_extension_of(const fs::path &path)
 std::expected<size_t, Error> file_size_of(const fs::path &path)
 {
     if (!fs::exists(path))
-        return std::unexpected(code::file_doesnt_exist);
+        return std::unexpected(Code::file_doesnt_exist);
 
     std::error_code ec;
     size_t size = fs::file_size(path, ec);
     if (ec)
         return std::unexpected(
-            Error(code::file_size_count_failed, ec.message()));
+            Error(Code::file_size_count_failed, ec.message()));
 
     return size;
 }
@@ -360,20 +360,20 @@ file_to_bytes(const fs::path &path)
     std::vector<unsigned char> buffer;
     std::ifstream ifs(path, std::ios::binary);
     if (!ifs) {
-        return std::unexpected(code::file_open_failed);
+        return std::unexpected(Code::file_open_failed);
     }
 
     ifs.seekg(0, std::ios::end);
     std::streamsize size = ifs.tellg();
     if (size < 0) {
-        return std::unexpected(code::file_size_count_failed);
+        return std::unexpected(Code::file_size_count_failed);
     }
     ifs.seekg(0, std::ios::beg);
 
     buffer.resize(static_cast<size_t>(size));
     if (size > 0) {
         if (!ifs.read(reinterpret_cast<char *>(buffer.data()), size)) {
-            return std::unexpected(code::file_read_failed);
+            return std::unexpected(Code::file_read_failed);
         }
     }
     return buffer;
@@ -386,7 +386,7 @@ std::expected<std::string, Error> file_to_b64(const fs::path &path)
         return std::unexpected(check.error());
     if (check.value() == false)
         return std::unexpected(
-            Error(code::file_not_valid, "File not an image."));
+            Error(Code::file_not_valid, "File not an image."));
 
     auto bytes = file_to_bytes(path);
     if (!bytes.has_value())
@@ -404,12 +404,12 @@ image_dimensions_of(const fs::path &path)
         return std::unexpected(check.error());
     if (check.value() == false)
         return std::unexpected(
-            Error(code::file_not_valid, "File not an image."));
+            Error(Code::file_not_valid, "File not an image."));
 
     // Read first bytes to determine dimensions
     std::ifstream file(path, std::ios::binary);
     if (!file)
-        return std::unexpected(Error(code::file_open_failed));
+        return std::unexpected(Error(Code::file_open_failed));
 
     std::array<unsigned char, 24> header{};
     file.read(reinterpret_cast<char *>(header.data()), header.size());
@@ -417,7 +417,7 @@ image_dimensions_of(const fs::path &path)
 
     if (bytes_read < 24)
         return std::unexpected(
-            Error(code::file_read_failed,
+            Error(Code::file_read_failed,
                   "Not enough bytes to read image dimensions"));
 
     int w = -1, h = -1;
@@ -434,7 +434,7 @@ image_dimensions_of(const fs::path &path)
     // JPEG: need to scan for SOF marker
     else if (header[0] == 0xFF && header[1] == 0xD8) {
         return std::unexpected(
-            setman::Error(setman::code::file_not_valid,
+            setman::Error(setman::Code::file_not_valid,
                           "JPEG dimension reading not yet implemented"));
     }
 
@@ -455,7 +455,7 @@ image_dimensions_of(const fs::path &path)
 
     if (w == -1 || h == -1)
         return std::unexpected(
-            Error(code::file_not_valid, "Unknown or unsupported image format"));
+            Error(Code::file_not_valid, "Unknown or unsupported image format"));
 
     return std::make_pair(w, h);
 }
@@ -465,27 +465,27 @@ Error check_if_valid(const fs::path &path, bool wp)
     std::error_code ec;
 
     if (!fs::exists(path, ec)) {
-        return Error(code::file_doesnt_exist, ec.message());
+        return Error(Code::file_doesnt_exist, ec.message());
     }
 
     std::ifstream read_test(path);
     if (!read_test.is_open()) {
-        return Error(code::file_read_failed,
+        return Error(Code::file_read_failed,
                      "Permission denied reading " + path.string());
     }
     read_test.close();
 
     if (!wp)
-        return Error(code::success, path.string() + " is valid");
+        return Error(Code::success, path.string() + " is valid");
 
     std::ofstream write_test(path);
     if (!write_test.is_open()) {
-        return Error(code::file_write_failed,
+        return Error(Code::file_write_failed,
                      "Permission denied writing to " + path.string());
     }
     write_test.close();
 
-    return Error(code::success, path.string() + " is valid");
+    return Error(Code::success, path.string() + " is valid");
 }
 
 int last_integer_sequence_of(const std::string &sequence)

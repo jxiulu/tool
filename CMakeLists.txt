@@ -16,6 +16,7 @@ find_package(Boost REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(CURL REQUIRED)
+find_package(SQLite3 REQUIRED)
 find_package(Qt6 REQUIRED COMPONENTS Widgets Core Gui)
 
 add_library(SetmanAIEndpoints)
@@ -34,20 +35,22 @@ target_sources(
   PRIVATE setman/materials/material.cpp setman/materials/cut.cpp
           setman/materials/image.cpp setman/materials/element.cpp)
 target_include_directories(SetmanMaterials PUBLIC setman/materials setman/)
-target_link_libraries(SetmanMaterials spdlog::spdlog
-                      SetmanCore)
+target_link_libraries(SetmanMaterials spdlog::spdlog SetmanCore)
 
 add_library(SetmanCore)
 target_sources(
   SetmanCore PRIVATE setman/episode.cpp setman/series.cpp setman/error.cpp
-                     setman/company.cpp setman/config.cpp)
-target_include_directories(SetmanCore PUBLIC setman ${Boost_INCLUDE_DIRS})
-target_link_libraries(SetmanCore SetmanMaterials SetmanAIEndpoints ${Boost_LIBRARIES})
+                     setman/company.cpp setman/config.cpp setman/database.cpp)
+target_include_directories(SetmanCore PUBLIC setman/ ${Boost_INCLUDE_DIRS})
+target_link_libraries(SetmanCore SetmanMaterials SetmanAIEndpoints
+                      ${Boost_LIBRARIES} SQLite::SQLite3)
 
 add_library(SetmanConversationsModule)
-target_sources(SetmanConversationsModule PRIVATE
-setman/conversations/conversations.cpp)
-target_include_directories(SetmanConversationsModule PUBLIC setman/)
+target_sources(SetmanConversationsModule
+               PRIVATE setman/conversations/conversation.cpp)
+target_include_directories(SetmanConversationsModule
+                           PUBLIC setman/ ${Boost_INCLUDE_DIRS})
+target_link_libraries(SetmanConversationsModule ${Boost_LIBRARIES})
 
 add_library(SetmanTranslationService)
 target_sources(
@@ -58,7 +61,7 @@ target_include_directories(
   SetmanTranslationService PUBLIC setman/ setman/ai_endpoints
                                   setman/translation_service)
 target_link_libraries(SetmanTranslationService SetmanAIEndpoints
-SetmanConversationsModule CURL::libcurl)
+                      SetmanConversationsModule CURL::libcurl)
 
 add_executable(Application)
 target_sources(Application PRIVATE qt/main.cpp qt/main_window.cpp)

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "material.hpp"
+#include "uuid.hpp"
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <string>
@@ -20,6 +21,17 @@ namespace materials
 class Element
 {
   public:
+    Element(Series *series, const std::string &name)
+        : series_(series), name_(name), uuid_(setman::generate_uuid())
+    {
+    }
+    Element(Series *series, const std::string &name,
+            const boost::uuids::uuid &uuid)
+        : series_(series), name_(name), uuid_(uuid)
+    {
+    }
+    ~Element() = default;
+
     constexpr const setman::Series *series() const { return series_; }
 
     constexpr const boost::uuids::uuid &uuid() const { return uuid_; }
@@ -27,6 +39,8 @@ class Element
     constexpr const std::string &name() const { return name_; }
     void rename(const std::string &name) { name_ = name; }
     void alias_to_name(int alias_index);
+
+    // alias
 
     constexpr const std::vector<std::string> &aliases() const
     {
@@ -45,6 +59,8 @@ class Element
     }
     bool has_alias(const std::string &alias);
 
+    // tags
+
     constexpr const std::vector<std::string> &tags() const { return tags_; }
     constexpr const std::string &tag_at(int index) const
     {
@@ -59,9 +75,11 @@ class Element
     }
     bool has_tag(const std::string &tag);
 
-    constexpr const std::unordered_set<GenericMaterial *> &references() const
+    // mentions
+
+    constexpr const std::unordered_set<GenericMaterial *> &mentions() const
     {
-        return references_;
+        return mentions_;
     }
 
   private:
@@ -71,7 +89,7 @@ class Element
     std::vector<std::string> aliases_;
     std::vector<std::string> tags_;
 
-    std::unordered_set<GenericMaterial *> references_;
+    std::unordered_set<GenericMaterial *> mentions_;
 };
 
 } // namespace materials

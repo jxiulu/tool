@@ -10,8 +10,6 @@
 #include <unordered_map>
 #include <vector>
 
-namespace fs = std::filesystem;
-
 namespace setman
 {
 
@@ -19,6 +17,11 @@ class Config
 {
   public:
     constexpr Config() = default;
+
+    static std::expected<Config, Error> load(const std::filesystem::path &path);
+
+    static std::optional<std::filesystem::path>
+    find_file(const std::string &filename = "config.ini");
 
     std::optional<std::string> find(const std::string &key) const;
 
@@ -33,9 +36,5 @@ class Config
   private:
     std::unordered_map<std::string, std::string> map_;
 };
-
-std::expected<Config, Error> load_config(const fs::path &path);
-
-std::optional<fs::path> find_config(const std::string &filename = "config.ini");
 
 } // namespace setman

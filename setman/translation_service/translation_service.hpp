@@ -13,25 +13,15 @@
 namespace setman
 {
 
-namespace conversations
-{
-
 class Conversation;
-
-}
-
-namespace translation_service
-{
-
-enum client {
-    deepl,
-    openrouter,
-};
 
 class TranslationService
 {
   public:
-    using Conversation = setman::conversations::Conversation;
+    enum class SupportedClient {
+        deepl,
+        openrouter,
+    };
 
     TranslationService(CURL *curl, enum language target_language,
                        setman::ai::OpenRouterClient *openrouter,
@@ -39,16 +29,16 @@ class TranslationService
         : curl_(curl), target_language_(target_language)
     {
         if (!openrouter)
-            client_choice_ = client::deepl;
+            client_choice_ = SupportedClient::deepl;
         else if (!deepl)
-            client_choice_ = client::openrouter;
+            client_choice_ = SupportedClient::openrouter;
 
         // placeholder. prefer deepl for now.
     }
 
     ~TranslationService() = default;
 
-    void choose_client(client choice) { client_choice_ = choice; }
+    void choose_client(SupportedClient choice) { client_choice_ = choice; }
     setman::ai::OpenRouterClient *openrouter_client() const
     {
         return openrouter_;
@@ -79,7 +69,7 @@ class TranslationService
 
     std::string translate(const std::string &message);
 
-    void translate(setman::conversations::Conversation &conversation); // todo
+    void translate(Conversation &conversation); // todo
 
   private:
     CURL *curl_;
@@ -87,12 +77,10 @@ class TranslationService
     enum language target_language_;
     std::optional<language> source_language_;
 
-    client client_choice_;
+    SupportedClient client_choice_;
 
     setman::ai::OpenRouterClient *openrouter_;
     setman::ai::DeepLClient *deepl_;
 };
-
-} // namespace translation_service
 
 } // namespace setman

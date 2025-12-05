@@ -9,7 +9,7 @@
 namespace setman
 {
 
-enum class code {
+enum class Code {
     success,
 
     parse_failed,
@@ -34,6 +34,8 @@ enum class code {
     folder_open_failed,
     folder_already_exists,
 
+    database_error,
+
     generic,
 };
 
@@ -45,51 +47,51 @@ enum class severity {
     critical,
 };
 
-constexpr std::string_view to_message(enum code code)
+constexpr std::string_view to_message(enum Code code)
 {
     switch (code) {
-    case code::success:
+    case Code::success:
         return "Operation completed successfully";
 
-    case code::parse_failed:
+    case Code::parse_failed:
         return "Failed to parse input";
 
-    case code::existing_cut_conflicts:
+    case Code::existing_cut_conflicts:
         return "Cut with same identity and stage already exists";
 
-    case code::cels_folder_exists:
+    case Code::cels_folder_exists:
         return "Cels folder already exists";
-    case code::cels_folder_doesnt_exist:
+    case Code::cels_folder_doesnt_exist:
         return "Cels folder does not exist";
-    case code::up_folder_exists:
+    case Code::up_folder_exists:
         return "Up folder already exists";
-    case code::up_folder_doesnt_exist:
+    case Code::up_folder_doesnt_exist:
         return "Up folder does not exist";
 
-    case code::file_doesnt_exist:
+    case Code::file_doesnt_exist:
         return "File does not exist";
-    case code::file_not_valid:
+    case Code::file_not_valid:
         return "File is not valid or not a regular file";
-    case code::file_open_failed:
+    case Code::file_open_failed:
         return "Failed to open file";
-    case code::file_read_failed:
+    case Code::file_read_failed:
         return "Failed to read file";
-    case code::file_size_count_failed:
+    case Code::file_size_count_failed:
         return "Failed to determine file size";
-    case code::file_already_exists:
+    case Code::file_already_exists:
         return "File already exists";
 
-    case code::generic_filesystem_error:
+    case Code::generic_filesystem_error:
         return "Filesystem operation failed";
 
-    case code::folder_doesnt_exist:
+    case Code::folder_doesnt_exist:
         return "Folder does not exist";
-    case code::folder_open_failed:
+    case Code::folder_open_failed:
         return "Failed to open folder";
-    case code::folder_already_exists:
+    case Code::folder_already_exists:
         return "Folder already exists";
 
-    case code::generic:
+    case Code::generic:
         return "Generic error";
 
     default:
@@ -100,24 +102,24 @@ constexpr std::string_view to_message(enum code code)
 class Error
 {
   public:
-    constexpr Error(const severity sev, const code errc, const std::string &msg)
+    constexpr Error(const severity sev, const Code errc, const std::string &msg)
         : sev_(sev), errc_(errc), msg_(std::move(msg))
     {
     }
-    constexpr Error(const code errc, const std::string &msg)
+    constexpr Error(const Code errc, const std::string &msg)
         : sev_(severity::error), errc_(errc), msg_(std::move(msg))
     {
     }
-    constexpr Error(const code errc)
+    constexpr Error(const Code errc)
         : sev_(severity::error), errc_(errc), msg_(std::nullopt)
     {
     }
-    constexpr Error(const severity sev, const code errc)
+    constexpr Error(const severity sev, const Code errc)
         : sev_(sev), errc_(errc), msg_(std::nullopt)
     {
     }
     constexpr Error(const std::string &msg)
-        : sev_(severity::error), errc_(code::generic), msg_(std::move(msg))
+        : sev_(severity::error), errc_(Code::generic), msg_(std::move(msg))
     {
     }
 
@@ -125,19 +127,19 @@ class Error
     {
         return msg_.value_or(std::string(to_message(errc_)));
     }
-    constexpr operator bool() const { return errc_ == code::success; }
-    constexpr operator code() const { return errc_; }
+    constexpr operator bool() const { return errc_ == Code::success; }
+    constexpr operator Code() const { return errc_; }
 
     constexpr const std::string message() const
     {
         return msg_.value_or(std::string(to_message(errc_)));
     }
-    constexpr code code() const { return errc_; }
+    constexpr Code code() const { return errc_; }
     constexpr severity severity() const { return sev_; }
 
   private:
     const enum severity sev_;
-    const enum code errc_;
+    const enum Code errc_;
     const std::optional<std::string> msg_;
 };
 

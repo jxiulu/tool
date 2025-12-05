@@ -2,6 +2,7 @@
 #include "series.hpp"
 #include "company.hpp"
 #include "episode.hpp"
+#include "uuid.hpp"
 
 #include <map>
 
@@ -11,7 +12,8 @@ namespace setman
 Series::Series(const Company *company, const std::string &series_code,
                const std::string &naming_convention, const int season)
     : company_(company), id_(series_code),
-      naming_convention_(naming_convention), season_(season)
+      naming_convention_(naming_convention), season_(season),
+      uuid_(generate_uuid())
 {
     build_regex();
 }
@@ -76,7 +78,7 @@ void Series::refresh_tags()
     tag_lookup_.clear();
     for (const auto &episode : episodes_) {
         for (const auto &material : episode->materials()) {
-            for (const std::string& tag : material->tags()) {
+            for (const std::string &tag : material->tags()) {
                 tag_lookup_[tag].insert(material.get());
             }
         }

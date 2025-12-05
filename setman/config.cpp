@@ -7,6 +7,8 @@
 namespace setman
 {
 
+namespace fs = std::filesystem;
+
 static std::string without_padding_whitespace(std::string in)
 {
     constexpr char whitespace[] = " \t\r\n";
@@ -18,17 +20,17 @@ static std::string without_padding_whitespace(std::string in)
     return in.substr(start, end - start + 1);
 }
 
-std::expected<Config, Error> load_config(const fs::path &path)
+std::expected<Config, Error> Config::load(const fs::path &path)
 {
     if (!fs::exists(path)) {
         return std::unexpected(
-            Error(code::file_doesnt_exist, path.string() + " does not exist."));
+            Error(Code::file_doesnt_exist, path.string() + " does not exist."));
     }
 
     std::ifstream file(path);
     if (!file) {
         return std::unexpected(
-            Error(code::file_open_failed, "Failed to open " + path.string()));
+            Error(Code::file_open_failed, "Failed to open " + path.string()));
     }
 
     Config cfg;
@@ -73,17 +75,17 @@ std::expected<Config, Error> load_config(const fs::path &path)
     return cfg;
 }
 
-std::optional<fs::path> find_config(const std::string &filename)
+std::optional<fs::path> Config::find_file(const std::string &filename)
 {
-    fs::path cdcfg = fs::current_path() / filename;
-    if (fs::exists(cdcfg))
-        return cdcfg;
+    fs::path cd_config = fs::current_path() / filename;
+    if (fs::exists(cd_config))
+        return cd_config;
 
     const char *home = std::getenv("HOME");
     if (home) {
-        fs::path homecfg = fs::path(home) / (".settei_man_" + filename);
-        if (fs::exists(homecfg))
-            return homecfg;
+        fs::path home_config = fs::path(home) / (".settei_man_" + filename);
+        if (fs::exists(home_config))
+            return home_config;
     }
 
     return std::nullopt;

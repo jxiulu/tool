@@ -6,6 +6,7 @@
 #include "company.hpp"
 #include "materials/cut.hpp"
 #include "materials/element.hpp"
+#include "uuid.hpp"
 
 // std
 #include <filesystem>
@@ -15,6 +16,8 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+
+//boost
 
 namespace setman
 {
@@ -26,6 +29,8 @@ class Series
   public:
     Series(const Company *parent, const std::string &series_code,
            const std::string &naming_convention, const int season);
+
+    constexpr const boost::uuids::uuid uuid() const { return uuid_; }
 
     constexpr const Company *company() const { return company_; }
     constexpr const std::string &naming_convention() const
@@ -58,7 +63,8 @@ class Series
     const Episode *find_episode(const int number);
 
   private:
-    const class Company *company_;
+    const Company *company_;
+    const boost::uuids::uuid uuid_;
 
     std::filesystem::path location_;
     std::string id_;

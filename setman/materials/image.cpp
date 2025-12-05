@@ -37,7 +37,7 @@ std::expected<int, Error> Image::width() const
         return cached_width_;
     }
 
-    return Error(code::file_not_valid, "Could not determine image width");
+    return Error(Code::file_not_valid, "Could not determine image width");
 }
 
 std::expected<int, Error> Image::height() const
@@ -50,7 +50,7 @@ std::expected<int, Error> Image::height() const
         return cached_height_;
     }
 
-    return Error(code::file_not_valid, "Could not determine image height");
+    return Error(Code::file_not_valid, "Could not determine image height");
 }
 
 //

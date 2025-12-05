@@ -39,14 +39,14 @@ Error Cut::assume_identity_from_name()
 {
     auto parsed = episode_->series()->parse_cut_name(name());
     if (!parsed.has_value()) {
-        return code::parse_failed;
+        return Code::parse_failed;
     }
 
     parsed.value().scene = scene_;
     parsed.value().number = number_;
     parsed.value().take = take_;
 
-    return {code::success, "Cannot assume episode and series. Please manually "
+    return {Code::success, "Cannot assume episode and series. Please manually "
                            "move this cut if these changes are desired."};
 }
 
@@ -82,14 +82,14 @@ std::expected<std::unique_ptr<Cut>, Error> build_from(setman::Episode *episode,
         episode->series()->parse_cut_name(pathtocut.filename().string());
 
     if (!result)
-        return std::unexpected(code::parse_failed);
+        return std::unexpected(Code::parse_failed);
 
     auto newcut = std::make_unique<Cut>(episode, pathtocut, result->scene,
                                         result->number, result->stage);
 
     for (auto &cut : episode->active()) {
         if (newcut->conflicts(*cut))
-            return std::unexpected(code::existing_cut_conflicts);
+            return std::unexpected(Code::existing_cut_conflicts);
     }
 
     return newcut;
